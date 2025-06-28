@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ServiceItemController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('customers', CustomerController::class);
+Route::resource('service_items', ServiceItemController::class);
