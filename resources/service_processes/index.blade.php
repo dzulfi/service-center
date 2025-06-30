@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Pelanggan</title>
+    <title>Daftar Proses Servis</title>
     <style>
+        /* CSS yang sama dengan index pelanggan/barang servis sebelumnya */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -63,7 +64,7 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border-radius: 8px;
-            overflow: hidden; /* For rounded corners */
+            overflow: hidden;
         }
         th, td {
             padding: 12px 15px;
@@ -83,7 +84,7 @@
             background-color: #f1f1f1;
         }
         .actions {
-            white-space: nowrap; /* Keep buttons on one line */
+            white-space: nowrap;
         }
         .actions a, .actions button {
             display: inline-block;
@@ -136,11 +137,26 @@
         .nav-links a:hover {
             text-decoration: underline;
         }
+
+        /* Status colors */
+        .status-pending { background-color: #ffeb3b; color: #333; } /* Amber */
+        .status-diagnosa { background-color: #673ab7; color: #fff; } /* Deep Purple */
+        .status-proses { background-color: #2196f3; color: #fff; } /* Blue */
+        .status-menunggu { background-color: #ff9800; color: #fff; } /* Orange */
+        .status-selesai { background-color: #4caf50; color: #fff; } /* Green */
+        .status-batal { background-color: #f44336; color: #fff; } /* Red */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Daftar Pelanggan</h1>
+        <h1>Daftar Proses Servis</h1>
 
         @if (session('success'))
             <div class="message success-message">
@@ -148,37 +164,55 @@
             </div>
         @endif
 
-        <a href="{{ route('customers.create') }}" class="add-button">Tambah Pelanggan Baru</a>
+        <a href="{{ route('service_processes.create') }}" class="add-button">Tambah Proses Servis Baru</a>
 
-        @if ($customers->isEmpty())
-            <p class="no-data">Belum ada pelanggan yang terdaftar.</p>
+        @if ($serviceProcesses->isEmpty())
+            <p class="no-data">Belum ada proses servis yang terdaftar.</p>
         @else
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nama Pelanggan</th>
-                        <th>No. Telepon</th>
-                        <th>Perusahaan</th>
-                        <th>Kota</th>
+                        <th>Barang Servis</th>
+                        <th>Pelanggan</th>
+                        <th>Analisa Kerusakan</th>
+                        <th>Solusi</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($customers as $customer)
+                    @foreach ($serviceProcesses as $process)
                         <tr>
-                            <td>{{ $customer->id }}</td>
-                            <td>{{ $customer->name }}</td>
-                            <td>{{ $customer->phone_number ?? '-' }}</td>
-                            <td>{{ $customer->company ?? '-' }}</td>
-                            <td>{{ $customer->kota ?? '-' }}</td>
+                            <td>{{ $process->id }}</td>
+                            <td>
+                                @if ($process->serviceItem)
+                                    <a href="{{ route('service_items.show', $process->serviceItem->id) }}">{{ $process->serviceItem->name }} ({{ $process->serviceItem->serial_number ?? '-' }})</a>
+                                @else
+                                    <span style="color: #999;">(Barang Servis Tidak Ditemukan)</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if ($process->serviceItem && $process->serviceItem->customer)
+                                    <a href="{{ route('customers.show', $process->serviceItem->customer->id) }}">{{ $process->serviceItem->customer->name }}</a>
+                                @else
+                                    <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                                @endif
+                            </td>
+                            <td>{{ Str::limit($process->damage_analysis_detail ?? '-', 50) }}</td>
+                            <td>{{ Str::limit($process->solution ?? '-', 50) }}</td>
+                            <td>
+                                <span class="status-badge status-{{ Str::slug($process->process_status) }}">
+                                    {{ $process->process_status }}
+                                </span>
+                            </td>
                             <td class="actions">
-                                <a href="{{ route('customers.show', $customer->id) }}" class="view-button">Lihat</a>
-                                <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit</a>
-                                <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
+                                <a href="{{ route('service_processes.show', $process->id) }}" class="view-button">Lihat</a>
+                                <a href="{{ route('service_processes.edit', $process->id) }}" class="edit-button">Edit</a>
+                                <form action="{{ route('service_processes.destroy', $process->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus pelanggan ini?')">Hapus</button>
+                                    <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus proses servis ini?')">Hapus</button>
                                 </form>
                             </td>
                         </tr>
@@ -188,7 +222,8 @@
         @endif
 
         <div class="nav-links">
-            <a href="{{ route('service_items.index') }}">Lihat Daftar Barang Servis</a>
+            <a href="{{ route('customers.index') }}">Daftar Pelanggan</a>
+            <a href="{{ route('service_items.index') }}">Daftar Barang Servis</a>
         </div>
     </div>
 </body>

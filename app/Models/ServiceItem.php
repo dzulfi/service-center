@@ -23,4 +23,9 @@ class ServiceItem extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function serviceProcesses()
+    {
+        return $this->hasMany(ServiceProcess::class);
+    }
 }

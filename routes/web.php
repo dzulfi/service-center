@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ServiceItemController;
+use App\Http\Controllers\ServiceProcessController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,3 +22,4 @@ Route::get('/', function () {
 
 Route::resource('customers', CustomerController::class);
 Route::resource('service_items', ServiceItemController::class);
+Route::resource('service_processes', ServiceProcessController::class);

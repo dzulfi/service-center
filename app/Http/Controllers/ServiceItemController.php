@@ -68,9 +68,11 @@ class ServiceItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(ServiceItem $serviceItem)
     {
-        //
+        $customers = Customer::all();
+        $merks = ['Techma', 'Hilook', 'Hikvision', 'Dahua', 'Lainnya'];
+        return view('service_items.edit', compact('serviceItem', 'customers', 'merks'));
     }
 
     /**
