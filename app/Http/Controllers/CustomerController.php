@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\ServiceItem;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller

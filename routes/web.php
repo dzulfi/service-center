@@ -22,4 +22,12 @@ Route::get('/', function () {
 
 Route::resource('customers', CustomerController::class);
 Route::resource('service_items', ServiceItemController::class);
-Route::resource('service_processes', ServiceProcessController::class);
+// Route::resource('service_processes', ServiceProcessController::class);
+
+// modifikasi untuk ServiceProcess
+Route::get('service_processes', [ServiceProcessController::class, 'index'])->name('service_processes.index');
+Route::get('service_processes/{serviceItem}/work', [ServiceProcessController::class, 'workOn'])->name('service_processes.work_on');
+Route::post('service_processes/{serviceItem}/work', [ServiceProcessController::class, 'storeWork'])->name('service_processes.store_work');
+// melihat detail spesifik
+Route::get('service_processes/{serviceProcess}', [ServiceProcessController::class, 'show'])->name('service_processes.show');
+

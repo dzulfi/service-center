@@ -91,51 +91,53 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Detail Barang Servis</h1>
+    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+        <div class="container">
+            <h1>Detail Barang Servis</h1>
 
-        <div class="detail-group">
-            <strong>Pelanggan:</strong>
-            <span>
-                @if ($serviceItem->customer)
-                    <a href="{{ route('customers.show', $serviceItem->customer->id) }}">{{ $serviceItem->customer->name }}</a>
-                @else
-                    <span style="color: #999;">(Tidak Ditemukan)</span>
-                @endif
-            </span>
-        </div>
-        <div class="detail-group">
-            <strong>Nama Barang:</strong> <span>{{ $serviceItem->name }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Tipe Barang:</strong> <span>{{ $serviceItem->type ?? '-' }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Serial Number:</strong> <span>{{ $serviceItem->serial_number ?? '-' }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Analisa Kerusakan:</strong> <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Merk:</strong> <span>{{ $serviceItem->merk ?? '-' }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Dibuat Pada:</strong> <span>{{ $serviceItem->created_at->format('d M Y H:i') }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Diperbarui Pada:</strong> <span>{{ $serviceItem->updated_at->format('d M Y H:i') }}</span>
-        </div>
+            <div class="detail-group">
+                <strong>Pelanggan:</strong>
+                <span>
+                    @if ($serviceItem->customer)
+                        <a href="{{ route('customers.show', $serviceItem->customer->id) }}">{{ $serviceItem->customer->name }}</a>
+                    @else
+                        <span style="color: #999;">(Tidak Ditemukan)</span>
+                    @endif
+                </span>
+            </div>
+            <div class="detail-group">
+                <strong>Nama Barang:</strong> <span>{{ $serviceItem->name }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Tipe Barang:</strong> <span>{{ $serviceItem->type ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Serial Number:</strong> <span>{{ $serviceItem->serial_number ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Analisa Kerusakan:</strong> <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Merk:</strong> <span>{{ $serviceItem->merk ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Dibuat Pada:</strong> <span>{{ $serviceItem->created_at->format('d M Y H:i') }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Diperbarui Pada:</strong> <span>{{ $serviceItem->updated_at->format('d M Y H:i') }}</span>
+            </div>
 
-        <div class="actions">
-            <a href="{{ route('service_items.edit', $serviceItem->id) }}" class="edit-button">Edit Barang Servis</a>
-            <form action="{{ route('service_items.destroy', $serviceItem->id) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus Barang Servis</button>
-            </form>
-        </div>
+            <div class="actions">
+                <a href="{{ route('service_items.edit', $serviceItem->id) }}" class="edit-button">Edit Barang Servis</a>
+                <form action="{{ route('service_items.destroy', $serviceItem->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus Barang Servis</button>
+                </form>
+            </div>
 
-        <a href="{{ route('service_items.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>
-    </div>
+            <a href="{{ route('service_items.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>
+        </div>
+    @endsection
 </body>
 </html>

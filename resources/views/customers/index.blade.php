@@ -13,7 +13,7 @@
             color: #333;
         }
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 20px auto;
             background-color: #fff;
             padding: 30px;
@@ -123,73 +123,58 @@
             color: #777;
             font-style: italic;
         }
-        .nav-links {
-            margin-top: 30px;
-            text-align: center;
-        }
-        .nav-links a {
-            color: #3498db;
-            text-decoration: none;
-            margin: 0 10px;
-            font-weight: bold;
-        }
-        .nav-links a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Daftar Pelanggan</h1>
+    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+        <div class="container">
+            <h1>Daftar Customer</h1>
 
-        @if (session('success'))
-            <div class="message success-message">
-                {{ session('success') }}
-            </div>
-        @endif
+            @if (session('success'))
+                <div class="message success-message">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-        <a href="{{ route('customers.create') }}" class="add-button">Tambah Pelanggan Baru</a>
+            <a href="{{ route('customers.create') }}" class="add-button">Tambah Pelanggan Baru</a>
 
-        @if ($customers->isEmpty())
-            <p class="no-data">Belum ada pelanggan yang terdaftar.</p>
-        @else
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nama Pelanggan</th>
-                        <th>No. Telepon</th>
-                        <th>Perusahaan</th>
-                        <th>Kota</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($customers as $customer)
+            @if ($customers->isEmpty())
+                <p class="no-data">Belum ada pelanggan yang terdaftar.</p>
+            @else
+                <table>
+                    <thead>
                         <tr>
-                            <td>{{ $customer->id }}</td>
-                            <td>{{ $customer->name }}</td>
-                            <td>{{ $customer->phone_number ?? '-' }}</td>
-                            <td>{{ $customer->company ?? '-' }}</td>
-                            <td>{{ $customer->kota ?? '-' }}</td>
-                            <td class="actions">
-                                <a href="{{ route('customers.show', $customer->id) }}" class="view-button">Lihat</a>
-                                <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit</a>
-                                <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus pelanggan ini?')">Hapus</button>
-                                </form>
-                            </td>
+                            <th>ID</th>
+                            <th>Nama Pelanggan</th>
+                            <th>No. Telepon</th>
+                            <th>Perusahaan</th>
+                            <th>Kota</th>
+                            <th>Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-
-        <div class="nav-links">
-            <a href="{{ route('service_items.index') }}">Lihat Daftar Barang Servis</a>
+                    </thead>
+                    <tbody>
+                        @foreach ($customers as $customer)
+                            <tr>
+                                <td>{{ $customer->id }}</td>
+                                <td>{{ $customer->name }}</td>
+                                <td>{{ $customer->phone_number ?? '-' }}</td>
+                                <td>{{ $customer->company ?? '-' }}</td>
+                                <td>{{ $customer->kota ?? '-' }}</td>
+                                <td class="actions">
+                                    <a href="{{ route('customers.show', $customer->id) }}" class="view-button">Lihat</a>
+                                    <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit</a>
+                                    {{-- <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus pelanggan ini?')">Hapus</button>
+                                    </form> --}}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         </div>
-    </div>
+    @endsection
 </body>
 </html>

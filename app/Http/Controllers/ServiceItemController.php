@@ -81,7 +81,7 @@ class ServiceItemController extends Controller
     public function update(Request $request, ServiceItem $serviceItem)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customer,id',
+            'customer_id' => 'required|exists:customers,id',
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
             'serial_number' => 'required|string|max:255',

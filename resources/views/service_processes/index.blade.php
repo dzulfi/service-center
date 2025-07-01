@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Barang Servis</title>
+    <title>Daftar Barang Servis (Siap Dikerjakan)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -38,25 +38,6 @@
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .add-button {
-            display: inline-block;
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-            margin-bottom: 20px;
-        }
-        .add-button:hover {
-            background-color: #2980b9;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -75,7 +56,6 @@
             color: #555;
             font-weight: 600;
             text-transform: uppercase;
-            text-align: center;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
@@ -86,37 +66,21 @@
         .actions {
             white-space: nowrap;
         }
-        .actions a, .actions button {
+        .actions a {
             display: inline-block;
-            padding: 6px 12px;
+            padding: 8px 15px;
             border-radius: 4px;
             text-decoration: none;
             font-size: 0.9em;
             margin-right: 5px;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-        .actions a.view-button {
-            background-color: #28a745;
+        .actions a.work-button {
+            background-color: #28a745; /* Hijau untuk Kerjakan */
             color: white;
         }
-        .actions a.view-button:hover {
+        .actions a.work-button:hover {
             background-color: #218838;
-        }
-        .actions a.edit-button {
-            background-color: #ffc107;
-            color: #333;
-        }
-        .actions a.edit-button:hover {
-            background-color: #e0a800;
-        }
-        .actions button.delete-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .actions button.delete-button:hover {
-            background-color: #c82333;
         }
         .no-data {
             text-align: center;
@@ -124,7 +88,7 @@
             color: #777;
             font-style: italic;
         }
-         /* Status colors - pastikan ini konsisten dengan CSS Anda */
+        /* Status colors - pastikan ini konsisten dengan CSS Anda */
         .status-badge {
             padding: 4px 8px;
             border-radius: 3px;
@@ -144,7 +108,7 @@
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
         <div class="container">
-            <h1>Daftar Barang Servis</h1>
+            <h1>Antrian Barang Service</h1>
 
             @if (session('success'))
                 <div class="message success-message">
@@ -152,22 +116,21 @@
                 </div>
             @endif
 
-            <a href="{{ route('service_items.create') }}" class="add-button">Tambah Barang Servis Baru</a>
-
             @if ($serviceItems->isEmpty())
-                <p class="no-data">Belum ada barang servis yang terdaftar.</p>
+                <p class="no-data">Tidak ada barang servis yang perlu dikerjakan atau sedang dalam proses.</p>
             @else
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>ID Barang</th>
                             <th>Nama Barang</th>
-                            <th>Pelanggan</th>
-                            <th>Tipe Barang</th>
                             <th>Serial Number</th>
-                            <th>Merk</th>
-                            <th>Jumlah Item</th>
-                            <th>Proses pengerjaan</th>
+                            <th>Pelanggan</th>
+                            <th>Analisa Kerusakan Awal</th>
+                            <th>Kerusakan</th>
+                            <th>Solusi</th>
+                            <th>Keterangan</th>
+                            <th>Status Terakhir</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -176,21 +139,18 @@
                             <tr>
                                 <td>{{ $item->id }}</td>
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->serial_number ?? '-' }}</td>
                                 <td>
                                     @if ($item->customer)
                                         <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
                                     @else
-                                        <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                                        <span style="color: #999;">(Tidak Ditemukan)</span>
                                     @endif
                                 </td>
-                                <td>{{ $item->type ?? '-' }}</td>
-                                <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->merk ?? '-' }}</td>
-                                <td>{{ $item->jumlah_item ?? '-' }}</td>
-
-                                {{-- @php
-                                dd($service)
-                                @endphp --}}
+                                <td>{{ Str::limit($item->analisa_kerusakan ?? '-', 50) }}</td>
+                                @php
+                                    // dd($item)
+                                @endphp
                                 <td>
                                     @php
                                         $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
@@ -203,15 +163,8 @@
                                         <span class="status-badge status-pending">Pending</span>
                                     @endif
                                 </td>
-
                                 <td class="actions">
-                                    <a href="{{ route('service_items.show', $item->id) }}" class="view-button">Lihat</a>
-                                    <a href="{{ route('service_items.edit', $item->id) }}" class="edit-button">Edit</a>
-                                    <form action="{{ route('service_items.destroy', $item->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus</button>
-                                    </form>
+                                    <a href="{{ route('service_processes.work_on', $item->id) }}" class="work-button">Kerjakan</a>
                                 </td>
                             </tr>
                         @endforeach

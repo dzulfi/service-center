@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Pelanggan Baru</title>
+    <title>Tambah Proses Servis Baru</title>
     <style>
+        /* CSS yang sama dengan create pelanggan/barang servis sebelumnya */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -36,8 +37,9 @@
             color: #555;
         }
         input[type="text"],
-        textarea {
-            width: calc(100% - 20px); /* Adjust for padding */
+        textarea,
+        select {
+            width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -45,7 +47,8 @@
             transition: border-color 0.3s ease;
         }
         input[type="text"]:focus,
-        textarea:focus {
+        textarea:focus,
+        select:focus {
             border-color: #3498db;
             outline: none;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
@@ -98,7 +101,7 @@
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
         <div class="container">
-            <h1>Tambah Pelanggan Baru</h1>
+            <h1>Tambah Proses Servis Baru</h1>
 
             @if ($errors->any())
                 <ul class="error-message-list">
@@ -108,60 +111,58 @@
                 </ul>
             @endif
 
-            <form action="{{ route('customers.store') }}" method="POST">
+            <form action="{{ route('service_processes.store') }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label for="name">Nama Pelanggan:</label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" required>
-                    @error('name')
+                    <label for="service_item_id">Barang Servis:</label>
+                    <select name="service_item_id" id="service_item_id" required>
+                        <option value="">-- Pilih Barang Servis --</option>
+                        @foreach ($serviceItems as $item)
+                            <option value="{{ $item->id }}" {{ old('service_item_id') == $item->id ? 'selected' : '' }}>
+                                {{ $item->name }} (SN: {{ $item->serial_number ?? 'N/A' }}) - Pelanggan: {{ $item->customer->name ?? 'N/A' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('service_item_id')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="phone_number">No. Telepon:</label>
-                    <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number') }}">
-                    @error('phone_number')
+                    <label for="damage_analysis_detail">Analisa Kerusakan Detail:</label>
+                    <textarea name="damage_analysis_detail" id="damage_analysis_detail">{{ old('damage_analysis_detail') }}</textarea>
+                    @error('damage_analysis_detail')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="company">Perusahaan:</label>
-                    <input type="text" name="company" id="company" value="{{ old('company') }}">
-                    @error('company')
+                    <label for="solution">Solusi / Tindakan:</label>
+                    <textarea name="solution" id="solution">{{ old('solution') }}</textarea>
+                    @error('solution')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="address">Alamat:</label>
-                    <textarea name="address" id="address">{{ old('address') }}</textarea>
-                    @error('address')
+                    <label for="process_status">Status Proses Pengerjaan:</label>
+                    <select name="process_status" id="process_status" required>
+                        <option value="">-- Pilih Status --</option>
+                        @foreach ($statuses as $status)
+                            <option value="{{ $status }}" {{ old('process_status') == $status ? 'selected' : '' }}>{{ $status }}</option>
+                        @endforeach
+                    </select>
+                    @error('process_status')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="kelurahan">Kelurahan:</label>
-                    <input type="text" name="kelurahan" id="kelurahan" value="{{ old('kelurahan') }}">
-                    @error('kelurahan')
+                    <label for="keterangan">Keterangan Tambahan:</label>
+                    <textarea name="keterangan" id="keterangan">{{ old('keterangan') }}</textarea>
+                    @error('keterangan')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="form-group">
-                    <label for="kecamatan">Kecamatan:</label>
-                    <input type="text" name="kecamatan" id="kecamatan" value="{{ old('kecamatan') }}">
-                    @error('kecamatan')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group">
-                    <label for="kota">Kota:</label>
-                    <input type="text" name="kota" id="kota" value="{{ old('kota') }}">
-                    @error('kota')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-                <button type="submit">Simpan Pelanggan</button>
+                <button type="submit">Simpan Proses Servis</button>
             </form>
-            <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a>
+            <a href="{{ route('service_processes.index') }}" class="back-link">Kembali ke Daftar Proses Servis</a>
         </div>
     @endsection
 </body>

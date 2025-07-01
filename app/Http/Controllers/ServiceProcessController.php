@@ -14,8 +14,51 @@ class ServiceProcessController extends Controller
      */
     public function index()
     {
-        $serviceProcesses = ServiceProcess::with('serviceItem.customer')->get();
-        return view('service_processes.index', compact('serviceProcesses'));
+        $serviceItems = ServiceItem::with(['customer', 'serviceProcesses'])
+            ->get()
+            ->filter(function ($item) {
+                $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
+                return ((!$latestProcess || $latestProcess->process_status !== 'Selesai') && (!$latestProcess || $latestProcess->process_status !== 'Tidak bisa diperbaiki'));
+            });
+        
+        return view('service_processes.index', compact('serviceItems'));
+    }
+
+    /**
+     * Menampilkan form untuk mengerjakan/melanjutkan proses servis.
+     */
+    public function workOn(ServiceItem $serviceItem)
+    {
+        // Load proses terakhir untuk service item ini (jika ada)
+        $latestProcess = $serviceItem->serviceProcesses->sortByDesc('created_at')->first();
+
+        // status yang tersedia untuk dropdown
+        $statuses = ['Pending', 'Diagnosa', 'Proses Pengerjaan', 'Menunggu Sparepart', 'Selesai', 'Tidak bisa diperbaiki'];
+
+        return view('service_processes.work_on', compact('serviceItem', 'latestProcess', 'statuses'));
+    }
+
+    /**
+     * Menyimpan proses servis baru atau memperbarui yang sudah ada.
+     */
+    public function storeWork(Request $request, ServiceItem $serviceItem)
+    {
+        $request->validate([
+            'damage_analysis_detail' => 'nullable|string',
+            'solution' => 'nullable|string',
+            'process_status' => 'required|string|in:Pending,Diagnosa,Proses Pengerjaan,Menunggu Sparepart,Selesai,Tidak bisa diperbaiki',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        ServiceProcess::create([
+            'service_item_id' => $serviceItem->id,
+            'damage_analysis_detail' => $request->damage_analysis_detail,
+            'solution' => $request->solution,
+            'process_status' => $request->process_status,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()->route('service_processes.index')->with('success', 'Proses service berhasil diperbaharui');
     }
 
     /**
@@ -38,7 +81,7 @@ class ServiceProcessController extends Controller
             'service_item_id' => 'required|exists:service_items,id',
             'damage_analysis_detail' => 'nullable|string',
             'solution' => 'nullable|string',
-            'process_statu' => 'required|string|in:Pending,Diangnosis,Proses pengerjaan,Menuggu Sparepart,Selesai,Tidak bisa diperbaiki',
+            'process_status' => 'required|string|in:Pending,Diangnosis,Proses pengerjaan,Menuggu Sparepart,Selesai,Tidak bisa diperbaiki',
             'keterangan' => 'nullable|string',
         ]);
 
