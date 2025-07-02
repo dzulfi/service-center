@@ -49,14 +49,35 @@ class ServiceProcessController extends Controller
             'process_status' => 'required|string|in:Pending,Diagnosa,Proses Pengerjaan,Menunggu Sparepart,Selesai,Tidak bisa diperbaiki',
             'keterangan' => 'nullable|string',
         ]);
+        
+        // cek apakah ada process terakhir untuk service item ini
+        $latestProcess = $serviceItem->serviceProcesses()->latest()->first();
 
-        ServiceProcess::create([
-            'service_item_id' => $serviceItem->id,
-            'damage_analysis_detail' => $request->damage_analysis_detail,
-            'solution' => $request->solution,
-            'process_status' => $request->process_status,
-            'keterangan' => $request->keterangan,
-        ]);
+        // tentukan status-status yang dianggap final dan tidak boleh diupdate
+        $finalStatuses = ['Selesai', 'Tidak bisa diperbaiki'];
+
+        if ($latestProcess && !in_array($latestProcess->process_status, $finalStatuses)) {
+            $latestProcess->update([
+                'damage_analysis_detail' => $request->damage_analysis_detail,
+                'solution' => $request->solution,
+                'process_status' => $request->process_status,
+                'keterangan' => $request->keterangan,
+            ]);
+            $message = 'Process service berhasil diperbarui';
+        } else {
+            /**
+             * jika tidak ada process sama sekali atau process sudah final
+             * maka buat entri proses service baru
+             */
+            ServiceProcess::create([
+                'service_item_id' => $serviceItem->id,
+                'damage_analysis_detail' => $request->damage_analysis_detail,
+                'solution' => $request->solution,
+                'process_status' => $request->process_status,
+                'keterangan' => $request->keterangan,
+            ]);
+            $message = 'Proses service berhasil ditambahkan';
+        }
 
         return redirect()->route('service_processes.index')->with('success', 'Proses service berhasil diperbaharui');
     }

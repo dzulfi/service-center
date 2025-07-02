@@ -135,6 +135,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        
                         @foreach ($serviceItems as $item)
                             <tr>
                                 <td>{{ $item->id }}</td>
@@ -148,9 +149,22 @@
                                     @endif
                                 </td>
                                 <td>{{ Str::limit($item->analisa_kerusakan ?? '-', 50) }}</td>
-                                @php
-                                    // dd($item)
-                                @endphp
+                                
+                                {{-- @foreach ($item->serviceProcesses as $service) --}}
+                                    @php
+                                        $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
+                                    @endphp
+                                    @if ($latestProcess)
+                                        <td>{{ $latestProcess->damage_analysis_detail ?? '-' }}</td>
+                                        <td>{{ $latestProcess->solution ?? '-' }}</td>
+                                        <td>{{ $latestProcess->keterangan ?? '-' }}</td>
+                                    @else
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    @endif
+                                {{-- @endforeach --}}
+
                                 <td>
                                     @php
                                         $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
