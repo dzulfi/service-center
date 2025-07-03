@@ -15,10 +15,16 @@ class ServiceProcess extends Model
         'solution',
         'process_status',
         'keterangan',
+        'handle_by_user_id',
     ];
 
     public function serviceItem()
     {
         return $this->belongsTo(ServiceItem::class);
+    }
+
+    public function handler()
+    {
+        return $this->belongsTo(User::class, 'handle_by_user_id');
     }
 }

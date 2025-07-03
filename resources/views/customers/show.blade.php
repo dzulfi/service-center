@@ -212,7 +212,10 @@
                 </form>
             </div>
 
-            <h2>Barang Servis Milik Pelanggan Ini</h2>
+            {{-- 
+                Informasi service milik customer
+            --}}
+            <h2>Barang Servis Milik Customer :</h2>
             {{-- Filter Menu --}}
             {{-- <label for="">Filter status service :</label> --}}
             <div class="filter-menu">
@@ -275,51 +278,6 @@
                     </tbody>
                 </table>
             @endif
-            
-            {{-- @if ($customer->serviceItems->isEmpty())
-                <p class="no-service-items">Belum ada barang servis untuk pelanggan ini.</p>
-            @else
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nama Barang</th>
-                            <th>Tipe</th>
-                            <th>Serial Number</th>
-                            <th>Merk</th>
-                            <th>Status Service</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($customer->serviceItems as $item)
-                            <tr>
-                                <td>{{ $item->id }}</td>
-                                <td>{{ $item->name }}</td>
-                                <td>{{ $item->type ?? '-' }}</td>
-                                <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->merk ?? '-' }}</td>
-                                <td>
-                                    @php
-                                        $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
-                                    @endphp
-                                    @if ($latestProcess)
-                                        <span class="status-badge status-{{ Str::slug($latestProcess->process_status) }}">
-                                            {{ $latestProcess->process_status }}
-                                        </span>
-                                    @else
-                                        <span class="status-bagde status-pending">Pending</span>
-                                    @endif
-                                </td>
-                                <td class="service-item-actions">
-                                    <a href="{{ route('service_items.show', $item->id) }}">Lihat</a>
-                                    <a href="{{ route('service_items.edit', $item->id) }}">Edit</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @endif --}}
             <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a>
         </div>
     @endsection

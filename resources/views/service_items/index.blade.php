@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Barang Servis</title>
     <style>
+        /* Pastikan CSS ini ada di sini atau di file CSS eksternal Anda */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -38,11 +39,6 @@
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
         .add-button {
             display: inline-block;
             background-color: #3498db;
@@ -75,7 +71,6 @@
             color: #555;
             font-weight: 600;
             text-transform: uppercase;
-            text-align: center;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
@@ -124,7 +119,20 @@
             color: #777;
             font-style: italic;
         }
-         /* Status colors - pastikan ini konsisten dengan CSS Anda */
+        .nav-links {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .nav-links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        /* Status colors - pastikan ini konsisten dengan CSS Anda */
         .status-badge {
             padding: 4px 8px;
             border-radius: 3px;
@@ -139,87 +147,150 @@
         .status-menunggu-sparepart { background-color: #ff9800; } /* Orange */
         .status-selesai { background-color: #4caf50; } /* Green */
         .status-tidak-bisa-diperbaiki { background-color: #f44336; } /* Red */
+
+        /* Filter menu styles */
+        .filter-menu {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .filter-menu button {
+            background-color: #5bc0de; /* Info blue */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+        .filter-menu button:hover, .filter-menu button.active {
+            background-color: #31b0d5;
+        }
     </style>
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
-        <div class="container">
-            <h1>Daftar Barang Servis</h1>
+    <div class="container">
+        <h1>Daftar Barang Servis</h1>
 
-            @if (session('success'))
-                <div class="message success-message">
-                    {{ session('success') }}
-                </div>
-            @endif
+        @if (session('success'))
+            <div class="message success-message">
+                {{ session('success') }}
+            </div>
+        @endif
 
-            <a href="{{ route('service_items.create') }}" class="add-button">Tambah Barang Servis Baru</a>
+        <a href="{{ route('service_items.create') }}" class="add-button">Tambah Barang Servis Baru</a>
 
-            @if ($serviceItems->isEmpty())
-                <p class="no-data">Belum ada barang servis yang terdaftar.</p>
-            @else
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nama Barang</th>
-                            <th>Pelanggan</th>
-                            <th>Tipe Barang</th>
-                            <th>Serial Number</th>
-                            <th>Merk</th>
-                            <th>Jumlah Item</th>
-                            <th>Proses pengerjaan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($serviceItems as $item)
-                            <tr>
-                                <td>{{ $item->id }}</td>
-                                <td>{{ $item->name }}</td>
-                                <td>
-                                    @if ($item->customer)
-                                        <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
-                                    @else
-                                        <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
-                                    @endif
-                                </td>
-                                <td>{{ $item->type ?? '-' }}</td>
-                                <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->merk ?? '-' }}</td>
-                                <td>{{ $item->jumlah_item ?? '-' }}</td>
-
-                                {{-- @php
-                                dd($service)
-                                @endphp --}}
-                                <td>
-                                    @php
-                                        $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
-                                    @endphp
-                                    @if ($latestProcess)
-                                        <span class="status-badge status-{{ Str::slug($latestProcess->process_status) }}">
-                                            {{ $latestProcess->process_status }}
-                                        </span>
-                                    @else
-                                        <span class="status-badge status-pending">Pending</span>
-                                    @endif
-                                </td>
-
-                                <td class="actions">
-                                    <a href="{{ route('service_items.show', $item->id) }}" class="view-button">Lihat</a>
-                                    <a href="{{ route('service_items.edit', $item->id) }}" class="edit-button">Edit</a>
-                                    <form action="{{ route('service_items.destroy', $item->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @endif
+        {{-- Filter Menu --}}
+        <div class="filter-menu">
+            <button class="filter-btn active" data-filter="all">Semua</button>
+            <button class="filter-btn" data-filter="selesai">Selesai</button>
+            <button class="filter-btn" data-filter="tidak-bisa-diperbaiki">Tidak Bisa Diperbaiki</button>
+            <button class="filter-btn" data-filter="proses-pengerjaan">Proses Pengerjaan</button>
         </div>
+
+        @if ($serviceItems->isEmpty())
+            <p class="no-data">Belum ada barang servis yang terdaftar.</p>
+        @else
+            <table id="serviceItemsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama Barang</th>
+                        <th>Pelanggan</th>
+                        <th>Tipe Barang</th>
+                        <th>Serial Number</th>
+                        <th>Merk</th>
+                        <th>Dibuat oleh</th>
+                        <th>Status Pengerjaan</th> 
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($serviceItems as $item)
+                        @php
+                            $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
+                            $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                            $statusSlug = Str::slug($status);
+                            $filterGroup = '';
+
+                            if ($status === 'Selesai') {
+                                $filterGroup = 'selesai';
+                            } elseif ($status === 'Batal' || $status === 'Tidak bisa diperbaiki') { // Pastikan 'Batal' masuk ke sini jika itu menandakan tidak bisa diperbaiki
+                                $filterGroup = 'tidak-bisa-diperbaiki';
+                            } else { // Semua status selain Selesai, Batal, Tidak Bisa Diperbaiki dianggap proses pengerjaan
+                                $filterGroup = 'proses-pengerjaan';
+                            }
+                        @endphp
+                        <tr data-filter-group="{{ $filterGroup }}">
+                            <td>{{ $item->id }}</td>
+                            <td>{{ $item->name }}</td>
+                            <td>
+                                @if ($item->customer)
+                                    <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
+                                @else
+                                    <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                                @endif
+                            </td>
+                            <td>{{ $item->type ?? '-' }}</td>
+                            <td>{{ $item->serial_number ?? '-' }}</td>
+                            <td>{{ $item->merk ?? '-' }}</td>
+
+                            {{-- author yang membuat barang service oleh user siapa --}}
+                            <td>{{ $item->creator->name ?? 'N/A' }}</td> 
+                            
+                            <td>
+                                {{-- LOGIKA STATUS PROSES TERAKHIR --}}
+                                @if ($latestProcess)
+                                    <span class="status-badge status-{{ $statusSlug }}">
+                                        {{ $status }}
+                                    </span>
+                                @else
+                                    <span class="status-badge status-pending">Pending</span>
+                                @endif
+                            </td>
+                            <td class="actions">
+                                <a href="{{ route('service_items.show', $item->id) }}" class="view-button">Lihat</a>
+                                <a href="{{ route('service_items.edit', $item->id) }}" class="edit-button">Edit</a>
+                                <form action="{{ route('service_items.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
+        <div class="nav-links">
+            <a href="{{ route('customers.index') }}">Lihat Daftar Pelanggan</a>
+            <a href="{{ route('service_processes.index') }}">Daftar Proses Servis (Siap Dikerjakan)</a>
+        </div>
+    </div>
     @endsection
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.filter-btn').on('click', function() {
+                $('.filter-btn').removeClass('active');
+                $(this).addClass('active');
+
+                var filterValue = $(this).data('filter'); // Mendapatkan nilai data-filter
+
+                $('#serviceItemsTable tbody tr').hide(); // Sembunyikan semua baris
+
+                if (filterValue === 'all') {
+                    $('#serviceItemsTable tbody tr').show(); // Tampilkan semua jika filter 'all'
+                } else {
+                    // Tampilkan baris yang memiliki data-filter-group sesuai dengan filterValue
+                    $('#serviceItemsTable tbody tr[data-filter-group="' + filterValue + '"]').show();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-

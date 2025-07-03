@@ -153,6 +153,10 @@
                 <strong>Keterangan Tambahan:</strong> <span>{{ $serviceProcess->keterangan ?? '-' }}</span>
             </div>
             <div class="detail-group">
+                <strong>Ditangani oleh:</strong>
+                <span>{{ $serviceProcess->handler->name ?? 'Belum ada' }}</span>
+            </div>
+            <div class="detail-group">
                 <strong>Dibuat Pada:</strong> <span>{{ $serviceProcess->created_at->format('d M Y H:i') }}</span>
             </div>
             <div class="detail-group">

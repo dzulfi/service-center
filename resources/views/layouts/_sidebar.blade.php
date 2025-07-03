@@ -60,11 +60,98 @@
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <h2>Panel Servis</h2>
+        <h2>Service Center</h2>
     </div>
     <nav class="sidebar-menu">
         <ul>
-            <li>
+            {{-- Menu untuk semua role yang autentikasi --}}
+            @auth
+                <li>
+                    <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        Dashboard
+                    </a>
+                </li>
+            @endauth
+
+            {{-- CRUD Customer/Pelanggan (admin only) --}}
+            @auth
+                @if (auth()->user()->isAdmin() || auth()->user()->isDeveloper())
+                    <li>
+                        <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
+                            Daftar Customer
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- CRUD Daftar Barang yang diservice (admin only) --}}
+            @auth
+                @if (auth()->user()->isAdmin() || auth()->user()->isDeveloper())
+                    <li>
+                        <a href="{{ route('service_items.index') }}" class="{{ request()->routeIs('service_items.*') ? 'active' : '' }}">
+                            Daftar Barang Service
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- mengerjakan daftar proses service (RMA only) --}}
+            @auth
+                @if (auth()->user()->isRma() || auth()->user()->isDeveloper())
+                    <li>
+                        <a href="{{ route('service_processes.index') }}" class="{{ request()->routeIs('service_processes.*') ? 'active' : '' }}">
+                            Antrian Service
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- Developer: membuat user baru --}}
+            @auth
+                @if (auth()->user()->isDeveloper())
+                    <li>
+                        <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
+                            Manajemen User
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- Developer & Superadmin: melihat aktivitas service (semua proces) --}}
+            @auth
+                @if (auth()->user()->isDeveloper() || auth()->user()->isSuperAdmin())
+                    <li>
+                        <a href="{{ route('all_customers.index') }}" class="{{ request()->routeIs('all_customers.*') ? 'active' : '' }}">
+                            Aktivitas Customer
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- Developer, Superadmin: CRUD kantor Cabang --}}
+            @auth
+                @if (auth()->user()->isDeveloper() || auth()->user()->isSuperAdmin())
+                    <li>
+                        <a href="{{ route('branch_offices.index') }}" class="{{ request()->routeIs('branch_offices.*') ? 'active' : '' }}">
+                            Kantor Cabang
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- logout --}}
+            @auth
+                <li>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline">
+                        @csrf
+                        <button type="submit" style="background: none; border: none; color:white; padding:12px 20px; text-align:left; width:100%; cursor:pointer; font-size: 1.1em; ">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            @endauth
+
+            {{-- <li>
                 <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
                     Daftar Customer
                 </a>
@@ -78,7 +165,7 @@
                 <a href="{{ route('service_processes.index') }}" class="{{ request()->routeIs('service_processes.*') ? 'active' : '' }}">
                     Daftar Proses Servis
                 </a>
-            </li>
-            </ul>
+            </li> --}}
+        </ul>
     </nav>
 </div>

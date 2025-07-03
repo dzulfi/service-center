@@ -127,6 +127,7 @@
                             <th>Serial Number</th>
                             <th>Pelanggan</th>
                             <th>Analisa Kerusakan Awal</th>
+                            {{-- <th>Dikerjakan oleh</th> --}}
                             <th>Kerusakan</th>
                             <th>Solusi</th>
                             <th>Keterangan</th>

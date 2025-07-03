@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ServiceItem;
 use App\Models\ServiceProcess;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceProcessController extends Controller
 {
@@ -62,6 +63,7 @@ class ServiceProcessController extends Controller
                 'solution' => $request->solution,
                 'process_status' => $request->process_status,
                 'keterangan' => $request->keterangan,
+                'handle_by_user_id' => Auth::id(), // Simpan ID user yang sedang login saat ini dan mengerjakan update antrian service
             ]);
             $message = 'Process service berhasil diperbarui';
         } else {
@@ -75,6 +77,7 @@ class ServiceProcessController extends Controller
                 'solution' => $request->solution,
                 'process_status' => $request->process_status,
                 'keterangan' => $request->keterangan,
+                'handle_by_user_id' => Auth::id(), // Simpan ID user yang sedang login saat mulai mengerjakan
             ]);
             $message = 'Proses service berhasil ditambahkan';
         }
@@ -117,8 +120,15 @@ class ServiceProcessController extends Controller
     public function show(ServiceProcess $serviceProcess)
     {
         // Load relasi serviceItem dan customer
-        $serviceProcess->load('serviceItem.customer');
+        $serviceProcess->load('serviceItem.customer', 'handler'); // load handler juga
         return view('service_processes.show', compact('serviceProcess'));
+    }
+
+    // metode indexAll untuk developer/superadmin
+    public function indexAll() 
+    {
+        $serviceProcess = ServiceProcess::with(['serviceItems.customer', 'handler'])->get();
+        return view('service.processes.index_all', compact('serviceProcess'));
     }
 
     /**

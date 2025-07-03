@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
+        'branch_office_id',
+        'phone_number',
     ];
 
     /**
@@ -42,4 +45,54 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // relasi ke role
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    // relasi ke branch office
+    public function branchOffice()
+    {
+        return $this->belongsTo(BranchOffice::class);
+    }
+
+    // relasi ke service item
+    public function createdServiceItems()
+    {
+        return $this->hasMany(ServiceItem::class, 'created_by_user_id');
+    }
+
+    // relasi ke service process
+    public function handleServiceProcesses()
+    {
+        return $this->hasMany(ServiceProcess::class, 'handle_by_user_id');
+    }
+
+    // Helper role
+    public function hasRole($roleName)
+    {
+        return $this->role && $this->role->name === $roleName;
+    }
+
+    public function isDeveloper()
+    {
+        return $this->hasRole('developer');
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->hasRole('superadmin');
+    }
+
+    public function isAdmin()
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function isRma()
+    {
+        return $this->hasRole('rma');
+    }
 }

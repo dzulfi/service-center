@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\ServiceItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceItemController extends Controller
 {
@@ -33,15 +34,6 @@ class ServiceItemController extends Controller
      */
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'customer_id' => 'required|exists:customers,id',
-        //     'name' => 'required|string|max:255',
-        //     'type' => 'required|string|max:255',
-        //     'serial_number' => 'required|string|max:255',
-        //     'merk' => 'required|string|max:255',
-        //     'analisa_kerusakan' => 'nullable|text',
-        //     'jumlah_item' => 'require|integer'
-        // ]);
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'name' => 'required|string|max:255',
@@ -52,7 +44,16 @@ class ServiceItemController extends Controller
             'jumlah_item' => 'nullable|string',
         ]);
 
-        ServiceItem::create($request->all());
+        $serviceItem = ServiceItem::create([
+            'customer_id' => $request->customer_id,
+            'name' => $request->name,
+            'type' => $request->type,
+            'serial_number' => $request->serial_number,
+            'merk' => $request->merk,
+            'analisa_kerusakan' => $request->analisa_kerusakan,
+            'jumlah_item' => $request->jumlah_item,
+            'created_by_user_id' => Auth::id(), // Simpan ID user yang sedang login
+        ]);
 
         return redirect()->route('service_items.index')->with('success', 'Barang servis berhasil ditambahkan!');
     }
