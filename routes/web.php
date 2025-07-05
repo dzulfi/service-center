@@ -56,9 +56,12 @@ Route::middleware('auth')->group(function () {
 
     // halaman detail pelanggan, semua role dapat melihat halaman ini
     Route::middleware(['role:developer,superadmin,admin,rma'])->group(function () {
+        // aksese detail customer (show)
         Route::get('customers/{customers}', [CustomerController::class, 'show'])->name('customers.show');
+        
         Route::get('customers/{customer}/on-process-service', [CustomerController::class, 'showServiceOnProcess'])->name('customers.on_process_services');
     });
+
     // CRUD user (hanya Developer)
     Route::middleware(['role:developer'])->group(function () {
         Route::resource('users', UserController::class);
@@ -71,7 +74,13 @@ Route::middleware('auth')->group(function () {
 
     // melihat aktivitas service (developer, superadmin)
     Route::middleware(['role:developer,superadmin'])->group(function () {
-        Route::get('all-customers', [CustomerController::class, 'indexAll'])->name('all_customers.index');
+        // melihat daftar & detail customer
+        Route::get('activity/customers', [CustomerController::class, 'indexAll'])->name('activity.customers.index');
+        Route::get('activity/customers/{customer}', [CustomerController::class, 'showDetailAktivityCustomer'])->name('activity.customers.detail_activity_customer');
+        
+        // melihat daftar & barang service
+        Route::get('activity/service-items', [ServiceItemController::class, 'indexAllServiceItems'])->name('activity.service_items.index');
+        Route::get('activity/service-items/{serviceItem}', [ServiceItemController::class, 'showDetailActivityServiceItem'])->name('activity.service_items.detail_activity_service_item');
     });
 
     // logout

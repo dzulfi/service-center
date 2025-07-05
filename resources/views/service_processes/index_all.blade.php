@@ -170,104 +170,109 @@
     </style>
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Aktivitas: Semua Proses Servis') @section('content')
         <div class="container">
-            <h1>Daftar Barang Servis</h1>
+            <h1>Aktivitas: Daftar Semua Proses Servis</h1>
 
-            @if (session('success'))
-                <div class="message success-message">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <a href="{{ route('service_items.create') }}" class="add-button">Tambah Barang Servis Baru</a>
-
-            {{-- Filter Menu --}}
-            <div class="filter-menu">
+            <div class="filter-menu"> {{-- Sertakan juga filter untuk memudahkan --}}
                 <button class="filter-btn active" data-filter="all">Semua</button>
                 <button class="filter-btn" data-filter="selesai">Selesai</button>
                 <button class="filter-btn" data-filter="tidak-bisa-diperbaiki">Tidak Bisa Diperbaiki</button>
                 <button class="filter-btn" data-filter="proses-pengerjaan">Proses Pengerjaan</button>
             </div>
 
-            @if ($serviceItems->isEmpty())
-                <p class="no-data">Belum ada barang servis yang terdaftar.</p>
+            @if ($serviceProcesses->isEmpty())
+                <p class="no-data">Belum ada proses servis yang terdaftar.</p>
             @else
-                <table id="serviceItemsTable">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Barang</th>
-                            <th>Pelanggan</th>
-                            <th>Tipe Barang</th>
-                            <th>Serial Number</th>
-                            <th>Merk</th>
-                            <th>Dibuat oleh</th>
-                            <th>Status Pengerjaan</th> 
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
-                        @foreach ($serviceItems as $item)
-                            @php
-                                $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
-                                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
-                                $statusSlug = Str::slug($status);
-                                $filterGroup = '';
-
-                                if ($status === 'Selesai') {
-                                    $filterGroup = 'selesai';
-                                } elseif ($status === 'Batal' || $status === 'Tidak bisa diperbaiki') { // Pastikan 'Batal' masuk ke sini jika itu menandakan tidak bisa diperbaiki
-                                    $filterGroup = 'tidak-bisa-diperbaiki';
-                                } else { // Semua status selain Selesai, Batal, Tidak Bisa Diperbaiki dianggap proses pengerjaan
-                                    $filterGroup = 'proses-pengerjaan';
-                                }
-                            @endphp
-                            <tr data-filter-group="{{ $filterGroup }}">
-                                <td>{{ $no++ }}</td>
-                                <td>{{ $item->name }}</td>
-                                <td>
-                                    @if ($item->customer)
-                                        <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
-                                    @else
-                                        <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
-                                    @endif
-                                </td>
-                                <td>{{ $item->type ?? '-' }}</td>
-                                <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->merk ?? '-' }}</td>
-
-                                {{-- author yang membuat barang service oleh user siapa --}}
-                                <td>{{ $item->creator->name ?? 'N/A' }}</td> 
-                                
-                                <td>
-                                    {{-- LOGIKA STATUS PROSES TERAKHIR --}}
-                                    @if ($latestProcess)
-                                        <span class="status-badge status-{{ $statusSlug }}">
-                                            {{ $status }}
-                                        </span>
-                                    @else
-                                        <span class="status-badge status-pending">Pending</span>
-                                    @endif
-                                </td>
-                                <td class="actions">
-                                    <a href="{{ route('service_items.show', $item->id) }}" class="view-button">Lihat</a>
-                                    <a href="{{ route('service_items.edit', $item->id) }}" class="edit-button">Edit</a>
-                                    <form action="{{ route('service_items.destroy', $item->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus</button>
-                                    </form>
-                                </td>
+                <div class="table-responsive">
+                    <table id="serviceProcessesTable"> {{-- Beri ID yang unik --}}
+                        <thead>
+                            <tr>
+                                <th>ID Proses</th>
+                                <th>Barang Servis</th>
+                                <th>Pelanggan</th>
+                                <th>Analisa Kerusakan Detail</th>
+                                <th>Solusi</th>
+                                <th>Status</th>
+                                <th>Ditangani Oleh</th>
+                                <th>Tanggal Update</th>
+                                <th>Aksi</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($serviceProcesses as $process)
+                                @php
+                                    $latestProcess = $serviceProcesses->sortByDesc('created_at')->first();
+                                    $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                                    $statusSlug = Str::slug($status);
+                                    $filterGroup = '';
+
+                                    if ($status === 'Selesai') {
+                                        $filterGroup = 'selesai';
+                                    } elseif ($status === 'Batal' || $status === 'Tidak Bisa Diperbaiki') {
+                                        $filterGroup = 'tidak-bisa-diperbaiki';
+                                    } else {
+                                        $filterGroup = 'proses-pengerjaan';
+                                    }
+                                @endphp
+                                <tr data-filter-group="{{ $filterGroup }}">
+                                    <td>{{ $process->id }}</td>
+                                    <td>
+                                        @if ($process->serviceItem)
+                                            <a href="{{ route('service_items.show', $process->serviceItem->id) }}">{{ $process->serviceItem->name }} (SN: {{ $process->serviceItem->serial_number ?? '-' }})</a>
+                                        @else
+                                            <span style="color: #999;">(Barang Servis Tidak Ditemukan)</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($process->serviceItem && $process->serviceItem->customer)
+                                            <a href="{{ route('customers.show', $process->serviceItem->customer->id) }}">{{ $process->serviceItem->customer->name }}</a>
+                                        @else
+                                            <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ Str::limit($process->damage_analysis_detail ?? '-', 50) }}</td>
+                                    <td>{{ Str::limit($process->solution ?? '-', 50) }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ $statusSlug }}">
+                                            {{ $process->process_status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $process->handler->name ?? 'N/A' }}</td>
+                                    <td>{{ $process->updated_at->format('d M Y H:i') }}</td>
+                                    <td class="actions">
+                                        <a href="{{ route('service_processes.show', $process->id) }}" class="view-button">Lihat Detail</a>
+                                        {{-- Tidak ada tombol Edit/Hapus di sini --}}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             @endif
         </div>
+
+        @push('scripts') {{-- Pastikan layouts/app.blade.php memiliki @stack('scripts') --}}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.filter-btn').on('click', function() {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+
+                    var filterValue = $(this).data('filter');
+
+                    $('#serviceProcessesTable tbody tr').hide(); // Target ID tabel yang benar
+
+                    if (filterValue === 'all') {
+                        $('#serviceProcessesTable tbody tr').show();
+                    } else {
+                        $('#serviceProcessesTable tbody tr[data-filter-group="' + filterValue + '"]').show();
+                    }
+                });
+            });
+        </script>
+        @endpush
     @endsection
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

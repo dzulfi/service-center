@@ -19,6 +19,15 @@ class CustomerController extends Controller
     }
 
     /**
+     * metode ini akan menampilkan daftar semua customer untuk Developer dan Superadmin
+     */
+    public function indexAll()
+    {
+        $customers = Customer::all();
+        return view('customers.index_all', compact('customers'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -52,6 +61,14 @@ class CustomerController extends Controller
     public function show(Customer $customer)
     {
         return view('customers.show', compact('customer'));
+    }
+
+    /**
+     * detail aktivitas customer per id (rule: developer, superadmin)
+     */
+    public function showDetailAktivityCustomer(Customer $customer)
+    {
+        return view('customers.detail_activity_customer', compact('customer'));
     }
 
     /**

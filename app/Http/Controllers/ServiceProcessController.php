@@ -125,11 +125,11 @@ class ServiceProcessController extends Controller
     }
 
     // metode indexAll untuk developer/superadmin
-    public function indexAll() 
-    {
-        $serviceProcess = ServiceProcess::with(['serviceItems.customer', 'handler'])->get();
-        return view('service.processes.index_all', compact('serviceProcess'));
-    }
+    // public function indexAllServiceProcesses() 
+    // {
+    //     $serviceProcesses = ServiceProcess::with(['serviceItem.customer', 'handler'])->get();
+    //     return view('service_processes.index_all', compact('serviceProcesses'));
+    // }
 
     /**
      * Show the form for editing the specified resource.

@@ -203,15 +203,6 @@
                 <strong>Diperbarui Pada:</strong> <span>{{ $customer->updated_at->format('d M Y H:i') }}</span>
             </div>
 
-            <div class="actions">
-                <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit Pelanggan</a>
-                <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus pelanggan ini?')">Hapus Pelanggan</button>
-                </form>
-            </div>
-
             {{-- 
                 Informasi service milik customer
             --}}
@@ -231,13 +222,14 @@
                 <table id="serviceItemsTable">
                     <thead>
                         <tr>
-                            <th>No</th>
+                            <th>ID</th>
                             <th>Nama Barang</th>
                             <th>Tipe</th>
                             <th>Serial Number</th>
                             <th>Merk</th>
+                            <th>Kantor Cabang Pembuat</th>
+                            <th>Ditangani Oleh</th>
                             <th>Status Servis</th>
-                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -247,8 +239,6 @@
                                 $status = $latestProcess ? $latestProcess->process_status : 'Pending';
                                 $statusSlug = Str::slug($status); // Gunakan Str::slug untuk kelas CSS
                                 $filterGroup = '';
-
-                                $no = 1;
 
                                 if ($status === 'Selesai') {
                                     $filterGroup = 'selesai';
@@ -261,19 +251,20 @@
                                 }
                             @endphp
                             <tr data-filter-group="{{ $filterGroup }}">
-                                <td>{{ $no++ }}</td>
+                                <td>{{ $item->id }}</td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->type ?? '-' }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
                                 <td>{{ $item->merk ?? '-' }}</td>
+                                <td>{{ $item->creator->branchOffice->name }}</td>
+                                
+                                @foreach ($item->serviceProcesses as $process)
+                                    <td>{{ $process->handler->name }}</td>
+                                @endforeach
                                 <td>
                                     <span class="status-badge status-{{ $statusSlug }}">
                                         {{ $status }}
                                     </span>
-                                </td>
-                                <td class="service-item-actions">
-                                    <a href="{{ route('service_items.show', $item->id) }}">Lihat</a>
-                                    <a href="{{ route('service_items.edit', $item->id) }}">Edit</a>
                                 </td>
                             </tr>
                         @endforeach

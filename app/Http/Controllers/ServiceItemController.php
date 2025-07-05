@@ -20,6 +20,15 @@ class ServiceItemController extends Controller
     }
 
     /**
+     * Metode untuk menampilkan daftar semua barang service untuk dilihat Role Developer dan Superadmin
+     */
+    public function indexAllServiceItems()
+    {
+        $serviceItems = ServiceItem::with(['customer', 'creator'])->get();
+        return view('service_items.index_all', compact('serviceItems'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -64,6 +73,14 @@ class ServiceItemController extends Controller
     public function show(ServiceItem $serviceItem)
     {
         return view('service_items.show', compact('serviceItem'));
+    }
+
+    /**
+     * Detail aktifitas barang service per id (role: developer, superadmin)
+     */
+    public function showDetailActivityServiceItem(ServiceItem $serviceItem)
+    {
+        return view('service_items.detail_activity_service_item', compact('serviceItem'));
     }
 
     /**

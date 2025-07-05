@@ -126,56 +126,45 @@
     </style>
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Aktivitas: Semua Pelanggan') @section('content')
         <div class="container">
-            <h1>Daftar Customer</h1>
-
-            @if (session('success'))
-                <div class="message success-message">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <a href="{{ route('customers.create') }}" class="add-button">Tambah Pelanggan Baru</a>
+            <h1>Aktivitas: Daftar Semua Pelanggan</h1>
 
             @if ($customers->isEmpty())
                 <p class="no-data">Belum ada pelanggan yang terdaftar.</p>
             @else
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Pelanggan</th>
-                            <th>No. Telepon</th>
-                            <th>Perusahaan</th>
-                            <th>Kota</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
-                        @foreach ($customers as $customer)
+                <div class="table-responsive">
+                    <table>
+                        <thead>
                             <tr>
-                                <td>{{ $no++ }}</td>
-                                <td>{{ $customer->name }}</td>
-                                <td>{{ $customer->phone_number ?? '-' }}</td>
-                                <td>{{ $customer->company ?? '-' }}</td>
-                                <td>{{ $customer->kota ?? '-' }}</td>
-                                <td class="actions">
-                                    <a href="{{ route('customers.show', $customer->id) }}" class="view-button">Lihat</a>
-                                    <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit</a>
-                                    {{-- <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus pelanggan ini?')">Hapus</button>
-                                    </form> --}}
-                                </td>
+                                <th>No</th>
+                                <th>Nama Pelanggan</th>
+                                <th>No. Telepon</th>
+                                <th>Perusahaan</th>
+                                <th>Kota</th>
+                                <th>Aksi</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @php
+                                $no = 1;
+                            @endphp
+                            @foreach ($customers as $customer)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $customer->name }}</td>
+                                    <td>{{ $customer->phone_number ?? '-' }}</td>
+                                    <td>{{ $customer->company ?? '-' }}</td>
+                                    <td>{{ $customer->kota ?? '-' }}</td>
+                                    <td class="actions">
+                                        <a href="{{ route('activity.customers.detail_activity_customer', $customer->id) }}" class="view-button">Lihat Detail</a>
+                                        {{-- Tidak ada tombol Edit/Hapus di sini --}}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             @endif
         </div>
     @endsection

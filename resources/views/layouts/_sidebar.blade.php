@@ -75,7 +75,7 @@
 
             {{-- CRUD Customer/Pelanggan (admin only) --}}
             @auth
-                @if (auth()->user()->isAdmin() || auth()->user()->isDeveloper())
+                @if (auth()->user()->isAdmin())
                     <li>
                         <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
                             Daftar Customer
@@ -86,7 +86,7 @@
 
             {{-- CRUD Daftar Barang yang diservice (admin only) --}}
             @auth
-                @if (auth()->user()->isAdmin() || auth()->user()->isDeveloper())
+                @if (auth()->user()->isAdmin())
                     <li>
                         <a href="{{ route('service_items.index') }}" class="{{ request()->routeIs('service_items.*') ? 'active' : '' }}">
                             Daftar Barang Service
@@ -97,7 +97,7 @@
 
             {{-- mengerjakan daftar proses service (RMA only) --}}
             @auth
-                @if (auth()->user()->isRma() || auth()->user()->isDeveloper())
+                @if (auth()->user()->isRma())
                     <li>
                         <a href="{{ route('service_processes.index') }}" class="{{ request()->routeIs('service_processes.*') ? 'active' : '' }}">
                             Antrian Service
@@ -117,23 +117,28 @@
                 @endif
             @endauth
 
-            {{-- Developer & Superadmin: melihat aktivitas service (semua proces) --}}
-            @auth
-                @if (auth()->user()->isDeveloper() || auth()->user()->isSuperAdmin())
-                    <li>
-                        <a href="{{ route('all_customers.index') }}" class="{{ request()->routeIs('all_customers.*') ? 'active' : '' }}">
-                            Aktivitas Customer
-                        </a>
-                    </li>
-                @endif
-            @endauth
-
             {{-- Developer, Superadmin: CRUD kantor Cabang --}}
             @auth
                 @if (auth()->user()->isDeveloper() || auth()->user()->isSuperAdmin())
                     <li>
                         <a href="{{ route('branch_offices.index') }}" class="{{ request()->routeIs('branch_offices.*') ? 'active' : '' }}">
                             Kantor Cabang
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- Developer & Superadmin: melihat aktivitas service (semua proces) --}}
+            @auth
+                @if (auth()->user()->isDeveloper() || auth()->user()->isSuperAdmin())
+                    <li>
+                        <a href="{{ route('activity.customers.index') }}" class="{{ request()->routeIs('activity.customers.*') ? 'active' : '' }}">
+                            Aktivitas Customer
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('activity.service_items.index') }}" class="{{ request()->routeIs('activity.service_items.*') ? 'active' : '' }}">
+                            Aktivitas Barang Service
                         </a>
                     </li>
                 @endif
