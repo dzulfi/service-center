@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LocationStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\ServiceItem;
@@ -33,6 +34,11 @@ class ServiceItemController extends Controller
      */
     public function create()
     {
+        // hanya admin yang bisa membuat service ini
+        if (!Auth::user()->isAdmin()) {
+            abort(403,'Akses Ditolak');
+        }
+
         $customers = Customer::all(); // mengambil semua pelanggan untuk di dropdown
         $merks = ['Techma', 'Hilook', 'Hikvision', 'Dahua', 'Lainnya']; // dropdown pemilihan merk lain
         return view('service_items.create', compact('customers', 'merks'));
@@ -43,6 +49,11 @@ class ServiceItemController extends Controller
      */
     public function store(Request $request)
     {
+        // hanya admin yang bisa membuat service item
+        if (!Auth::user()->isAdmin()){
+            abort(403,'Akses Ditolak');
+        }
+
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'name' => 'required|string|max:255',
@@ -62,6 +73,7 @@ class ServiceItemController extends Controller
             'analisa_kerusakan' => $request->analisa_kerusakan,
             'jumlah_item' => $request->jumlah_item,
             'created_by_user_id' => Auth::id(), // Simpan ID user yang sedang login
+            'location_status' => LocationStatusEnum::AtBranch,
         ]);
 
         return redirect()->route('service_items.index')->with('success', 'Barang servis berhasil ditambahkan!');

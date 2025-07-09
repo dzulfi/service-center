@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ServiceItemController;
 use App\Http\Controllers\ServiceProcessController;
+use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchOfficeController;
 use Illuminate\Support\Facades\Auth;
@@ -58,8 +59,11 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:developer,superadmin,admin,rma'])->group(function () {
         // aksese detail customer (show)
         Route::get('customers/{customers}', [CustomerController::class, 'show'])->name('customers.show');
-        
         Route::get('customers/{customer}/on-process-service', [CustomerController::class, 'showServiceOnProcess'])->name('customers.on_process_services');
+
+        Route::get('service_items/{service_item}', [ServiceItemController::class, 'show'])->name('service_items.show');
+        Route::get('service_processes/{serviceProcess}', [ServiceProcessController::class, 'show'])->name('service_processes.show');
+        Route::get('shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show'); // Detail shipments
     });
 
     // CRUD user (hanya Developer)
@@ -81,6 +85,28 @@ Route::middleware('auth')->group(function () {
         // melihat daftar & barang service
         Route::get('activity/service-items', [ServiceItemController::class, 'indexAllServiceItems'])->name('activity.service_items.index');
         Route::get('activity/service-items/{serviceItem}', [ServiceItemController::class, 'showDetailActivityServiceItem'])->name('activity.service_items.detail_activity_service_item');
+    });
+
+    // ROUTE UNTUK SISTEM KIRIM BARANG (RESI)
+    // Admin Side (Mengirim Barang Ke RMA)
+    Route::middleware(['role:admin'])->prefix('shipments/admin')->name('shipments.admin.')->group( function () {
+        Route::get('outbound-to-rma', [ShipmentController::class, 'indexOutboundToRma'])->name('outbound_to_rma.index'); // Daftar barang siap kirim
+        Route::get('outbound_to_rma/{serviceItem}/create', [ShipmentController::class, 'createOutboundToRma'])->name('outbound_to_rma.create'); // Form kirim
+        Route::post('outbound-to-rma/{serviceItem}/store', [ShipmentController::class, 'storeOutboundToRma'])->name('outbound_to_rma.store'); // Simpan Kirim
+
+        // Admin: Menerima Barang dari RMA
+        Route::get('inbound-from-rma', [ShipmentController::class, 'indexInboundFromRma'])->name('inbound_from_rma.index'); // Daftar barang masuk dari RMA
+        Route::post('inbound-from-rma/{shipment}/receive', [ShipmentController::class, 'receiveInboundFromRma'])->name('inbound_from_rma.receive'); // Aksi Terima
+    });
+
+    // RMA Side (Menerima Barang dari Admin & Mengirim Kembali ke Admin)
+    Route::middleware(['role:rma'])->prefix('shipments/rma')->name('shipments.rma.')->group(function () {
+        Route::get('inbound-from-admin', [ShipmentController::class, 'indexInboundFromAdmin'])->name('inbound_from_admin.index'); // Daftar barang masuk dari admin
+        Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); // Aksi terima
+
+        Route::get('outbound-from-rma', [ShipmentController::class,'indexOutboundFromRma'])->name('outbound_from_rma.index'); // Daftar barang siap kirim kembali
+        Route::get('outbound-from-rma/{serviceItem}/create', [ShipmentController::class,'createOutboundFromRma'])->name('outbound_from_rma.create'); // form kirim kembali
+        Route::post('outbound-from-rma/{serviceItem}/store', [ShipmentController::class,'storeOutboundFromRma'])->name('outbound_from_rma.store'); // Simpan Kirim Kembali
     });
 
     // logout

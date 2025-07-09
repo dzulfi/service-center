@@ -17,7 +17,12 @@ class ServiceItem extends Model
         'merk',
         'analisa_kerusakan',
         'jumlah_item',
-        'created_by_user_id'
+        'created_by_user_id',
+        'location_status' // untuk deteksi barang saat ini berada dimana
+    ];
+
+    protected $casts = [
+        'location_status' => \App\Enums\LocationStatusEnum::class,
     ];
 
     public function customer()
@@ -48,5 +53,10 @@ class ServiceItem extends Model
         })->orWhereHas('serviceProcesses', function ($q) {
             $q->whereNotIn('process_status', ['Selesai', 'Batal', 'Tidak Bisa Diperbaiki']);
         });
+    }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class);
     }
 }

@@ -95,4 +95,9 @@ class User extends Authenticatable
     {
         return $this->hasRole('rma');
     }
+
+    public function initiatedShipments()
+    {
+        return $this->hasMany(Shipment::class, 'responsible_user_id');
+    }
 }

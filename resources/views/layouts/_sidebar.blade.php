@@ -95,12 +95,42 @@
                 @endif
             @endauth
 
+            {{-- Admin: Fitur pengiriman barang --}}
+            @auth
+                @if (auth()->user()->isAdmin())
+                    <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
+                        Logistik Admin
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.admin.outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.outbound_to_rma.*') ? 'active' : '' }}">
+                            Kirim Barang ke RMA
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shiments.admin.inbound_from_rma.*') ? 'active' : '' }}">
+                            Barang Masuk Dari RMA
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
+            {{-- RMA: Fitur Pengiriman Barang (RMA) & Proses Service --}}
             {{-- mengerjakan daftar proses service (RMA only) --}}
             @auth
                 @if (auth()->user()->isRma())
                     <li>
+                        <a href="{{ route('shipments.rma.inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.inbound_from_admin.*') ? 'active' : '' }}">
+                            Barang Masuk Dari Admin
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('service_processes.index') }}" class="{{ request()->routeIs('service_processes.*') ? 'active' : '' }}">
                             Antrian Service
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.outbound_from_rma.*') ? 'active' : '' }}">
+                            Siap Kirim Balik Ke Admin
                         </a>
                     </li>
                 @endif
