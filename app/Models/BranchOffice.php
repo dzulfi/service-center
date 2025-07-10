@@ -11,6 +11,7 @@ class BranchOffice extends Model
 
     protected $fillable = [
         'name',
+        'code',
         'address',
         'sub_district',
         'district',

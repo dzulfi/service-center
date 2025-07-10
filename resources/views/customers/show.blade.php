@@ -241,6 +241,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $no = 1;
+                        @endphp
                         @foreach ($customer->serviceItems as $item)
                             @php
                                 $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
@@ -248,7 +251,7 @@
                                 $statusSlug = Str::slug($status); // Gunakan Str::slug untuk kelas CSS
                                 $filterGroup = '';
 
-                                $no = 1;
+                                // $no = 1;
 
                                 if ($status === 'Selesai') {
                                     $filterGroup = 'selesai';

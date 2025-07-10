@@ -14,6 +14,7 @@ class ServiceItem extends Model
         'name',
         'type',
         'serial_number',
+        'code',
         'merk',
         'analisa_kerusakan',
         'jumlah_item',

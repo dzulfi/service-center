@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\ServiceItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -60,6 +61,19 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        $user = Auth::user(); // dapatkan user yang sedang login
+
+        $customer->load([
+            'serviceItems' => function ($query) use ($user) {
+                // jika user adalah admin, maka tampilkan service item yang dibuat oleh user tersebut 
+                if ($user->isAdmin()) {
+                    $query->where('created_by_user_id', $user->id);
+                }
+                // eager load relasi-relasi yang dibutuhkan di blade untuk serviceItem
+                $query->with(['serviceProcesses', 'creator']);
+            }
+        ]);
+
         return view('customers.show', compact('customer'));
     }
 

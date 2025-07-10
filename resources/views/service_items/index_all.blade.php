@@ -194,6 +194,7 @@
                                 <th>Dibuat Oleh</th>
                                 <th>Tipe Barang</th>
                                 <th>Serial Number</th>
+                                <th>Kode Service</th>
                                 <th>Merk</th>
                                 <th>Ditangani</th>
                                 <th>Status Pengerjaan</th>
@@ -231,6 +232,7 @@
                                     <td>{{ $item->creator->name ?? 'N/A' }}</td>
                                     <td>{{ $item->type ?? '-' }}</td>
                                     <td>{{ $item->serial_number ?? '-' }}</td>
+                                    <td>{{ $item->code ?? '-' }}</td>
                                     <td>{{ $item->merk ?? '-' }}</td>
                                     
                                     @foreach ($item->serviceProcesses as $process)

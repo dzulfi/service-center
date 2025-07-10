@@ -117,6 +117,13 @@
                     @error('name') <div class="error">{{ $message }}</div> @enderror
                 </div>
                 <div class="form-group">
+                    <label for="code">Kode Cabang:</label>
+                    <input type="text" name="code" id="code" value="{{ old('code', $branchOffice->code) }}" required>
+                    @error('code')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group">
                     <label for="address">Alamat:</label>
                     <textarea name="address" id="address" required>{{ old('address', $branchOffice->address) }}</textarea>
                     @error('address') <div class="error">{{ $message }}</div> @enderror

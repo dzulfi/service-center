@@ -147,6 +147,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nama Cabang</th>
+                                <th>Kode Cabang</th>
                                 <th>Alamat</th>
                                 <th>Kelurahan</th>
                                 <th>Kecamatan</th>
@@ -159,6 +160,7 @@
                                 <tr>
                                     <td>{{ $branchOffice->id }}</td>
                                     <td>{{ $branchOffice->name }}</td>
+                                    <td>{{ $branchOffice->code }}</td>
                                     <td>{{ Str::limit($branchOffice->address, 40) }}</td>
                                     <td>{{ $branchOffice->sub_district ?? '-' }}</td>
                                     <td>{{ $branchOffice->district ?? '-' }}</td>

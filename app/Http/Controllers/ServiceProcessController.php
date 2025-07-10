@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LocationStatusEnum;
+use App\Enums\ShipmentStatusEnum;
+use App\Enums\ShipmentTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Models\ServiceItem;
 use App\Models\ServiceProcess;
@@ -22,14 +24,27 @@ class ServiceProcessController extends Controller
         }
 
         // ambil service item yang lokasinya sudah di RMA
-        $serviceItems = ServiceItem::with(['customer', 'serviceProcesses', 'creator'])
+        $serviceItems = ServiceItem::with(['customer', 'serviceProcesses', 'creator', 'shipments' => function ($query) {
+            $query->where('shipment_type', ShipmentTypeEnum::ToRMA)
+                  ->orderByDesc('created_at');
+            }])
+            ->where('location_status', LocationStatusEnum::AtRMA)
             ->get()
             ->filter(function ($item) {
                 // filter yang belum selesai atau batal secara proses
                 $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
                 $finalProcessStatuses = ['Selesai', 'Tidak bisa diperbaiki'];
+                $isNotFinished = !$latestProcess || !in_array($latestProcess->process_status, $finalProcessStatuses);
+
+                // Pastikan ada shipment terakhir dari admin dan statusnya 'Diterima'
+                $latestInboundShipment = $item->shipments->first(); // Karena sudah kita limit
+
+                $isReceivedFromAdmin = $latestInboundShipment && $latestInboundShipment->shipment_type === ShipmentTypeEnum::ToRMA && $latestInboundShipment->status === ShipmentStatusEnum::Diterima;
+                
                 // return ((!$latestProcess || $latestProcess->process_status !== 'Selesai') && (!$latestProcess || $latestProcess->process_status !== 'Tidak bisa diperbaiki'));
-                return !$latestProcess || !in_array($latestProcess->process_status, $finalProcessStatuses);
+                // return !$latestProcess || !in_array($latestProcess->process_status, $finalProcessStatuses);
+
+                return $isNotFinished && $isReceivedFromAdmin;
             });
         
         return view('service_processes.index', compact('serviceItems'));
@@ -40,9 +55,17 @@ class ServiceProcessController extends Controller
      */
     public function workOn(ServiceItem $serviceItem)
     {
-        // Load proses terakhir untuk service item ini (jika ada)
-        // $latestProcess = $serviceItem->serviceProcesses->sortByDesc('created_at')->first();
+        if (!Auth::user()->isRma()) {
+            abort(403,'Akses Ditolak');
+        }
 
+        // Validasi untuk memastikan item memang siap dikerjakan 
+        if ($serviceItem->location_status !== LocationStatusEnum::AtRMA) {
+            return redirect()->route('service_items.index')->with('error', 'Barang ini tidak berada di RMA atau belum siap dikerjakan');
+        }
+
+        // Load proses terakhir untuk service item ini (jika ada)
+        $latestProcess = $serviceItem->serviceProcesses->sortByDesc('created_at')->first();
 
         // status yang tersedia untuk dropdown
         $statuses = ['Pending', 'Diagnosa', 'Proses Pengerjaan', 'Menunggu Sparepart', 'Selesai', 'Tidak bisa diperbaiki'];

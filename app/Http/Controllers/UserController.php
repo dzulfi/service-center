@@ -41,7 +41,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
-            'branch_office_id' => 'required|exitst:branch_office,id',
+            'branch_office_id' => 'required|exists:branch_offices,id',
             'phone_number' => 'nullable|string|max:20',
         ]);
 

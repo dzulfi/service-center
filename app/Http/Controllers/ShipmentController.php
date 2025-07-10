@@ -27,9 +27,12 @@ class ShipmentController extends Controller
             abort(403, 'Akses Ditolak.');
         }
 
+        $loggedInUserId = Auth::id();
+
         // Ambil service items yang status lokasinya masih dicabang
-        $serviceItems = ServiceItem::with(['customer', 'creator'])
+        $serviceItems = ServiceItem::with(['customer', 'creator', 'serviceProcesses'])
             ->where('location_status', LocationStatusEnum::AtBranch)
+            ->where('created_by_user_id', $loggedInUserId)
             ->get();
         
         return view('shipments.admin.outbound_to_rma_index', compact('serviceItems'));
@@ -238,10 +241,25 @@ class ShipmentController extends Controller
             abort(403,'Akses Ditolak');
         }
 
+        // mengambil ID user yang sedang login beserta branch_id nya
+        $loggedInUserId = Auth::user();
+        // dd($loggedInUserId);
+        $loggedInUserBranchOfficeId = $loggedInUserId->branch_office_id; // ID cabang user yang login
+
         // Ambil pengiriman yang tipenya from_rma dan statusnya 'Kirim Kembali'
-        $shipments = Shipment::with(['serviceItem.customer', 'responsibleUser'])
+        // dan service item terkaitnya dibuat oleh user dari cabang yang sama dengan admin yang login
+        $shipments = Shipment::with([
+                'serviceItem.customer', 
+                'responsibleUser', 
+                'serviceItem.serviceProcesses',
+                'serviceItem.creator.branchOffice' // Eager load branch office dari creator untuk filter
+            ])
             ->where('shipment_type', ShipmentTypeEnum::FromRMA)
             ->where('status', ShipmentStatusEnum::KirimKembali)
+            ->whereHas('serviceItem.creator', function ($query) use ($loggedInUserBranchOfficeId) {
+                // filter shipments dimana creator (pembuat service item), memiliki branch_office_id yang sama dengan cabang user yang login.
+                $query->where('branch_office_id', $loggedInUserBranchOfficeId);
+            })
             ->get();
 
         return view('shipments.admin.inbound_from_rma_index', compact('shipments'));

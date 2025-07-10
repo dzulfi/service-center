@@ -115,6 +115,9 @@
                 <strong>Serial Number:</strong> <span>{{ $serviceItem->serial_number ?? '-' }}</span>
             </div>
             <div class="detail-group">
+                <strong>Kode Service</strong> <span>{{ $serviceItem->code ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
                 <strong>Analisa Kerusakan:</strong> <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
             </div>
             <div class="detail-group">

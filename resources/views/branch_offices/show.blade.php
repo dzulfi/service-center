@@ -179,6 +179,9 @@
                 <strong>Nama Cabang:</strong> <span>{{ $branchOffice->name }}</span>
             </div>
             <div class="detail-group">
+                <strong>Kode Cabang</strong> <span>{{ $branchOffice->code }}</span>
+            </div>
+            <div class="detail-group">
                 <strong>Alamat:</strong> <span>{{ $branchOffice->address }}</span>
             </div>
             <div class="detail-group">

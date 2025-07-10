@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\BranchOffice;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BranchOfficeController extends Controller
 {
@@ -32,6 +33,7 @@ class BranchOfficeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:branch_offices',
+            'code' => 'required|string|max:10|unique:branch_offcices', // unik di tabel branch_offices
             'address' => 'required|string',
             'sub_district' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:255',
@@ -65,7 +67,8 @@ class BranchOfficeController extends Controller
     public function update(Request $request, BranchOffice $branchOffice)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('branch_offices')->ignore($branchOffice->id)],
+            'name' => ['required', 'string', 'max:255', Rule::unique('branch_offices')->ignore($branchOffice->id)],
+            'code' => ['required', 'string', 'max:10', Rule::unique('branch_offices')->ignore($branchOffice->id)], // Aturan validasi untuk code saat update: unik, kecuali untuk dirinya sendiri
             'address' => 'required|string',
             'sub_district' => 'nullable|string|max:255',
             'disctrict' => 'nullable|string|max:255',

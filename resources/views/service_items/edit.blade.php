@@ -149,6 +149,10 @@
                     @enderror
                 </div>
                 <div class="form-group">
+                    <label for="code">Kode Service</label>
+                    <input type="text" name="code" id="code" value="{{ $serviceItem->code }}" readonly>
+                </div>
+                <div class="form-group">
                     <label for="analisa_kerusakan">Analisa Kerusakan:</label>
                     <textarea name="analisa_kerusakan" id="damage_analysis">{{ old('damage_analysis', $serviceItem->analisa_kerusakan) }}</textarea>
                     @error('analisa_kerusakan')
