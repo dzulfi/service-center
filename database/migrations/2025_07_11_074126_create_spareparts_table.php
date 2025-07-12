@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stock_spare_parts', function (Blueprint $table) {
+        Schema::create('spareparts', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
             $table->string('name');
             $table->string('image_path')->nullable();
             $table->text('description')->nullable();
-            $table->integer('stock')->default(0); // default barang 0 jika tidak diisi
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_spare_parts');
+        Schema::dropIfExists('spareparts');
     }
 };

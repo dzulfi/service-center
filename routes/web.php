@@ -5,8 +5,11 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ServiceItemController;
 use App\Http\Controllers\ServiceProcessController;
 use App\Http\Controllers\ShipmentController;
+use App\Http\Controllers\SparepartController;
+use App\Http\Controllers\StockSparePartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchOfficeController;
+use App\Models\StockSparePart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -107,6 +110,15 @@ Route::middleware('auth')->group(function () {
         Route::get('outbound-from-rma', [ShipmentController::class,'indexOutboundFromRma'])->name('outbound_from_rma.index'); // Daftar barang siap kirim kembali
         Route::get('outbound-from-rma/{serviceItem}/create', [ShipmentController::class,'createOutboundFromRma'])->name('outbound_from_rma.create'); // form kirim kembali
         Route::post('outbound-from-rma/{serviceItem}/store', [ShipmentController::class,'storeOutboundFromRma'])->name('outbound_from_rma.store'); // Simpan Kirim Kembali
+    });
+
+    // RMA (Stock Sparepart)
+    Route::middleware(['role:rma'])->group(function () {
+        Route::resource('spareparts', SparepartController::class);
+        
+        // Stock In
+        Route::get('stock_sparepart/{sparepart}/stock_in', [StockSparePartController::class, 'stockIn'])->name('stock_in.create');
+        Route::post('stock_sparepart/{sparepart}/stock_in', [StockSparePartController::class, 'StoreStockIn'])->name('stock_in.store');
     });
 
     // logout

@@ -27,4 +27,9 @@ class ServiceProcess extends Model
     {
         return $this->belongsTo(User::class, 'handle_by_user_id');
     }
+
+    public function stockSpareparts()
+    {
+        return $this->hasMany(StockSparepart::class, 'service_process_id');
+    }
 }

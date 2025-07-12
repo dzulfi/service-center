@@ -119,6 +119,11 @@
             @auth
                 @if (auth()->user()->isRma())
                     <li>
+                        <a href="{{ route('spareparts.index') }}" class="{{ request()->routeIs('spareparts.*') ? 'active' : '' }}">
+                            Sparepart Service
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('shipments.rma.inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.inbound_from_admin.*') ? 'active' : '' }}">
                             Barang Masuk Dari Admin
                         </a>
