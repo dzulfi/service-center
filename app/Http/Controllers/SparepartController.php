@@ -17,8 +17,6 @@ class SparepartController extends Controller
         return view('spareparts.index', compact('spareparts'));
     }
 
-    public function getstock()
-
     public function create()
     {
         return view('spareparts.create');

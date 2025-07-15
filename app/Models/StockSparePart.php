@@ -11,7 +11,7 @@ class StockSparepart extends Model
 
     protected $fillable = [
         'sparepart_id',
-        'service_process_id',
+        'service_item_id',
         'stock_type',
         'quantity',
     ];
@@ -21,8 +21,13 @@ class StockSparepart extends Model
         return $this->belongsTo(Sparepart::class);
     }
 
-    public function serviceProcess()
+    // public function serviceProcess()
+    // {
+    //     return $this->belongsTo(ServiceProcess::class);
+    // }
+
+    public function serviceItem()
     {
-        return $this->belongsTo(ServiceProcess::class);
+        return $this->belongsTo(ServiceItem::class, 'service_item_id');
     }
 }

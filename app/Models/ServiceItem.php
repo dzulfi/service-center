@@ -60,4 +60,9 @@ class ServiceItem extends Model
     {
         return $this->hasMany(Shipment::class);
     }
+
+    public function stockSpareparts()
+    {
+        return $this->hasMany(StockSparepart::class, 'service_item_id');
+    }
 }

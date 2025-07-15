@@ -132,6 +132,7 @@
                             <th>Solusi</th>
                             <th>Keterangan</th>
                             <th>Status Terakhir</th>
+                            <th>Sparepart</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -178,8 +179,18 @@
                                         <span class="status-badge status-pending">Pending</span>
                                     @endif
                                 </td>
+                                <td>
+                                    <ul>
+                                        @foreach ($item->stockSpareparts as $stock)
+                                            <ol>
+                                                {{ $stock->sparepart->name }} ({{ $stock->quantity }})
+                                            </ol>
+                                        @endforeach
+                                    </ul>
+                                </td>
                                 <td class="actions">
                                     <a href="{{ route('service_processes.work_on', $item->id) }}" class="work-button">Kerjakan</a>
+                                    <a href="{{ route('stock_out.index', $item->id) }}">Sparepart</a>
                                 </td>
                             </tr>
                         @endforeach

@@ -80,6 +80,7 @@
         }
         .actions {
             white-space: nowrap;
+            text-align: center;
         }
         .actions a, .actions button {
             display: inline-block;
@@ -103,6 +104,20 @@
         }
         .actions a.edit-button:hover {
             background-color: #e0a800;
+        }
+        .actions a.add-stock {
+            background-color: #2200ff;
+            color: #ffffff;
+        }
+        .actions a.add-stock:hover {
+            background-color: #2200ff;
+        }
+        .actions a.minus-stock {
+            background-color: #ff8400;
+            color: #000000;
+        }
+        .actions a.minus-stock:hover {
+            background-color: #ff8400;
         }
         .actions button.delete-button {
             background-color: #dc3545;
@@ -132,7 +147,7 @@
         .nav-links a:hover {
             text-decoration: underline;
         }
-        /* Status colors - pastikan ini konsisten dengan CSS Anda */
+        /* Status colors - pastikan ini konsisten dengan CSS Anda */http://localhost:8000/shipments/rma/outbound-from-rma
         .status-badge {
             padding: 4px 8px;
             border-radius: 3px;
@@ -199,7 +214,8 @@
                                 <th>Nama Sparepart</th>
                                 <th>Gambar</th>
                                 <th>Keterangan</th>
-                                <th>Aksi</th>
+                                <th>Stock</th>
+                                <th style="text-align: center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -219,6 +235,7 @@
                                         @endif
                                     </td>
                                     <td>{{ Str::limit($sparepart->description, 50) ?? '-' }}</td>
+                                    <td>{{ $sparepart->getStock() }}</td>
                                     <td class="actions">
                                         <a href="{{ route('spareparts.show', $sparepart->id) }}" class="view-button">Lihat</a>
                                         <a href="{{ route('spareparts.edit', $sparepart->id) }}" class="edit-button">Edit</a>
@@ -227,7 +244,8 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus Sparepart ini.')">Hapus</button>
                                         </form>
-                                        <a href="{{ route('stock_in.create', $sparepart->id) }}">Tambah Item</a>
+                                        <a href="{{ route('stock_in.create', $sparepart->id) }}" class="add-stock">Tambah Stock</a>
+                                        <a href="{{ route('stock_out_minus.create', $sparepart->id) }}" class="minus-stock">Kurangi Stock</a>
                                     </td>
                                 </tr>
                             @endforeach

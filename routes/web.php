@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MerkController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ServiceItemController;
@@ -69,9 +70,13 @@ Route::middleware('auth')->group(function () {
         Route::get('shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show'); // Detail shipments
     });
 
-    // CRUD user (hanya Developer)
+    // hanya Developer
     Route::middleware(['role:developer'])->group(function () {
+        // CRUD User
         Route::resource('users', UserController::class);
+        
+        // CRUD Merk
+        Route::resource('merks', MerkController::class);
     });
 
     // CRUD kantor cabang (developer, superadmin)
@@ -117,8 +122,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('spareparts', SparepartController::class);
         
         // Stock In
-        Route::get('stock_sparepart/{sparepart}/stock_in', [StockSparePartController::class, 'stockIn'])->name('stock_in.create');
-        Route::post('stock_sparepart/{sparepart}/stock_in', [StockSparePartController::class, 'StoreStockIn'])->name('stock_in.store');
+        Route::get('stock_sparepart/{sparepart}/stock_in', [StockSparepartController::class, 'stockIn'])->name('stock_in.create');
+        Route::post('stock_sparepart/{sparepart}/stock_in', [StockSparepartController::class, 'StoreStockIn'])->name('stock_in.store');
+
+        // stock Out
+        Route::get('stock_sparepart/{serviceItem}/stock_out', [StockSparepartController::class, 'stockOut'])->name('stock_out.index');
+        Route::post('stock_sparepart/{serviceItem}/stock_out', [StockSparepartController::class,'storeStockOut'])->name('stock_out.store');
+        
+        // minus stock
+        Route::get('stock_sparepart/{sparepart}/stock_out_minus', [StockSparepartController::class,'stockOutMinus'])->name('stock_out_minus.create');
+        Route::post('stock_sparepart/{sparepart}/stock_out_minus', [StockSparepartController::class,'storeStockOutMinus'])->name('stock_out_minus.store');
     });
 
     // logout

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Kantor Cabang</title>
+    <title>Daftar Merk</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -126,60 +126,55 @@
     </style>
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Kantor Cabang') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Merk') @section('content')
         <div class="container">
-            <h1>Daftar Kantor Cabang</h1>
-            
+            <h1>Daftar Merk</h1>
+
             @if (session('success'))
                 <div class="message success-message">
                     {{ session('success') }}
                 </div>
             @endif
-    
-            <a href="{{ route('branch_offices.create') }}" class="add-button">Tambah Cabang Baru</a>
-    
-            @if ($branchOffices->isEmpty())
-                <p class="no-data">Belum ada kantor cabang yang terdaftar.</p>
+
+            <a href="{{ route('merks.create') }}" class="add-button">Tambah Merk</a>
+
+            @if ($merks->isEmpty())
+                <p class="no-data">Belum ada merk yang terdaftar.</p>
             @else
-                <div class="table-responsive"> {{-- Tambahkan div ini untuk responsif tabel --}}
+                <table class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Nama Cabang</th>
-                                <th>Kode Cabang</th>
-                                <th>Alamat</th>
-                                <th>Kelurahan</th>
-                                <th>Kecamatan</th>
-                                <th>Kota</th>
+                                <th>No</th>
+                                <th>Nama Merk</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
+    
+                        @php
+                            $no = 1;
+                        @endphp
                         <tbody>
-                            @foreach ($branchOffices as $branchOffice)
+                            @foreach ($merks as $merk)
                                 <tr>
-                                    <td>{{ $branchOffice->id }}</td>
-                                    <td>{{ $branchOffice->name }}</td>
-                                    <td>{{ $branchOffice->code }}</td>
-                                    <td>{{ Str::limit($branchOffice->address, 40) }}</td>
-                                    <td>{{ $branchOffice->sub_district ?? '-' }}</td>
-                                    <td>{{ $branchOffice->district ?? '-' }}</td>
-                                    <td>{{ $branchOffice->city }}</td>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $merk->merk_name }}</td>
                                     <td class="actions">
-                                        <a href="{{ route('branch_offices.show', $branchOffice->id) }}" class="view-button">Lihat</a>
-                                        <a href="{{ route('branch_offices.edit', $branchOffice->id) }}" class="edit-button">Edit</a>
-                                        <form action="{{ route('branch_offices.destroy', $branchOffice->id) }}" method="POST" style="display:inline;">
+                                        <a href="" class="view-button">Lihat</a>
+                                        <a href="{{ route('merks.edit', $merk->id) }}" class="edit-button">Edit</a>
+                                        <form action="{{ route('merks.destroy', $merk->id) }}" method="POST" style="display: inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus kantor cabang ini?')">Hapus</button>
+                                            <button type="submit" class="delete-button" onclick="return confirm('Anda yakin menghapus merk ini?')">Hapus</button>
                                         </form>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
+                </table>
             @endif
+
         </div>
     @endsection
 </body>

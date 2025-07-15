@@ -24,4 +24,13 @@ class Sparepart extends Model
     {
         return $this->hasMany(StockSparepart::class, 'sparepart_id');
     }
+
+    // menghitung  total stok saat ini
+    public function getStock()
+    {
+        $in = $this->stockSpareparts()->where('stock_type', 'in')->sum('quantity');
+        $out = $this->stockSpareparts()->where('stock_type', 'out')->sum('quantity');
+
+        return $in - $out;
+    }
 }

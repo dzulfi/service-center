@@ -116,7 +116,7 @@
                     <label for="customer_id">Pelanggan:</label>
                     <select name="customer_id" id="customer_id" required>
                         <option value="">-- Pilih Pelanggan --</option>
-                        @foreach ($customers as $customer)
+                        @foreach ($customers as $customer)  
                             <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
                                 {{ $customer->name }} ({{ $customer->phone_number ?? 'Individu' }})
                             </option>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Sparepart Baru</title>
+    <title>Tambah Merk Baru</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -36,8 +36,7 @@
             color: #555;
         }
         input[type="text"],
-        textarea,
-        select {
+        textarea {
             width: calc(100% - 20px); /* Adjust for padding */
             padding: 10px;
             border: 1px solid #ccc;
@@ -46,8 +45,7 @@
             transition: border-color 0.3s ease;
         }
         input[type="text"]:focus,
-        textarea:focus,
-        select:focus {
+        textarea:focus {
             border-color: #3498db;
             outline: none;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
@@ -98,35 +96,26 @@
     </style>
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Tambah Stock: ' . $sparepart->name) @section('content')
-        <div class="container"> 
-            <h1>Tambah Stock: {{ $sparepart->name }}</h1>
+    @extends('layouts.app') @section('title','Tambahkan Merk Baru') @section('content')
+        <div class="container">
+            <h1>Tambah Merk Baru</h1>
 
             @if ($errors->any())
-                <ul class="error-message-list"> {{-- Tampilkan error validasi dengan styling --}}
+                <ul class="error-message-list">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             @endif
-            @if (session('success'))
-                <div class="message success-message"> {{-- Tampilkan pesan sukses --}}
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="message error-message"> {{-- Tampilkan pesan error --}}
-                    {{ session('error') }}
-                </div>
-            @endif
 
-
-            {{-- PERHATIKAN: action="{{ route('stock_in.store', $sparepart->id) }}" --}}
-            <form action="{{ route('stock_in.store', $sparepart->id) }}" method="POST">
-                @csrf <div class="form-group"> {{-- Gunakan form-group untuk styling yang konsisten --}}
-                    <label for="quantity">Jumlah:</label> {{-- Perbaikan typo label --}}
-                    <input type="number" name="quantity" id="quantity" value="{{ old('quantity') }}" required min="1"> {{-- type="number" dan min="1" --}}
-                    @error('quantity') <div class="error">{{ $message }}</div> @enderror {{-- Tampilkan error spesifik field --}}
+            <form action="{{ route('merks.store') }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="merk_name">Nama Merk:</label>
+                    <input type="text" name="merk_name" id="merk_name" value="{{ old('merk_name') }}" required>
+                    @error('merk_name')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <button type="submit">Simpan</button>

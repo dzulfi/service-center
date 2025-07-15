@@ -160,6 +160,11 @@
                             Kantor Cabang
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('merks.index') }}" class="{{ request()->routeIs('merks.*') ? 'active' : '' }}">
+                            Merk
+                        </a>
+                    </li>
                 @endif
             @endauth
 
