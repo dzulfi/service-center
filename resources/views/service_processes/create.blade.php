@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Proses Servis Baru</title>
-    <style>
+    {{-- <style>
         /* CSS yang sama dengan create pelanggan/barang servis sebelumnya */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -96,7 +96,7 @@
             color: #2980b9;
             text-decoration: underline;
         }
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')

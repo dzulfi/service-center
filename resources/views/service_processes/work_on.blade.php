@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kerjakan Servis: {{ $serviceItem->item_name }}</title>
-    <style>
+    {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -137,7 +137,7 @@
         .status-menunggu-sparepart { background-color: #ff9800; }
         .status-selesai { background-color: #4caf50; }
         .status-batal { background-color: #f44336; }
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
@@ -145,7 +145,7 @@
             <h1>Kerjakan Servis: {{ $serviceItem->name }}</h1>
 
             <h2>Informasi Barang Servis</h2>
-            <div class="info-group">
+            <div class="form-group">
                 <strong>Pelanggan:</strong>
                 <span>
                     @if ($serviceItem->customer)
@@ -155,23 +155,23 @@
                     @endif
                 </span>
             </div>
-            <div class="info-group">
+            <div class="form-group">
                 <strong>Nama Barang:</strong> <span>{{ $serviceItem->name }}</span>
             </div>
-            <div class="info-group">
+            <div class="form-group">
                 <strong>Tipe Barang:</strong> <span>{{ $serviceItem->type ?? '-' }}</span>
             </div>
-            <div class="info-group">
+            <div class="form-group">
                 <strong>Serial Number:</strong> <span>{{ $serviceItem->serial_number ?? '-' }}</span>
             </div>
-            <div class="info-group">
+            <div class="form-group">
                 <strong>Analisa Kerusakan Awal:</strong> <span>{{ $serviceItem->analisa_kerusakan ?? '-' }}</span>
             </div>
-            <div class="info-group">
+            <div class="form-group">
                 <strong>Merk:</strong> <span>{{ $serviceItem->merk ?? '-' }}</span>
             </div>
             @if ($latestProcess)
-                <div class="info-group">
+                <div class="form-group">
                     <strong>Status Proses Terakhir:</strong>
                     <span>
                         <span class="status-badge status-{{ Str::slug($latestProcess->process_status) }}">
@@ -179,20 +179,20 @@
                         </span>
                     </span>
                 </div>
-                <div class="info-group">
+                <div class="form-group">
                     <strong>Analisa Terakhir:</strong> <span>{{ $latestProcess->damage_analysis_detail ?? '-' }}</span>
                 </div>
-                <div class="info-group">
+                <div class="form-group">
                     <strong>Solusi Terakhir:</strong> <span>{{ $latestProcess->solution ?? '-' }}</span>
                 </div>
-                <div class="info-group">
+                <div class="form-group">
                     <strong>Keterangan Terakhir:</strong> <span>{{ $latestProcess->keterangan ?? '-' }}</span>
                 </div>
-                <div class="info-group">
+                <div class="form-group">
                     <strong>Diupdate Terakhir:</strong> <span>{{ $latestProcess->updated_at->format('d M Y H:i') }}</span>
                 </div>
             @else
-                <div class="info-group">
+                <div class="form-group">
                     <strong>Status Proses Terakhir:</strong> <span class="status-badge status-pending">Belum ada proses</span>
                 </div>
             @endif

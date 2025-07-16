@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Sparepart Baru</title>
-    <style>
+    {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -95,7 +95,7 @@
             color: #2980b9;
             text-decoration: underline;
         }
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Tambah Sparepart Baru') @section('content')

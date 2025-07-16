@@ -165,6 +165,11 @@
                             Merk
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('item_types.index') }}" class="{{ request()->routeIs('item_types.*') ? 'active' : '' }}">
+                            Tipe Barang
+                        </a>
+                    </li>
                 @endif
             @endauth
 

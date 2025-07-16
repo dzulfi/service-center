@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Pelanggan</title>
+    <title>Daftar Merk</title>
     {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -126,9 +126,9 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Tipe Barang') @section('content')
         <div class="container">
-            <h1>Daftar Customer</h1>
+            <h1>Daftar Tipe Barang</h1>
 
             @if (session('success'))
                 <div class="message success-message">
@@ -136,45 +136,35 @@
                 </div>
             @endif
 
-            <a href="{{ route('customers.create') }}" class="add-button">Tambah Pelanggan Baru</a>
+            <a href="{{ route('item_types.create') }}" class="add-button">Tambah Tipe Barang</a>
 
-            @if ($customers->isEmpty())
-                <p class="no-data">Belum ada pelanggan yang terdaftar.</p>
+            @if ($itemTypes->isEmpty())
+                <p class="no-data">Belum ada Tipe barang yang terdaftar</p>
             @else
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Pelanggan</th>
-                            <th>No. Telepon</th>
-                            <th>Perusahaan</th>
-                            <th>Kota</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
-                        @foreach ($customers as $customer)
+                <table class="table-responsive">
+                    <table>
+                        <thead>
                             <tr>
-                                <td>{{ $no++ }}</td>
-                                <td>{{ $customer->name }}</td>
-                                <td>{{ $customer->phone_number ?? '-' }}</td>
-                                <td>{{ $customer->company ?? '-' }}</td>
-                                <td>{{ $customer->kota ?? '-' }}</td>
-                                <td class="actions">
-                                    <a href="{{ route('customers.show', $customer->id) }}" class="view-button">Lihat</a>
-                                    <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit</a>
-                                    {{-- <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus pelanggan ini?')">Hapus</button>
-                                    </form> --}}
-                                </td>
+                                <th>No</th>
+                                <th>Merk</th>
+                                <th>Tipe Barang</th>
+                                <th>Aksi</th>
                             </tr>
-                        @endforeach
-                    </tbody>
+                        </thead>
+                        <tbody>
+                            @foreach ($itemTypes as $itemType)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $itemType->merk->merk_name }}</td>
+                                    <td>{{ $itemType->type_name }}</td>
+                                    <td class="actions">
+                                        <a href="#" class="view-button">Lihat</a>
+                                        <a href="{{ route('item_types.edit', $itemType->id) }}" class="edit-button">Edit</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </table>
             @endif
         </div>

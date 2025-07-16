@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Proses Servis: {{ $serviceProcess->serviceItem->item_name ?? 'N/A' }}</title>
-    <style>
+    {{-- <style>
         /* CSS yang sama dengan show pelanggan/barang servis sebelumnya */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -104,7 +104,7 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')

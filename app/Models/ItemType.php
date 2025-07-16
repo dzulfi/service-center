@@ -14,8 +14,8 @@ class ItemType extends Model
         'type_name',
     ];
 
-    public function merks()
+    public function merk()
     {
-        return $this->hasMany(Merk::class);
+        return $this->belongsTo(Merk::class, 'merk_id');
     }
 }

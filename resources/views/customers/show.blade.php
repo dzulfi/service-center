@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Customer: {{ $customer->name }}</title>
-    <style>
+    {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -168,7 +168,7 @@
         .filter-menu button:hover, .filter-menu button.active {
             background-color: #31b0d5;
         }
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
@@ -185,9 +185,11 @@
                 <strong>Perusahaan:</strong> <span>{{ $customer->company ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Alamat:</strong> <span>{{ $customer->address ?? '-' }}</span>
+                <strong>Alamat:</strong> <span>
+                    {{ $customer->address ?? '-' }}, {{ $customer->kelurahan ?? '-' }}, {{ $customer->kecamatan ?? '-' }}, {{ $customer->kota ?? '-' }}
+                </span>
             </div>
-            <div class="detail-group">
+            {{-- <div class="detail-group">
                 <strong>Kelurahan:</strong> <span>{{ $customer->kelurahan ?? '-' }}</span>
             </div>
             <div class="detail-group">
@@ -195,13 +197,13 @@
             </div>
             <div class="detail-group">
                 <strong>Kota:</strong> <span>{{ $customer->kota ?? '-' }}</span>
-            </div>
+            </div> --}}
             <div class="detail-group">
-                <strong>Dibuat Pada:</strong> <span>{{ $customer->created_at->format('d M Y H:i') }}</span>
+                <strong>Service Masuk: </strong> <span>{{ $customer->created_at->format('d M Y H:i') }}</span>
             </div>
-            <div class="detail-group">
+            {{-- <div class="detail-group">
                 <strong>Diperbarui Pada:</strong> <span>{{ $customer->updated_at->format('d M Y H:i') }}</span>
-            </div>
+            </div> --}}
 
             <div class="actions">
                 <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit Pelanggan</a>
@@ -212,10 +214,8 @@
                 </form>
             </div>
 
-            {{-- 
-                Informasi service milik customer
-            --}}
-            <h2>Barang Servis Milik Customer :</h2>
+            {{-- Informasi service milik customer --}}
+            <h2 style="margin-top: 10px;">Barang Servis Milik Customer :</h2>
             {{-- Filter Menu --}}
             {{-- <label for="">Filter status service :</label> --}}
             <div class="filter-menu">

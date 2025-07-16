@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\MerkController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
@@ -77,6 +78,9 @@ Route::middleware('auth')->group(function () {
         
         // CRUD Merk
         Route::resource('merks', MerkController::class);
+
+        // CRUD Tipe Barang
+        Route::resource('item_types', ItemTypeController::class);
     });
 
     // CRUD kantor cabang (developer, superadmin)

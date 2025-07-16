@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Customer: {{ $customer->name }}</title>
-    <style>
+    {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -168,7 +168,7 @@
         .filter-menu button:hover, .filter-menu button.active {
             background-color: #31b0d5;
         }
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
@@ -258,9 +258,13 @@
                                 <td>{{ $item->merk ?? '-' }}</td>
                                 <td>{{ $item->creator->branchOffice->name }}</td>
                                 
-                                @foreach ($item->serviceProcesses as $process)
-                                    <td>{{ $process->handler->name }}</td>
-                                @endforeach
+                                @if ($item->serviceProcesses->isEmpty())
+                                    <td style="color: red; ">Belum ada</td>
+                                @else
+                                    @foreach ($item->serviceProcesses as $process)
+                                        <td>{{ $process->handler->name ?? '-' }}</td>
+                                    @endforeach
+                                @endif
                                 <td>
                                     <span class="status-badge status-{{ $statusSlug }}">
                                         {{ $status }}

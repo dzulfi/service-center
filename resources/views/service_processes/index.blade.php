@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Barang Servis (Siap Dikerjakan)</title>
-    <style>
+    {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -103,7 +103,7 @@
         .status-menunggu-sparepart { background-color: #ff9800; } /* Orange */
         .status-selesai { background-color: #4caf50; } /* Green */
         .status-tidak-bisa-diperbaiki { background-color: #f44336; } /* Red */
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')

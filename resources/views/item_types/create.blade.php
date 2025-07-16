@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Barang Servis Baru</title>
+    <title>Tambah Merk Baru</title>
     {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -36,8 +36,7 @@
             color: #555;
         }
         input[type="text"],
-        textarea,
-        select {
+        textarea {
             width: calc(100% - 20px); /* Adjust for padding */
             padding: 10px;
             border: 1px solid #ccc;
@@ -46,8 +45,7 @@
             transition: border-color 0.3s ease;
         }
         input[type="text"]:focus,
-        textarea:focus,
-        select:focus {
+        textarea:focus {
             border-color: #3498db;
             outline: none;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
@@ -98,10 +96,9 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Admin: Kirim Barang ke RMA') @section('content')
+    @extends('layouts.app') @section('title', 'Tambah Item Barang') @section('content')
         <div class="container">
-            <h1>Admin: Kirim Barang ke RMA</h1>
-            <p>Isi detail pengiriman untuk barang servis <strong>{{ $serviceItem->name }} (SN: {{ $serviceItem->serial_number ?? '-' }})</strong> milik <strong>{{ $serviceItem->customer->name ?? '-' }}</strong>.</p>
+            <h1>Tambah Item Barang Baru</h1>
 
             @if ($errors->any())
                 <ul class="error-message-list">
@@ -110,32 +107,30 @@
                     @endforeach
                 </ul>
             @endif
-            @if (session('error'))
-                <div class="message error-message">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <form action="{{ route('shipments.admin.outbound_to_rma.store', $serviceItem->id) }}" method="POST" enctype="multipart/form-data">
+            
+            <form action="{{ route('item_types.store') }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label for="resi_number">Nomor Resi:</label>
-                    <input type="text" name="resi_number" id="resi_number" value="{{ old('resi_number') }}" required>
-                    @error('resi_number') <div class="error">{{ $message }}</div> @enderror
+                    <label for="merk_id">Merk Barang:</label>
+                    <select name="merk_id" id="merk_id" required>
+                        <option value="">-- Pilih Merk --</option>
+                        @foreach ($merks as $merk)
+                            <option value="{{ $merk->id }}" {{ old('merk_id') == $merk->id ? 'selected' : '' }}>
+                                {{ $merk->merk_name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="resi_image">Upload Gambar Resi:</label>
-                    <input type="file" name="resi_image" id="resi_image" accept="image/*">
-                    @error('resi_image') <div class="error">{{ $message }}</div> @enderror
+                    <label for="type_name">Nama Tipe:</label>
+                    <input type="text" name="type_name" id="type_name" value="{{ old('type_name') }}" required>
+                    @error('type_name')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
                 </div>
-                <div class="form-group">
-                    <label for="notes">Catatan Tambahan:</label>
-                    <textarea name="notes" id="notes">{{ old('notes') }}</textarea>
-                    @error('notes') <div class="error">{{ $message }}</div> @enderror
-                </div>
-                <button type="submit">Konfirmasi Kirim</button>
+
+                <button type="submit">Simpan</button>
             </form>
-            <a href="{{ route('shipments.admin.outbound_to_rma.index') }}" class="back-link">Kembali</a>
         </div>
     @endsection
 </body>

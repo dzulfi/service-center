@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Barang Servis</title>
-    <style>
+    {{-- <style>
         /* Pastikan CSS ini ada di sini atau di file CSS eksternal Anda */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -167,7 +167,7 @@
         .filter-menu button:hover, .filter-menu button.active {
             background-color: #31b0d5;
         }
-    </style>
+    </style> --}}
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Aktivitas: Semua Barang Servis') @section('content')
@@ -235,9 +235,13 @@
                                     <td>{{ $item->code ?? '-' }}</td>
                                     <td>{{ $item->merk ?? '-' }}</td>
                                     
-                                    @foreach ($item->serviceProcesses as $process)
-                                        <td>{{ $process->handler->name }}</td>
-                                    @endforeach
+                                    @if ($item->serviceProcesses->isEmpty())
+                                        <td style="color: red;">Belum ada</td>
+                                    @else
+                                        @foreach ($item->serviceProcesses as $process)
+                                            <td>{{ $process->handler->name }}</td>
+                                        @endforeach
+                                    @endif
 
                                     <td>
                                         @if ($latestProcess)
