@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LocationStatusEnum;
+use App\Enums\ShipmentStatusEnum;
+use App\Enums\ShipmentTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\ServiceItem;

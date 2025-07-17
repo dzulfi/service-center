@@ -189,21 +189,6 @@
                     {{ $customer->address ?? '-' }}, {{ $customer->kelurahan ?? '-' }}, {{ $customer->kecamatan ?? '-' }}, {{ $customer->kota ?? '-' }}
                 </span>
             </div>
-            {{-- <div class="detail-group">
-                <strong>Kelurahan:</strong> <span>{{ $customer->kelurahan ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Kecamatan:</strong> <span>{{ $customer->kecamatan ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Kota:</strong> <span>{{ $customer->kota ?? '-' }}</span>
-            </div> --}}
-            <div class="detail-group">
-                <strong>Service Masuk: </strong> <span>{{ $customer->created_at->format('d M Y H:i') }}</span>
-            </div>
-            {{-- <div class="detail-group">
-                <strong>Diperbarui Pada:</strong> <span>{{ $customer->updated_at->format('d M Y H:i') }}</span>
-            </div> --}}
 
             <div class="actions">
                 <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit Pelanggan</a>

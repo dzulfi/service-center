@@ -197,11 +197,11 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Kode Barang</th>
+                            <th>Customer</th>
                             <th>Nama Barang</th>
-                            <th>Pelanggan</th>
                             <th>Tipe Barang</th>
                             <th>Serial Number</th>
-                            <th>Kode Barang</th>
                             <th>Merk</th>
                             <th>Dibuat oleh</th>
                             <th>Status Pengerjaan</th> 
@@ -229,7 +229,7 @@
                             @endphp
                             <tr data-filter-group="{{ $filterGroup }}">
                                 <td>{{ $no++ }}</td>
-                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->code ?? '-' }}</td>
                                 <td>
                                     @if ($item->customer)
                                         <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
@@ -237,9 +237,9 @@
                                         <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
                                     @endif
                                 </td>
+                                <td>{{ $item->name }}</td>
                                 <td>{{ $item->type ?? '-' }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->code ?? '-' }}</td>
                                 <td>{{ $item->merk ?? '-' }}</td>
 
                                 {{-- author yang membuat barang service oleh user siapa --}}

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\ShipmentStatusEnum;
+use App\Enums\ShipmentTypeEnum;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -64,5 +67,64 @@ class ServiceItem extends Model
     public function stockSpareparts()
     {
         return $this->hasMany(StockSparepart::class, 'service_item_id');
+    }
+
+    // barang dikirim dari Admin cabang ke RMA
+    public function getKirimKeRmaAttribute()
+    {
+        $toRma = $this->shipments()
+            ->where('shipment_type', ShipmentTypeEnum::ToRMA)
+            ->first();
+
+        return $toRma ? Carbon::parse($toRma->created_at) : null;
+    }
+
+    // Barang service diterima RMA dari Admin cabang
+    public function getDiterimaRmaAttribute()
+    {
+        $received = $this->shipments()
+            ->where('shipment_type', ShipmentTypeEnum::ToRMA)
+            ->where('status', ShipmentStatusEnum::Diterima)
+            ->first();
+
+        return $received ? Carbon::parse($received->updated_at) : null;
+    }
+
+    // Barang service mulai dikerjakan RMA
+    public function getMulaiDikerjakanAttribute()
+    {
+        $start = $this->serviceProcesses()->first();
+        return $start ? Carbon::parse($start->created_at) : null;
+    }
+
+    // Barang service selesai
+    public function getSelesaiDikerjakanAttribute()
+    {
+        $finish = $this->serviceProcesses()
+            ->where('process_status', 'Selesai')
+            ->first();
+
+        return $finish ? Carbon::parse($finish->updated_at) : null;
+    }
+
+    // Barang service dikirim kembali dari RMA ke Admin cabang
+    public function getDikirimKembaliAttribute()
+    {
+        $fromRma = $this->shipments()
+            ->where('shipment_type', ShipmentTypeEnum::FromRMA)
+            ->first();
+
+        return $fromRma ? Carbon::parse($fromRma->created_at) : null;
+    }
+
+    // Barang service diterima kembali Admin cabang
+    public function getDiterimaCabangAttribute()
+    {
+        $received = $this->shipments()
+            ->where('shipment_type', ShipmentTypeEnum::FromRMA)
+            ->where('status', ShipmentStatusEnum::DiterimaCabang)
+            ->first();
+
+        return $received ? Carbon::parse($received->updated_at) : null;
     }
 }
