@@ -135,9 +135,16 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="type">Tipe Barang:</label>
-                    <input type="text" name="type" id="type" value="{{ old('type', $serviceItem->type) }}">
-                    @error('type')
+                    <label for="item_type">Tipe Barang:</label>
+                    <select name="item_type_id" id="item_type_id" required>
+                        <option value="">-- Tipe Barang --</option>
+                        @foreach ($itemTypes as $itemType)
+                            <option value="{{ $itemType->id }}" {{ old('item_type_id', $serviceItem->item_type_id) == $itemType->id ? 'selected' : '' }}>
+                                {{ $itemType->type_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('item_type_id')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
@@ -156,18 +163,6 @@
                     <label for="analisa_kerusakan">Analisa Kerusakan:</label>
                     <textarea name="analisa_kerusakan" id="damage_analysis">{{ old('damage_analysis', $serviceItem->analisa_kerusakan) }}</textarea>
                     @error('analisa_kerusakan')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group">
-                    <label for="merk">Merk:</label>
-                    <select name="merk" id="merk">
-                        <option value="">-- Pilih Merk --</option>
-                        @foreach ($merks as $merk)
-                            <option value="{{ $merk }}" {{ old('merk', $serviceItem->merk) == $merk ? 'selected' : '' }}>{{ $merk }}</option>
-                        @endforeach
-                    </select>
-                    @error('merk')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>

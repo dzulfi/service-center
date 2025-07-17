@@ -20,11 +20,13 @@ class InitialUserAndBranchSeeder extends Seeder
         $superadminRole = Role::where('name', 'superadmin')->first();
         $adminRole = Role::where('name', 'admin')->first();
         $rmaRole = Role::where('name', 'rma')->first();
+        $rmaAdminRole = Role::where('name', 'rma_admin')->first();
 
         // buat kantor cabang default jika belum ada 
         $mainBranchOffice = BranchOffice::firstOrCreate(
             ['name' => 'Kantor Pusat'],
             [
+                'code' => 'PST',
                 'address' => 'Jl. Merdeka No. 1',
                 'sub_district' => 'Menteng',
                 'district' => 'Menteng',
@@ -76,6 +78,17 @@ class InitialUserAndBranchSeeder extends Seeder
                 'role_id' => $rmaRole->id ?? null,
                 'branch_office_id' => $mainBranchOffice->id,
                 'phone_number' => '081234567895'
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'rmaadmin@techma.id'],
+            [
+                'name' => 'Admin RMA',
+                'password' => Hash::make('password'),
+                'role_id' => $rmaAdminRole->id ?? null,
+                'branch_office_id' => $mainBranchOffice->id,
+                'phone_number' => '081234567896'
             ]
         );
     }

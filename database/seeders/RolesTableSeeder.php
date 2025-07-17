@@ -17,5 +17,6 @@ class RolesTableSeeder extends Seeder
         Role::create(['name' => 'superadmin', 'description' => 'Melihat semua aktivitas, mengelola kantor cabang, melihat aktivitas user.']);
         Role::create(['name' => 'admin', 'description' => 'Mengelola pelanggan dan daftar barang servis.']);
         Role::create(['name' => 'rma', 'description' => 'Mengelola dan mengerjakan proses servis.']);
+        Role::create(['name'=> 'rma_admin', 'description'=> 'Membantu RMA dalam administari, menerima service masuk dan kirim balik.']);
     }
 }

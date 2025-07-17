@@ -296,6 +296,6 @@ class ShipmentController extends Controller
     public function show(Shipment $shipment)
     {
         $shipment->load(['serviceItem.customer', 'responsibleUser']);
-        return view('shipments.show', compact('shipments'));
+        return view('shipments.show', compact('shipment'));
     }
 }

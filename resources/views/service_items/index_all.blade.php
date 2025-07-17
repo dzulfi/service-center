@@ -230,11 +230,10 @@
                                         @endif
                                     </td>
                                     <td>{{ $item->creator->name ?? 'N/A' }}</td>
-                                    <td>{{ $item->type ?? '-' }}</td>
+                                    <td>{{ $item->itemType->type_name ?? '-' }}</td>
                                     <td>{{ $item->serial_number ?? '-' }}</td>
                                     <td>{{ $item->code ?? '-' }}</td>
-                                    <td>{{ $item->merk ?? '-' }}</td>
-                                    
+                                    <td>{{ $item->itemType->merk->merk_name }}</td>
                                     @if ($item->serviceProcesses->isEmpty())
                                         <td style="color: red;">Belum ada</td>
                                     @else

@@ -238,9 +238,9 @@
                                     @endif
                                 </td>
                                 <td>{{ $item->name }}</td>
-                                <td>{{ $item->type ?? '-' }}</td>
+                                <td>{{ $item->itemType->type_name ?? '-' }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->merk ?? '-' }}</td>
+                                <td>{{ $item->itemType->merk->merk_name }}</td>
 
                                 {{-- author yang membuat barang service oleh user siapa --}}
                                 <td>{{ $item->creator->name ?? 'N/A' }}</td> 

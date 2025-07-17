@@ -196,8 +196,8 @@
                                 <th>Barang Servis</th>
                                 <th>Nomor Resi</th>
                                 <th>Dikirim Oleh RMA</th>
-                                <th>Tanggal Kirim Balik</th>
-                                <th>Status</th>
+                                <th>Tanggal Barang Masuk</th>
+                                {{-- <th>Status</th> --}}
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -211,11 +211,11 @@
                                     <td>{{ $shipment->resi_number ?? '-' }}</td>
                                     <td>{{ $shipment->responsibleUser->name ?? 'N/A' }}</td>
                                     <td>{{ $shipment->created_at->format('d M Y H:i') }}</td>
-                                    <td>
+                                    {{-- <td>
                                         <span class="status-badge status-{{ Str::slug($shipment->status->value ?? '') }}">
                                             {{ $shipment->status->value ?? '-' }}
                                         </span>
-                                    </td>
+                                    </td> --}}
                                     <td class="actions">
                                         <a href="{{ route('shipments.show', $shipment->id) }}" class="view-button">Lihat Detail</a>
                                         <form action="{{ route('shipments.rma.inbound_from_admin.receive', $shipment->id) }}" method="POST" style="display:inline;">

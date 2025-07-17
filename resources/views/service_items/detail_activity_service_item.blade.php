@@ -156,29 +156,37 @@
                 </span>
             </div>
             <div class="detail-group">
-                <strong>Nama Barang:</strong> <span>{{ $serviceItem->name }}</span>
+                <strong>Nama Barang:</strong> 
+                <span>{{ $serviceItem->name }}</span>
             </div>
             <div class="detail-group">
-                <strong>Tipe Barang:</strong> <span>{{ $serviceItem->type ?? '-' }}</span>
+                <strong>Tipe Barang:</strong> 
+                <span>{{ $serviceItem->type ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Serial Number:</strong> <span>{{ $serviceItem->serial_number ?? '-' }}</span>
+                <strong>Serial Number:</strong> 
+                <span>{{ $serviceItem->serial_number ?? '-' }}</span>
             </div>
             <div class="detail-group">
                 <strong>Kode Service</strong>
                 <span>{{ $serviceItem->code }}</span>
             </div>
             <div class="detail-group">
-                <strong>Analisa Kerusakan:</strong> <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
+                <strong>Analisa Kerusakan:</strong> 
+                <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Merk:</strong> <span>{{ $serviceItem->merk ?? '-' }}</span>
+                <strong>Merk:</strong> 
+                {{-- <span>{{ $serviceItem->merk ?? '-' }}</span> --}}
+                <span>{{ $serviceItem->itemType->merk->merk_name }}</span>
             </div>
             <div class="detail-group">
-                <strong>Dibuat Pada:</strong> <span>{{ $serviceItem->created_at->format('d M Y H:i') }}</span>
+                <strong>Dibuat Pada:</strong> 
+                <span>{{ $serviceItem->created_at->format('d M Y H:i') }}</span>
             </div>
             <div class="detail-group">
-                <strong>Diperbarui Pada:</strong> <span>{{ $serviceItem->updated_at->format('d M Y H:i') }}</span>
+                <strong>Diperbarui Pada:</strong> 
+                <span>{{ $serviceItem->updated_at->format('d M Y H:i') }}</span>
             </div>
 
             <h2>Tahap Proses Pengerjaan Service Oleh Tim RMA</h2>

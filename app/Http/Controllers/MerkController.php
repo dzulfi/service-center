@@ -33,6 +33,11 @@ class MerkController extends Controller
         return redirect()->route('merks.index')->with('success','Merk berhasil ditambahkan');
     }
 
+    public function show(Merk $merk)
+    {
+        return view('merks.show', compact('merk'));
+    }
+
     public function edit(Merk $merk)
     {
         return view('merks.edit', compact('merk'));

@@ -7,6 +7,7 @@ use App\Enums\ShipmentStatusEnum;
 use App\Enums\ShipmentTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\ItemType;
 use App\Models\ServiceItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -50,8 +51,8 @@ class ServiceItemController extends Controller
         }
 
         $customers = Customer::all(); // mengambil semua pelanggan untuk di dropdown
-        $merks = ['Techma', 'Hilook', 'Hikvision', 'Dahua', 'Lainnya']; // dropdown pemilihan merk lain
-        return view('service_items.create', compact('customers', 'merks'));
+        $itemTypes = ItemType::all();
+        return view('service_items.create', compact('customers', 'itemTypes'));
     }
 
     /**
@@ -67,11 +68,12 @@ class ServiceItemController extends Controller
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'name' => 'required|string|max:255',
-            'type' => 'nullable|string|max:255',
+            // 'type' => 'nullable|string|max:255',
             'serial_number' => 'nullable|string|max:255',
-            'merk' => 'nullable|string|max:255',
+            // 'merk' => 'nullable|string|max:255',
             'analisa_kerusakan' => 'nullable|string',
             'jumlah_item' => 'nullable|string',
+            'item_type_id' => 'nullable|exists:item_types,id',
         ]);
 
         // Logika pembuatan generate kode service
@@ -110,14 +112,15 @@ class ServiceItemController extends Controller
         $serviceItem = ServiceItem::create([
             'customer_id' => $request->customer_id,
             'name' => $request->name,
-            'type' => $request->type,
+            // 'type' => $request->type,
             'serial_number' => $request->serial_number,
             'code' => $generatedCode, // Hasil penggabungan kode.
-            'merk' => $request->merk,
+            // 'merk' => $request->merk,
             'analisa_kerusakan' => $request->analisa_kerusakan,
             'jumlah_item' => $request->jumlah_item,
             'created_by_user_id' => Auth::id(), // Simpan ID user yang sedang login
             'location_status' => LocationStatusEnum::AtBranch,
+            'item_type_id' => $request->item_type_id,
         ]);
 
         return redirect()->route('service_items.index')->with('success', 'Barang servis berhasil ditambahkan!');
@@ -145,8 +148,8 @@ class ServiceItemController extends Controller
     public function edit(ServiceItem $serviceItem)
     {
         $customers = Customer::all();
-        $merks = ['Techma', 'Hilook', 'Hikvision', 'Dahua', 'Lainnya'];
-        return view('service_items.edit', compact('serviceItem', 'customers', 'merks'));
+        $itemTypes = ItemType::all();
+        return view('service_items.edit', compact('serviceItem', 'customers', 'itemTypes'));
     }
 
     /**
@@ -157,11 +160,12 @@ class ServiceItemController extends Controller
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'name' => 'required|string|max:255',
-            'type' => 'required|string|max:255',
+            // 'type' => 'required|string|max:255',
             'serial_number' => 'required|string|max:255',
             'analisa_kerusakan' => 'nullable|string',
-            'merk' => 'required|string|',
+            // 'merk' => 'required|string|',
             'jumlah_item' => 'required|integer',
+            'item_type_id' => 'nullable|exists:item_types,id',
         ]);
 
         $serviceItem->update($request->all());

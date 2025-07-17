@@ -15,14 +15,15 @@ class ServiceItem extends Model
     protected $fillable = [
         'customer_id',
         'name',
-        'type',
+        // 'type',
         'serial_number',
         'code',
-        'merk',
+        // 'merk',
         'analisa_kerusakan',
         'jumlah_item',
         'created_by_user_id',
-        'location_status' // untuk deteksi barang saat ini berada dimana
+        'location_status', // untuk deteksi barang saat ini berada dimana
+        'item_type_id'
     ];
 
     protected $casts = [
@@ -67,6 +68,11 @@ class ServiceItem extends Model
     public function stockSpareparts()
     {
         return $this->hasMany(StockSparepart::class, 'service_item_id');
+    }
+
+    public function itemType()
+    {
+        return $this->belongsTo(ItemType::class, 'item_type_id');
     }
 
     // barang dikirim dari Admin cabang ke RMA
