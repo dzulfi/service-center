@@ -11,7 +11,7 @@
 - composer update
 - php artisan migrate
 
-add field code on table service_items and branch_offices
+add field code on table service_items and table branch_offices
 
 ## About Laravel
 
