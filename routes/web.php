@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // halaman detail pelanggan, semua role dapat melihat halaman ini
-    Route::middleware(['role:developer,superadmin,admin,rma'])->group(function () {
+    Route::middleware(['role:developer,superadmin,admin,rma,rma_admin'])->group(function () {
         // aksese detail customer (show)
         Route::get('customers/{customers}', [CustomerController::class, 'show'])->name('customers.show');
         Route::get('customers/{customer}/on-process-service', [CustomerController::class, 'showServiceOnProcess'])->name('customers.on_process_services');
@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // RMA Side (Menerima Barang dari Admin & Mengirim Kembali ke Admin)
-    Route::middleware(['role:rma'])->prefix('shipments/rma')->name('shipments.rma.')->group(function () {
+    Route::middleware(['role:rma,rma_admin'])->prefix('shipments/rma')->name('shipments.rma.')->group(function () {
         Route::get('inbound-from-admin', [ShipmentController::class, 'indexInboundFromAdmin'])->name('inbound_from_admin.index'); // Daftar barang masuk dari admin
         Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); // Aksi terima
 

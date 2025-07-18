@@ -96,6 +96,11 @@ class User extends Authenticatable
         return $this->hasRole('rma');
     }
 
+    public function isRmaAdmin()
+    {
+        return $this->hasRole('rma_admin');
+    }
+
     public function initiatedShipments()
     {
         return $this->hasMany(Shipment::class, 'responsible_user_id');

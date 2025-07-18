@@ -98,14 +98,14 @@ class ShipmentController extends Controller
         return redirect()->route('shipments.admin.outbound_to_rma.index')->with('success', 'Barang berhasil dikirim ke RMA dengan resi: ' .$request->resi_number);
     }
 
-    // RMA side: menerima Barang dari admin
+    // RMA Admin side: menerima Barang dari admin
     /**
-     * Menampilkan daftar pengiriman yang sedang menuju RMA ('status: kirim')
+     * Menampilkan daftar pengiriman yang sedang menuju RMA Admin ('status: kirim')
      */
     public function indexInboundFromAdmin()
     {
-        // Hanya RMA yang bisa melihat ini
-        if (!Auth::user()->isRma()) {
+        // Hanya RMA Admin yang bisa melihat ini
+        if (!Auth::user()->isRmaAdmin()) {
             abort(403, 'Akses Ditolak');
         }
 
@@ -119,14 +119,14 @@ class ShipmentController extends Controller
     }
 
     /**
-     * mengubah status pengiriman menjadi 'Diterima' oleh RMA
+     * mengubah status pengiriman menjadi 'Diterima' oleh RMA Admin
      * @param \App\Models\Shipment $shipment
      * @return \Illuminate\Http\RedirectResponse
      */
     public function receiveInboundFromAdmin(Shipment $shipment) 
     {
-        // Hanya RMA yang bisa melakukan ini
-        if (!Auth::user()->isRma()) {
+        // Hanya RMA Admin yang bisa melakukan ini
+        if (!Auth::user()->isRmaAdmin()) {
             abort(403, 'Akses Ditolak');
         }
 
@@ -147,15 +147,14 @@ class ShipmentController extends Controller
         return redirect()->route('shipments.rma.inbound_from_admin.index')->with('success', 'Barang "' . $shipment->serviceItem->name . '" berhasil diterima.');
     }
 
-    // RMA side: Mengirim barang kembali ke admin
-
+    // RMA Admin side: Mengirim barang kembali ke admin
     /**
      * Menampilkan daftar barang service di RMA yang sudah selesai dan siap dikirim
      */
     public function indexOutboundFromRma()
     {
-        // hanya RMA yang bisa melihat ini
-        if (!Auth::user()->isRma()) {
+        // hanya RMA Admin yang bisa melihat ini
+        if (!Auth::user()->isRmaAdmin()) {
             abort(403, 'Akses Ditolak');
         }
 
@@ -171,12 +170,12 @@ class ShipmentController extends Controller
     }
 
     /**
-     * Menampilkan form untuk membuat (resi) dari RMA ke Admin
+     * Menampilkan form untuk membuat (resi) dari RMA Admin ke Admin
      */
     public function createOutboundFromRma(ServiceItem $serviceItem)
     {
         // Hanya RMA yang bisa melihat ini
-        if (!Auth::user()->isRma()) {
+        if (!Auth::user()->isRmaAdmin()) {
             abort(403, 'Akses Ditolak');
         }
 
@@ -195,7 +194,7 @@ class ShipmentController extends Controller
     public function storeOutboundFromRma(Request $request, ServiceItem $serviceItem)
     {
         // Hanya RMA yang bisa melakukan ini
-        if (!Auth::user()->isRma() && !Auth::user()->isDeveloper()) {
+        if (!Auth::user()->isRmaAdmin()) {
             abort(403, 'Akses Ditolak.');
         }
 

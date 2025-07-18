@@ -192,24 +192,38 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>ID Pengiriman</th>
+                                <th>No</th>
                                 <th>Barang Servis</th>
                                 <th>Nomor Resi</th>
-                                <th>Dikirim Oleh RMA</th>
-                                <th>Tanggal Barang Masuk</th>
+                                <th>Pengirim</th>
+                                <th>Gambar</th>
+                                <th>Tanggal Barang Kirim</th>
                                 {{-- <th>Status</th> --}}
                                 <th>Aksi</th>
                             </tr>
                         </thead>
+                        @php
+                            $no =1;
+                        @endphp
                         <tbody>
                             @foreach ($shipments as $shipment)
                                 <tr>
-                                    <td>{{ $shipment->id }}</td>
+                                    <td>{{ $no++ }}</td>
                                     <td>
                                         {{ $shipment->serviceItem->name ?? '-' }} (SN: {{ $shipment->serviceItem->serial_number ?? '-' }})
                                     </td>
                                     <td>{{ $shipment->resi_number ?? '-' }}</td>
-                                    <td>{{ $shipment->responsibleUser->name ?? 'N/A' }}</td>
+                                    <td>
+                                        {{ $shipment->responsibleUser->name ?? 'N/A' }}
+                                        ({{ $shipment->responsibleUser->branchOffice->name }})
+                                    </td>
+                                    <td>
+                                        @if ($shipment->resi_image_path)
+                                            <img src="{{ Storage::ulr($shipment->resi_image_path) }}" alt="" style="width: 50px; height: 50px; object-fit: cover;">
+                                        @else
+                                            Tidak ada gambar
+                                        @endif
+                                    </td>
                                     <td>{{ $shipment->created_at->format('d M Y H:i') }}</td>
                                     {{-- <td>
                                         <span class="status-badge status-{{ Str::slug($shipment->status->value ?? '') }}">

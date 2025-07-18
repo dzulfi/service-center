@@ -2,14 +2,17 @@
     <div class="container">
         <h1>Detail Pengiriman</h1>
 
+        {{-- <div class="detail-group">
+            <strong>ID Pengiriman:</strong> 
+            <span>{{ $shipment->id }}</span>
+        </div> --}}
         <div class="detail-group">
-            <strong>ID Pengiriman:</strong> <span>{{ $shipment->id }}</span>
+            <strong>Tipe Pengiriman:</strong> 
+            <span>{{ $shipment->shipment_type->value ?? '-' }}</span>
         </div>
         <div class="detail-group">
-            <strong>Tipe Pengiriman:</strong> <span>{{ $shipment->shipment_type->value ?? '-' }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Nomor Resi:</strong> <span>{{ $shipment->resi_number ?? '-' }}</span>
+            <strong>Nomor Resi:</strong> 
+            <span>{{ $shipment->resi_number ?? '-' }}</span>
         </div>
         <div class="detail-group">
             <strong>Barang Servis:</strong>
@@ -24,19 +27,21 @@
             </span>
         </div>
         <div class="detail-group">
-            <strong>Pelanggan:</strong>
+            <strong>Customer:</strong>
             <span>
                 @if ($shipment->serviceItem && $shipment->serviceItem->customer)
-                    <a href="{{ route('customers.show', $shipment->serviceItem->customer->id) }}">
-                        {{ $shipment->serviceItem->customer->name }}
-                    </a>
+                    <span>{{ $shipment->serviceItem->customer->name }}</span>
                 @else
                     <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
                 @endif
             </span>
         </div>
         <div class="detail-group">
-            <strong>Ditangani Oleh:</strong> <span>{{ $shipment->responsibleUser->name ?? 'N/A' }}</span>
+            <strong>Pengirim:</strong> 
+            <span>
+                {{ $shipment->responsibleUser->name ?? 'N/A' }} 
+                ({{ $shipment->responsibleUser->branchOffice->name }})
+            </span>
         </div>
         <div class="detail-group">
             <strong>Gambar Resi:</strong>
@@ -60,13 +65,16 @@
             </span>
         </div>
         <div class="detail-group">
-            <strong>Catatan:</strong> <span>{{ $shipment->notes ?? '-' }}</span>
+            <strong>Catatan:</strong> 
+            <span>{{ $shipment->notes ?? '-' }}</span>
         </div>
         <div class="detail-group">
-            <strong>Dibuat Pada:</strong> <span>{{ $shipment->created_at->format('d M Y H:i') }}</span>
+            <strong>Service Masuk:</strong> 
+            <span>{{ $shipment->created_at->format('d M Y H:i') }}</span>
         </div>
         <div class="detail-group">
-            <strong>Diperbarui Pada:</strong> <span>{{ $shipment->updated_at->format('d M Y H:i') }}</span>
+            <strong>Dikirim Pada:</strong> 
+            <span>{{ $shipment->updated_at->format('d M Y H:i') }}</span>
         </div>
 
         <a href="{{ url()->previous() }}" class="back-link">Kembali</a>

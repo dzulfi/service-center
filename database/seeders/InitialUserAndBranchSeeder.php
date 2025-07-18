@@ -84,7 +84,7 @@ class InitialUserAndBranchSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'rmaadmin@techma.id'],
             [
-                'name' => 'Admin RMA',
+                'name' => 'RMA Admin',
                 'password' => Hash::make('password'),
                 'role_id' => $rmaAdminRole->id ?? null,
                 'branch_office_id' => $mainBranchOffice->id,

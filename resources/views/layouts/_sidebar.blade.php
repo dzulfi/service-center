@@ -86,7 +86,7 @@
 
             {{-- CRUD Daftar Barang yang diservice (admin only) --}}
             @auth
-                @if (auth()->user()->isAdmin())
+                @if (auth()->user()->isAdmin() || auth()->user())
                     <li>
                         <a href="{{ route('service_items.index') }}" class="{{ request()->routeIs('service_items.*') ? 'active' : '' }}">
                             Daftar Barang Service
@@ -114,7 +114,21 @@
                 @endif
             @endauth
 
-            {{-- RMA: Fitur Pengiriman Barang (RMA) & Proses Service --}}
+            {{-- RMA: Fitur Pengiriman Barang (RMA) --}}
+            @auth
+                @if (auth()->user()->isRmaAdmin())
+                    <li>
+                        <a href="{{ route('shipments.rma.inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.inbound_from_admin.*') ? 'active' : '' }}">
+                            Barang Masuk Dari Admin
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.outbound_from_rma.*') ? 'active' : '' }}">
+                            Siap Kirim Balik Ke Admin
+                        </a>
+                    </li>
+                @endif
+            @endauth
             {{-- mengerjakan daftar proses service (RMA only) --}}
             @auth
                 @if (auth()->user()->isRma())
@@ -124,18 +138,8 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('shipments.rma.inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.inbound_from_admin.*') ? 'active' : '' }}">
-                            Barang Masuk Dari Admin
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ route('service_processes.index') }}" class="{{ request()->routeIs('service_processes.*') ? 'active' : '' }}">
                             Antrian Service
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('shipments.rma.outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.outbound_from_rma.*') ? 'active' : '' }}">
-                            Siap Kirim Balik Ke Admin
                         </a>
                     </li>
                 @endif
