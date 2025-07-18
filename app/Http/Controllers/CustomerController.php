@@ -15,7 +15,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::all();
+        $customers = Customer::paginate(10);
         return view('customers.index', compact('customers'));
     }
 
@@ -24,7 +24,7 @@ class CustomerController extends Controller
      */
     public function indexAll()
     {
-        $customers = Customer::all();
+        $customers = Customer::paginate(10);
         return view('customers.index_all', compact('customers'));
     }
 
@@ -63,18 +63,29 @@ class CustomerController extends Controller
     {
         $user = Auth::user(); // dapatkan user yang sedang login
 
-        $customer->load([
-            'serviceItems' => function ($query) use ($user) {
-                // jika user adalah admin, maka tampilkan service item yang dibuat oleh user tersebut 
-                if ($user->isAdmin()) {
-                    $query->where('created_by_user_id', $user->id);
-                }
-                // eager load relasi-relasi yang dibutuhkan di blade untuk serviceItem
-                $query->with(['serviceProcesses', 'creator']);
-            }
-        ]);
+        // $customer->load([
+        //     'serviceItems' => function ($query) use ($user) {
+        //         // jika user adalah admin, maka tampilkan service item yang dibuat oleh user tersebut 
+        //         if ($user->isAdmin()) {
+        //             $query->where('created_by_user_id', $user->id);
+        //         }
+        //         // eager load relasi-relasi yang dibutuhkan di blade untuk serviceItem
+        //         $query->with(['serviceProcesses', 'creator']);
+        //     }
+        // ]);
 
-        return view('customers.show', compact('customer'));
+        // Ambil serviceItems via query (bukan eiger load)
+        $serviceItemsQuery = $customer->serviceItems()->with(['serviceProcesses', 'creator']);
+
+        // Jika admin, filter berdasarkan user
+        if ($user->isAdmin()) {
+            $serviceItemsQuery->where('created_by_user_id', $user->id);
+        }
+
+        $perPage = 10;
+        $serviceItems = $serviceItemsQuery->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        
+        return view('customers.show', compact('customer', 'serviceItems'));
     }
 
     /**
@@ -82,7 +93,8 @@ class CustomerController extends Controller
      */
     public function showDetailAktivityCustomer(Customer $customer)
     {
-        return view('customers.detail_activity_customer', compact('customer'));
+        $serviceItems = $customer->serviceItems()->paginate(10);
+        return view('customers.detail_activity_customer', compact('customer', 'serviceItems'));
     }
 
     /**

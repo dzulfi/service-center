@@ -53,17 +53,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $no = 1;
-                    @endphp
-                    @foreach ($customer->serviceItems as $item)
+                    @foreach ($serviceItems as $item)
                         @php
                             $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
                             $status = $latestProcess ? $latestProcess->process_status : 'Pending';
                             $statusSlug = Str::slug($status); // Gunakan Str::slug untuk kelas CSS
                             $filterGroup = '';
-
-                            // $no = 1;
 
                             if ($status === 'Selesai') {
                                 $filterGroup = 'selesai';
@@ -76,7 +71,7 @@
                             }
                         @endphp
                         <tr data-filter-group="{{ $filterGroup }}">
-                            <td>{{ $no++ }}</td>
+                            <td>{{ ($serviceItems->currentPage() - 1) * $serviceItems->perPage() + $loop->iteration }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->type ?? '-' }}</td>
                             <td>{{ $item->serial_number ?? '-' }}</td>
@@ -94,6 +89,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="pagination-wrapper">
+                {{ $serviceItems->links() }}
+            </div>
         @endif
         <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a>
     </div>

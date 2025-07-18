@@ -23,13 +23,10 @@
                         </tr>
                     </thead>
 
-                    @php
-                        $no = 1;
-                    @endphp
                     <tbody>
                         @foreach ($merks as $merk)
                             <tr>
-                                <td>{{ $no++ }}</td>
+                                <td>{{ ($merks->currentPage() - 1) * $merks->perPage() + $loop->iteration }}</td>
                                 <td>{{ $merk->merk_name }}</td>
                                 <td class="actions">
                                     <a href="{{ route('merks.show', $merk->id) }}" class="view-button">Lihat</a>
@@ -44,6 +41,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="pagination-wrapper">
+                    {{ $merks->links() }}
+                </div>
             </table>
         @endif
 

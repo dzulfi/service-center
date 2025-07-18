@@ -6,7 +6,7 @@
             <span>{{ $merk->merk_name }}</span>
         </div>
 
-        @if ($merk->itemTypes->isEmpty())
+        @if ($itemTypes->isEmpty())
             <p class="no-data">Belum ada Tipe Barang untuk merk ini.</p>
         @else
             <table>
@@ -20,14 +20,17 @@
                     @php
                         $no = 1;
                     @endphp
-                    @foreach ($merk->itemTypes as $itemType)
+                    @foreach ($itemTypes as $itemType)
                     <tr>
-                        <td>{{ $no++ }}</td>
+                        <td>{{ ($itemTypes->currentPage() - 1) * $itemTypes->perPage() + $loop->iteration }}</td>
                         <td>{{ $itemType->type_name }}</td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
+            <div class="pagination-wrapper">
+                {{ $itemTypes->links() }}
+            </div>
         @endif
     </div>
 @endsection

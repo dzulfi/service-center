@@ -10,7 +10,7 @@ class MerkController extends Controller
 {
     public function index()
     {
-        $merks = Merk::all();
+        $merks = Merk::paginate(10);
 
         return view("merks.index", compact("merks"));
     }
@@ -35,7 +35,8 @@ class MerkController extends Controller
 
     public function show(Merk $merk)
     {
-        return view('merks.show', compact('merk'));
+        $itemTypes = $merk->itemTypes()->paginate(10);
+        return view('merks.show', compact('merk', 'itemTypes'));
     }
 
     public function edit(Merk $merk)

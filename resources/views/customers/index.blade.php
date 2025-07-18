@@ -153,12 +153,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
                         @foreach ($customers as $customer)
                             <tr>
-                                <td>{{ $no++ }}</td>
+                                <td>{{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}</td>
                                 <td>{{ $customer->name }}</td>
                                 <td>{{ $customer->phone_number ?? '-' }}</td>
                                 <td>{{ $customer->company ?? '-' }}</td>
@@ -176,6 +173,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="pagination-wrapper">
+                    {{ $customers->links() }}
+                </div>
             @endif
         </div>
     @endsection

@@ -12,7 +12,8 @@ class SparepartController extends Controller
 {
     public function index()
     {
-        $spareparts = Sparepart::all();
+        // $spareparts = Sparepart::all();
+        $spareparts = Sparepart::paginate(10);
 
         return view('spareparts.index', compact('spareparts'));
     }

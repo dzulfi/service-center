@@ -11,10 +11,9 @@ class ItemTypeController extends Controller
 {
     public function index()
     {
-        $itemTypes = ItemType::all();
-        $no = 1;
+        $itemTypes = ItemType::paginate(10);
 
-        return view('item_types.index', compact('itemTypes', 'no'));
+        return view('item_types.index', compact('itemTypes'));
     }
 
     public function create()

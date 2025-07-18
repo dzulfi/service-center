@@ -86,7 +86,7 @@
 
             {{-- CRUD Daftar Barang yang diservice (admin only) --}}
             @auth
-                @if (auth()->user()->isAdmin() || auth()->user())
+                @if (auth()->user()->isAdmin())
                     <li>
                         <a href="{{ route('service_items.index') }}" class="{{ request()->routeIs('service_items.*') ? 'active' : '' }}">
                             Daftar Barang Service

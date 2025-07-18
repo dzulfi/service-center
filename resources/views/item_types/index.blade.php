@@ -26,7 +26,7 @@
                     <tbody>
                         @foreach ($itemTypes as $itemType)
                             <tr>
-                                <td>{{ $no++ }}</td>
+                                <td>{{ ($itemTypes->currentPage() - 1) * $itemTypes->perPage() + $loop->iteration }}</td>
                                 <td>{{ $itemType->merk->merk_name }}</td>
                                 <td>{{ $itemType->type_name }}</td>
                                 <td class="actions">
@@ -42,6 +42,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="pagination-wrapper">
+                    {{ $itemTypes->links() }}
+                </div>
             </table>
         @endif
     </div>

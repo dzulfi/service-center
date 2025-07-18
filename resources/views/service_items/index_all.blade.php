@@ -209,8 +209,6 @@
                                     $statusSlug = Str::slug($status);
                                     $filterGroup = '';
 
-                                    $no = 1;
-
                                     if ($status === 'Selesai') {
                                         $filterGroup = 'selesai';
                                     } elseif ($status === 'Batal' || $status === 'Tidak Bisa Diperbaiki') {
@@ -220,7 +218,7 @@
                                     }
                                 @endphp
                                 <tr data-filter-group="{{ $filterGroup }}">
-                                    <td>{{ $no++ }}</td>
+                                    <td>{{ ($serviceItems->currentPage() - 1) * $serviceItems->perPage() + $loop->iteration }}</td>
                                     <td>{{ $item->code ?? '-' }}</td>
                                     <td>
                                         @if ($item->customer)
@@ -259,6 +257,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="pagination-wrapper">
+                        {{ $serviceItems->links() }}
+                    </div>
                 </div>
             @endif
         </div>

@@ -26,7 +26,7 @@ class ServiceItemController extends Controller
         
         $serviceItems = ServiceItem::with('customer', 'creator', 'serviceProcesses') // load relasi yang dibutuhkan untuk tampilan dan status
             ->where('created_by_user_id', $loggedInUserId)
-            ->get(); // Load relasi customer
+            ->paginate(10); // Load relasi customer
             
         return view('service_items.index', compact('serviceItems'));
     }
@@ -36,7 +36,7 @@ class ServiceItemController extends Controller
      */
     public function indexAllServiceItems()
     {
-        $serviceItems = ServiceItem::with(['customer', 'creator'])->get();
+        $serviceItems = ServiceItem::with(['customer', 'creator'])->paginate(10);
         return view('service_items.index_all', compact('serviceItems'));
     }
 

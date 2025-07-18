@@ -209,9 +209,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
                         @foreach ($serviceItems as $item)
                             @php
                                 $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
@@ -228,7 +225,7 @@
                                 }
                             @endphp
                             <tr data-filter-group="{{ $filterGroup }}">
-                                <td>{{ $no++ }}</td>
+                                <td>{{ ($serviceItems->currentPage() - 1) * $serviceItems->perPage() + $loop->iteration }}</td>
                                 <td>{{ $item->code ?? '-' }}</td>
                                 <td>
                                     @if ($item->customer)
@@ -268,6 +265,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="pagination-wrapper">
+                    {{ $serviceItems->links() }}
+                </div>
             @endif
         </div>
     @endsection

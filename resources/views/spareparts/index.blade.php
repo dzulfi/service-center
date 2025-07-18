@@ -32,12 +32,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
                         @foreach ($spareparts as $sparepart)
                             <tr>
-                                <td>{{ $no++ }}</td>
+                                {{-- <td>{{ $no++ }}</td> --}}
+                                <td>{{ ($spareparts->currentPage() - 1) * $spareparts->perPage() + $loop->iteration }}</td>
                                 <td>{{ $sparepart->code }}</td>
                                 <td>{{ $sparepart->name }}</td>
                                 <td>
@@ -65,6 +63,9 @@
                     </tbody>
                 </table>
             </div>
-        @endif
+            <div class="pagination-wrapper">
+                {{ $spareparts->links() }}
+            </div>
+            @endif
     </div>
 @endsection

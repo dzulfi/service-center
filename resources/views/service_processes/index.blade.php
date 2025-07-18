@@ -122,7 +122,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>ID Barang</th>
+                            <th>No</th>
                             <th>Nama Barang</th>
                             <th>Serial Number</th>
                             <th>Pelanggan</th>
@@ -140,7 +140,7 @@
                         
                         @foreach ($serviceItems as $item)
                             <tr>
-                                <td>{{ $item->id }}</td>
+                                <td>{{ ($serviceItems->currentPage() - 1) * $serviceItems->perPage() + $loop->iteration }}</td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
                                 <td>
@@ -196,6 +196,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="pagination-wrapper">
+                    {{ $serviceItems->links() }}
+                </div>
             @endif
         </div>
     @endsection

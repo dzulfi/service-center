@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ServiceItem;
 use App\Models\ServiceProcess;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class ServiceProcessController extends Controller
@@ -29,8 +30,10 @@ class ServiceProcessController extends Controller
                   ->orderByDesc('created_at');
             }])
             ->where('location_status', LocationStatusEnum::AtRMA)
-            ->get()
-            ->filter(function ($item) {
+            ->get();
+
+            // Filter di Collection
+            $filterServiceItem = $serviceItems->filter(function ($item) {
                 // filter yang belum selesai atau batal secara proses
                 $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
                 $finalProcessStatuses = ['Selesai', 'Tidak bisa diperbaiki'];
@@ -46,8 +49,21 @@ class ServiceProcessController extends Controller
 
                 return $isNotFinished && $isReceivedFromAdmin;
             });
+
+            // Manual Pagination 
+            $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Mengambil nomor halaman saat ini dari query string (contoh: ?page=2). Misal URL: example.com/barang?page=3, maka resolveCurrentPage() akan mengembalikan 3.
+            $perPage = 10; // Jumlah data yang ditampilkan dalam satu page
+            $currentItem = $filterServiceItem->slice(($currentPage - 1) * $perPage, $perPage)->values(); // mengambil jumlah item yang ditampilkan di halaman itu
+            $paginationItems = new LengthAwarePaginator(
+                $currentItem, // item yang ditampilkan di halaman ini
+                $filterServiceItem->count(), // totak seluruh item setelah di filter
+                $perPage, // jumlah item per halaman
+                $currentPage // halaman saat ini
+            );
+
+            $paginationItems->withPath(request()->url()); // agar pagination link tetap benar
         
-        return view('service_processes.index', compact('serviceItems'));
+        return view('service_processes.index', ['serviceItems' => $paginationItems]);
     }
 
     /**
