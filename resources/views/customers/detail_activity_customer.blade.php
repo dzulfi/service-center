@@ -176,31 +176,40 @@
             <h1>Detail Customer</h1>
 
             <div class="detail-group">
-                <strong>Nama Pelanggan:</strong> <span>{{ $customer->name }}</span>
+                <strong>Nama Pelanggan:</strong> 
+                <span>{{ $customer->name }}</span>
             </div>
             <div class="detail-group">
-                <strong>No. Telepon:</strong> <span>{{ $customer->phone_number ?? '-' }}</span>
+                <strong>No. Telepon:</strong> 
+                <span>{{ $customer->phone_number ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Perusahaan:</strong> <span>{{ $customer->company ?? '-' }}</span>
+                <strong>Perusahaan:</strong> 
+                <span>{{ $customer->company ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Alamat:</strong> <span>{{ $customer->address ?? '-' }}</span>
+                <strong>Alamat:</strong> 
+                <span>{{ $customer->address ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Kelurahan:</strong> <span>{{ $customer->kelurahan ?? '-' }}</span>
+                <strong>Kelurahan:</strong> 
+                <span>{{ $customer->kelurahan ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Kecamatan:</strong> <span>{{ $customer->kecamatan ?? '-' }}</span>
+                <strong>Kecamatan:</strong> 
+                <span>{{ $customer->kecamatan ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Kota:</strong> <span>{{ $customer->kota ?? '-' }}</span>
+                <strong>Kota:</strong> 
+                <span>{{ $customer->kota ?? '-' }}</span>
             </div>
             <div class="detail-group">
-                <strong>Dibuat Pada:</strong> <span>{{ $customer->created_at->format('d M Y H:i') }}</span>
+                <strong>Dibuat Pada:</strong> 
+                <span>{{ $customer->created_at->format('d M Y H:i') }}</span>
             </div>
             <div class="detail-group">
-                <strong>Diperbarui Pada:</strong> <span>{{ $customer->updated_at->format('d M Y H:i') }}</span>
+                <strong>Diperbarui Pada:</strong> 
+                <span>{{ $customer->updated_at->format('d M Y H:i') }}</span>
             </div>
 
             {{-- 
@@ -222,17 +231,21 @@
                 <table id="serviceItemsTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>NO</th>
+                            <th>Code Service</th>
                             <th>Nama Barang</th>
                             <th>Tipe</th>
                             <th>Serial Number</th>
                             <th>Merk</th>
-                            <th>Kantor Cabang Pembuat</th>
+                            <th>Kantor Cabang</th>
                             <th>Ditangani Oleh</th>
                             <th>Status Servis</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $no = 1;
+                        @endphp
                         @foreach ($customer->serviceItems as $item)
                             @php
                                 $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
@@ -251,11 +264,12 @@
                                 }
                             @endphp
                             <tr data-filter-group="{{ $filterGroup }}">
-                                <td>{{ $item->id }}</td>
+                                <td>{{ $no++ }}</td>
+                                <td>{{ $item->code }}</td>
                                 <td>{{ $item->name }}</td>
-                                <td>{{ $item->type ?? '-' }}</td>
+                                <td>{{ $item->itemType->type_name ?? '-' }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->merk ?? '-' }}</td>
+                                <td>{{ $item->itemType->merk->merk_name ?? '-' }}</td>
                                 <td>{{ $item->creator->branchOffice->name }}</td>
                                 
                                 @if ($item->serviceProcesses->isEmpty())

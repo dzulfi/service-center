@@ -181,12 +181,39 @@
                 <span>{{ $serviceItem->itemType->merk->merk_name }}</span>
             </div>
             <div class="detail-group">
-                <strong>Dibuat Pada:</strong> 
+                <strong>Service Masuk:</strong> 
                 <span>{{ $serviceItem->created_at->format('d M Y H:i') }}</span>
             </div>
+
             <div class="detail-group">
-                <strong>Diperbarui Pada:</strong> 
-                <span>{{ $serviceItem->updated_at->format('d M Y H:i') }}</span>
+                <strong>Kirim ke RMA:</strong>
+                {{-- <span>{{ $kirimKeRma ? $kirimKeRma->format('d M Y H:i') : '-' }}</span> --}}
+                <span>{{ $serviceItem->kirim_ke_rma?->format('d M Y H:i') ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Diterima RMA</strong>
+                {{-- <span>{{ $diterimaRma ? $diterimaRma->format('d M Y H:i') : '-' }}</span> --}}
+                <span>{{ $serviceItem->diterima_rma?->format('d M Y H:i') ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <Strong>Mulai Dikerjakan:</Strong>
+                {{-- <span>{{ $mulaiDikerjakan ? $mulaiDikerjakan->format('d M Y H:i') : '-' }}</span> --}}
+                <span>{{ $serviceItem->mulai_dikerjakan?->format('d M Y H:i') ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Selesai Dikerjakan:</strong>
+                {{-- <span>{{ $selesaiDikerjakan ? $selesaiDikerjakan->format('d M Y H:i') : '-' }}</span> --}}
+                <span>{{ $serviceItem->selesai_dikerjakan?->format('d M Y H:i') ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Kirim Ke Admin:</strong>
+                {{-- <span>{{ $dikirimKembali ? $dikirimKembali->format('d M Y H:i') : '-' }}</span> --}}
+                <span>{{ $serviceItem->dikirim_kembali?->format('d M Y H:i') ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Diterima Admin:</strong>
+                {{-- <span>{{ $diterimaCabang ? $diterimaCabang->format('d M Y H:i') : '-' }}</span> --}}
+                <span>{{ $serviceItem->diterima_cabang?->format('d M Y H:i') ?? '-' }}</span>
             </div>
 
             <h2>Tahap Proses Pengerjaan Service Oleh Tim RMA</h2>
