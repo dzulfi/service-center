@@ -44,13 +44,6 @@
                     @endforeach
                 </select>
             </div>
-            {{-- <div class="form-group">
-                <label for="type">Tipe Barang:</label>
-                <input type="text" name="type" id="type" value="{{ old('type') }}">
-                @error('type')
-                    <div class="error">{{ $message }}</div>
-                @enderror
-            </div> --}}
             <div class="form-group">
                 <label for="serial_number">Serial Number:</label>
                 <input type="text" name="serial_number" id="serial_number" value="{{ old('serial_number') }}">
@@ -65,18 +58,6 @@
                     <div class="error">{{ $message }}</div>
                 @enderror
             </div>
-            {{-- <div class="form-group">
-                <label for="brand"></label>
-                <select name="merk" id="merk">
-                    <option value="">-- Pilih Merk --</option>
-                    @foreach ($merks as $merk)
-                        <option value="{{ $merk }}" {{ old('merk') == $merk ? 'selected' : '' }}>{{ $merk }}</option>
-                    @endforeach
-                </select>
-                @error('merk')
-                    <div class="error">{{ $message }}</div>
-                @enderror
-            </div> --}}
             <div class="form-group">
                 <label for="jumlah_item">Jumlah Item:</label>
                 <input type="text" name="jumlah_item" id="jumlah_item" value="{{ old('jumlah_item') }}">

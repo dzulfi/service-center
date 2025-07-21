@@ -144,7 +144,7 @@
                 <div class="form-group">
                     <label for="branch_office_id">Kantor Cabang:</label>
                     <select name="branch_office_id" id="branch_office_id">
-                        <option value="">-- Pilih Cabang (Opsional) --</option>
+                        <option value="">-- Pilih Kantor Cabang --</option>
                         @foreach ($branchOffices as $branchOffice)
                             <option value="{{ $branchOffice->id }}" {{ old('branch_office_id') == $branchOffice->id ? 'selected' : '' }}>
                                 {{ $branchOffice->name }}

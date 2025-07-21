@@ -11,6 +11,9 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
+        {{-- Select2 --}}
+        <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
@@ -104,7 +107,44 @@
             @endif
 
             <main>
-                @yield('content') </main>
+                @yield('content') 
+            </main>
         </div>
+
+        {{-- Select2 --}}
+        <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+        <script src="{{ asset('js/select2.min.js') }}"></script>
+
+        <script>
+           jQuery(document).ready(function($) {
+                // Customer
+                $('#customer_id').select2({
+                    placeholder: "-- Pilih Pelanggan --",
+                    language: "id"
+                });
+
+                // item type
+                $('#item_type_id').select2({
+                    tags: true
+                });
+
+                // sparepart (out RMA)
+                $('#sparepart_id').select2({
+                    placeholder: "-- Pilih Sparepart --",
+                    language: "id"
+                });
+
+                // Role user
+                $('#role_id').select2({
+                    placeholder: "-- Pilih Role --",
+                    language: "id"
+                });
+
+                $('#branch_office_id').select2({
+                    placeholder: "-- Pilih Kantor Cabang --",
+                    language: "id"
+                });
+            })
+        </script>
     </body>
 </html>

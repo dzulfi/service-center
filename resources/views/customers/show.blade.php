@@ -3,16 +3,20 @@
         <h1>Detail Customer</h1>
 
         <div class="detail-group">
-            <strong>Nama Pelanggan:</strong> <span>{{ $customer->name }}</span>
+            <strong>Nama Pelanggan:</strong>
+            <span>{{ $customer->name }}</span>
         </div>
         <div class="detail-group">
-            <strong>No. Telepon:</strong> <span>{{ $customer->phone_number ?? '-' }}</span>
+            <strong>No. Telepon:</strong> 
+            <span>{{ $customer->phone_number ?? '-' }}</span>
         </div>
         <div class="detail-group">
-            <strong>Perusahaan:</strong> <span>{{ $customer->company ?? '-' }}</span>
+            <strong>Perusahaan:</strong> 
+            <span>{{ $customer->company ?? '-' }}</span>
         </div>
         <div class="detail-group">
-            <strong>Alamat:</strong> <span>
+            <strong>Alamat:</strong> 
+            <span>
                 {{ $customer->address ?? '-' }}, {{ $customer->kelurahan ?? '-' }}, {{ $customer->kecamatan ?? '-' }}, {{ $customer->kota ?? '-' }}
             </span>
         </div>
