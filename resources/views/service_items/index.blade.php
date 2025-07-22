@@ -170,7 +170,7 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
         <div class="container">
             <h1>Daftar Barang Servis</h1>
 
@@ -231,7 +231,7 @@
                                     @if ($item->customer)
                                         <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
                                     @else
-                                        <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                                        <span style="color: #999;">(Mitra Bisnis Tidak Ditemukan)</span>
                                     @endif
                                 </td>
                                 <td>{{ $item->name }}</td>

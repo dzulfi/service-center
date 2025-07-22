@@ -190,7 +190,7 @@
                             <tr>
                                 <th>ID Proses</th>
                                 <th>Barang Servis</th>
-                                <th>Pelanggan</th>
+                                <th>Mitra Bisnis</th>
                                 <th>Analisa Kerusakan Detail</th>
                                 <th>Solusi</th>
                                 <th>Status</th>
@@ -228,7 +228,7 @@
                                         @if ($process->serviceItem && $process->serviceItem->customer)
                                             <a href="{{ route('customers.show', $process->serviceItem->customer->id) }}">{{ $process->serviceItem->customer->name }}</a>
                                         @else
-                                            <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                                            <span style="color: #999;">(Mitra Bisnis Tidak Ditemukan)</span>
                                         @endif
                                     </td>
                                     <td>{{ Str::limit($process->damage_analysis_detail ?? '-', 50) }}</td>

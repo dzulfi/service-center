@@ -224,7 +224,7 @@
                                         @if ($item->customer)
                                             <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
                                         @else
-                                            <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                                            <span style="color: #999;">(Mitra Bisnis Tidak Ditemukan)</span>
                                         @endif
                                     </td>
                                     <td>{{ $item->name }}</td>

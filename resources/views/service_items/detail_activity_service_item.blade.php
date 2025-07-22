@@ -141,12 +141,12 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
         <div class="container">
             <h1>Detail Barang Servis</h1>
 
             <div class="detail-group">
-                <strong>Pelanggan:</strong>
+                <strong>Mitra Bisnis:</strong>
                 <span>
                     @if ($serviceItem->customer)
                         <a href="{{ route('activity.customers.detail_activity_customer', $serviceItem->customer->id) }}">{{ $serviceItem->customer->name }}</a>

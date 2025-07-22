@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Pelanggan</title>
+    <title>Daftar Mitra Bisnis</title>
     {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -126,19 +126,20 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Aktivitas: Semua Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Aktivitas: Semua Mitra Bisnis') @section('content')
         <div class="container">
-            <h1>Aktivitas: Daftar Semua Pelanggan</h1>
+            <h1>Aktivitas: Daftar Mitra Bisnis</h1>
 
             @if ($customers->isEmpty())
-                <p class="no-data">Belum ada pelanggan yang terdaftar.</p>
+                <p class="no-data">Belum ada mitra bisnis yang terdaftar.</p>
             @else
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Nama Pelanggan</th>
+                                <th>Nama</th>
+                                <th>Kode</th>
                                 <th>No. Telepon</th>
                                 <th>Perusahaan</th>
                                 <th>Kota</th>
@@ -150,6 +151,7 @@
                                 <tr>
                                     <td>{{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}</td>
                                     <td>{{ $customer->name }}</td>
+                                    <td>{{ $customer->code }}</td>
                                     <td>{{ $customer->phone_number ?? '-' }}</td>
                                     <td>{{ $customer->company ?? '-' }}</td>
                                     <td>{{ $customer->kota ?? '-' }}</td>

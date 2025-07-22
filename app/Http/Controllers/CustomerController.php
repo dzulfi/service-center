@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\Role;
 use App\Models\ServiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +43,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'code' => 'required|string|max:10|unique:customers',
             'name' => 'required|string|max:255',
             'phone_number' => 'required|string',
             'company' => 'nullable|string|max:255',
@@ -53,7 +55,7 @@ class CustomerController extends Controller
 
         Customer::create($request->all());
 
-        return redirect()->route('customers.index')->with('success', 'Pelanggan berhasil ditambah!');
+        return redirect()->route('customers.index')->with('success', 'Mitra Bisnis berhasil ditambah!');
     }
 
     /**
@@ -111,6 +113,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $request->validate([
+            'code' => ['required', 'string', 'max:10', Role::unique('customers')->ignore($customer->id)],
             'name' => 'required|string|max:255',
             'phone_number' => 'required|integer|max:15',
             'company' => 'nullable|string|max:255',
@@ -122,7 +125,7 @@ class CustomerController extends Controller
 
         $customer->update($request->all());
 
-        return redirect()->route('customers.index')->with('success', 'Data pelanggan berhasil diedit');
+        return redirect()->route('customers.index')->with('success', 'Data Mitra Bisnis berhasil diedit');
     }
 
     /**
@@ -131,6 +134,6 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return redirect()->route('customers.index')->with('success', 'Pelanggan berhasil dihapus');
+        return redirect()->route('customers.index')->with('success', 'Mitra Bisnis berhasil dihapus');
     }
 }

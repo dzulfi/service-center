@@ -1,4 +1,4 @@
-@extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+@extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
     <div class="container">
         <h1>Tambah Barang Servis Baru</h1>
 
@@ -13,9 +13,9 @@
         <form action="{{ route('service_items.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="customer_id">Pelanggan:</label>
+                <label for="customer_id">Mitra Bisnis:</label>
                 <select name="customer_id" id="customer_id" required>
-                    <option value="">-- Pilih Pelanggan --</option>
+                    <option value="">-- Pilih Mitra Bisnis --</option>
                     @foreach ($customers as $customer)  
                         <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
                             {{ $customer->name }} ({{ $customer->phone_number ?? 'Individu' }})

@@ -1,10 +1,14 @@
-@extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+@extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
     <div class="container">
         <h1>Detail Customer</h1>
 
         <div class="detail-group">
-            <strong>Nama Pelanggan:</strong>
+            <strong>Nama:</strong>
             <span>{{ $customer->name }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Kode:</strong>
+            <span>{{ $customer->code }}</span>
         </div>
         <div class="detail-group">
             <strong>No. Telepon:</strong> 
@@ -22,16 +26,16 @@
         </div>
 
         <div class="actions">
-            <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit Pelanggan</a>
+            <a href="{{ route('customers.edit', $customer->id) }}" class="edit-button">Edit</a>
             <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus pelanggan ini?')">Hapus Pelanggan</button>
+                <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus mitra bisnis ini?')">Hapus</button>
             </form>
         </div>
 
         {{-- Informasi service milik customer --}}
-        <h2 style="margin-top: 10px;">Barang Servis Milik Customer :</h2>
+        <h2 style="margin-top: 10px;">Barang Servis Milik Mitra Bisnis :</h2>
         {{-- Filter Menu --}}
         {{-- <label for="">Filter status service :</label> --}}
         <div class="filter-menu">
@@ -42,7 +46,7 @@
         </div>
 
         @if ($customer->serviceItems->isEmpty())
-            <p class="no-service-items">Belum ada barang servis untuk customer ini.</p>
+            <p class="no-service-items">Belum ada barang servis untuk mitra bisnis ini.</p>
         @else
             <table id="serviceItemsTable">
                 <thead>
@@ -97,7 +101,7 @@
                 {{ $serviceItems->links() }}
             </div>
         @endif
-        <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a>
+        {{-- <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a> --}}
     </div>
 @endsection
 

@@ -106,7 +106,7 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
         <div class="container">
             <h1>Antrian Barang Service</h1>
 
@@ -125,7 +125,7 @@
                             <th>No</th>
                             <th>Nama Barang</th>
                             <th>Serial Number</th>
-                            <th>Pelanggan</th>
+                            <th>Mitra Bisnis</th>
                             <th>Analisa Kerusakan Awal</th>
                             {{-- <th>Dikerjakan oleh</th> --}}
                             <th>Kerusakan</th>

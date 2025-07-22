@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Customer: {{ $customer->name }}</title>
+    <title>Detail Mitra Bisnis: {{ $customer->name }}</title>
     {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -171,13 +171,17 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
         <div class="container">
-            <h1>Detail Customer</h1>
+            <h1>Detail Mitra Bisnis</h1>
 
             <div class="detail-group">
-                <strong>Nama Pelanggan:</strong> 
+                <strong>Nama:</strong> 
                 <span>{{ $customer->name }}</span>
+            </div>
+            <div class="detail-group">
+                <strong>Kode:</strong>
+                <span>{{ $customer->code }}</span>
             </div>
             <div class="detail-group">
                 <strong>No. Telepon:</strong> 
@@ -289,7 +293,7 @@
                     {{ $serviceItems->links() }}
                 </div>
             @endif
-            <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a>
+            {{-- <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a> --}}
         </div>
     @endsection
 

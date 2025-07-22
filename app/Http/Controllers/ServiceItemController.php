@@ -50,7 +50,7 @@ class ServiceItemController extends Controller
             abort(403,'Akses Ditolak');
         }
 
-        $customers = Customer::all(); // mengambil semua pelanggan untuk di dropdown
+        $customers = Customer::all(); // mengambil semua Mitra Bisnis untuk di dropdown
         $itemTypes = ItemType::all();
         return view('service_items.create', compact('customers', 'itemTypes'));
     }

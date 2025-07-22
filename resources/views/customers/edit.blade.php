@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Pelanggan: {{ $customer->customer_name }}</title>
+    <title>Edit Mitra Bisnis: {{ $customer->customer_name }}</title>
     {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -96,9 +96,9 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
         <div class="container">
-            <h1>Edit Pelanggan: {{ $customer->name }}</h1>
+            <h1>Edit Mitra Bisnis: {{ $customer->name }}</h1>
 
             @if ($errors->any())
                 <ul class="error-message-list">
@@ -112,9 +112,16 @@
                 @csrf
                 @method('PUT')
                 <div class="form-group">
-                    <label for="name">Nama Pelanggan:</label>
+                    <label for="name">Nama:</label>
                     <input type="text" name="name" id="name" value="{{ old('name', $customer->name) }}" required>
                     @error('name')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <label for="code">Kode</label>
+                    <input type="text" name="code" id="code" value="{{ old('code', $customer->code) }}" required>
+                    @error('code')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
@@ -160,9 +167,9 @@
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
-                <button type="submit">Update Pelanggan</button>
+                <button type="submit">Update</button>
             </form>
-            <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a>
+            {{-- <a href="{{ route('customers.index') }}" class="back-link">Kembali ke Daftar Pelanggan</a> --}}
         </div>
     @endsection
 </body>

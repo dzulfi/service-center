@@ -286,7 +286,7 @@ class ShipmentController extends Controller
         ]);
 
         // 2. update serviceItem.location_status
-        $shipment->serviceItem->update(['location_status' => LocationStatusEnum::AtBranch]); // Atau ReadyForPickup jika ada langkah pengambilan pelanggan
+        $shipment->serviceItem->update(['location_status' => LocationStatusEnum::AtBranch]); // Atau ReadyForPickup jika ada langkah pengambilan Mitra Bisnis
 
         return redirect()->route('shipments.admin.inbound_from_rma.index')->with('success', 'Barang "' . $shipment->serviceItem->name . '" berhasil diterima cabang');
     }

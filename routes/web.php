@@ -60,7 +60,7 @@ Route::middleware('auth')->group(function () {
         Route::get('service_processes/{serviceProcess}', [ServiceProcessController::class, 'show'])->name('service_processes.show'); 
     });
 
-    // halaman detail pelanggan, semua role dapat melihat halaman ini
+    // halaman detail Mitra Bisnis, semua role dapat melihat halaman ini
     Route::middleware(['role:developer,superadmin,admin,rma,rma_admin'])->group(function () {
         // aksese detail customer (show)
         Route::get('customers/{customers}', [CustomerController::class, 'show'])->name('customers.show');

@@ -195,7 +195,7 @@
                                 <th>ID Barang</th>
                                 <th>Nama Barang</th>
                                 <th>Serial Number</th>
-                                <th>Pelanggan</th>
+                                <th>Mitra Bisnis</th>
                                 <th>Dibuat Oleh</th>
                                 <th>Aksi</th>
                             </tr>

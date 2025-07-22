@@ -119,7 +119,7 @@
            jQuery(document).ready(function($) {
                 // Customer
                 $('#customer_id').select2({
-                    placeholder: "-- Pilih Pelanggan --",
+                    placeholder: "-- Pilih Mitra Bisnis --",
                     language: "id"
                 });
 
