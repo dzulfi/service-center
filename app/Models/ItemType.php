@@ -10,7 +10,6 @@ class ItemType extends Model
     use HasFactory;
 
     protected $fillable = [
-        'merk_id',
         'type_name',
     ];
 
