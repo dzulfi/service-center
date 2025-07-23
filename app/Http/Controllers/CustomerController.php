@@ -8,6 +8,8 @@ use App\Models\Role;
 use App\Models\ServiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Yajra\DataTables\Facades\DataTables;
 
 class CustomerController extends Controller
 {
@@ -16,7 +18,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::paginate(10);
+        $customers = Customer::all();
         return view('customers.index', compact('customers'));
     }
 
@@ -25,7 +27,7 @@ class CustomerController extends Controller
      */
     public function indexAll()
     {
-        $customers = Customer::paginate(10);
+        $customers = Customer::all();
         return view('customers.index_all', compact('customers'));
     }
 
@@ -46,11 +48,11 @@ class CustomerController extends Controller
             'code' => 'required|string|max:10|unique:customers',
             'name' => 'required|string|max:255',
             'phone_number' => 'required|string',
-            'company' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'kelurahan' => 'nullable|string|max:255',
-            'kecamatan' => 'nullable|string|max:255',
-            'kota' => 'nullable|string|max:255',
+            'company' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'kelurahan' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
         ]);
 
         Customer::create($request->all());
@@ -113,14 +115,14 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $request->validate([
-            'code' => ['required', 'string', 'max:10', Role::unique('customers')->ignore($customer->id)],
+            'code' => ['required', 'string', 'max:10', Rule::unique('customers')->ignore($customer->id)],
             'name' => 'required|string|max:255',
-            'phone_number' => 'required|integer|max:15',
-            'company' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'kelurahan' => 'nullable|string|max:255',
-            'kecamatan' => 'nullable|string|max:255',
-            'kota' => 'nullable|string|max:255',
+            'phone_number' => 'required|string|max:15',
+            'company' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'kelurahan' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
         ]);
 
         $customer->update($request->all());
@@ -135,5 +137,35 @@ class CustomerController extends Controller
     {
         $customer->delete();
         return redirect()->route('customers.index')->with('success', 'Mitra Bisnis berhasil dihapus');
+    }
+
+    public function getData(Request $request)
+    {
+        $query = Customer::query();
+
+        return DataTables::of($query)
+            ->addColumn('action', function ($row) {
+                return '
+                    <a href="' . route('customers.edit', $row->id) . '" class="btn btn-sm btn-warning">Edit</a>
+                    <form action="' . route('customers.destroy', $row->id) . '" method="POST" style="display:inline;">
+                        ' . csrf_field() . method_field('DELETE') . '
+                        <button class="btn btn-sm btn-danger" onclick="return confirm(\'Yakin hapus data ini?\')">Hapus</button>
+                    </form>
+                ';
+            })
+            ->rawColumns(['action'])
+            ->filter(function ($query) use ($request) {
+                if ($request->has('columns')) {
+                    foreach ($request->get('columns') as $column) {
+                        $value = $column['search']['value'] ?? '';
+                        $name = $column['name'] ?? '';
+                        if ($value && $name && !in_array($name, ['action', 'DT_RowIndex'])) {
+                            $query->where($name, 'like', '%' . $value . '%');
+                        }
+                    }
+                }
+            })
+            ->addIndexColumn() // untuk kolom No
+            ->make(true);
     }
 }

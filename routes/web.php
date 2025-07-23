@@ -11,10 +11,13 @@ use App\Http\Controllers\SparepartController;
 use App\Http\Controllers\StockSparePartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchOfficeController;
+use App\Models\Customer;
 use App\Models\StockSparePart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+// use DataTables;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,9 +46,14 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // Crud Customer (hanya admin) 
-    Route::middleware(['role:admin'])->group(function () {
+    Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('customers', CustomerController::class);
+        Route::get('customers/data', [CustomerController::class, 'getData'])->name('customers.data');
     });
+    // Route::middleware(['role:admin'])->group(function () {
+    //     Route::resource('customers', CustomerController::class);
+    //     Route::get('/customers/data', [CustomerController::class, 'getData'])->name('customers.data');
+    // });
 
     // CRUD service item (hanya admin) akan menyimpan created_by_user_id
     Route::middleware(['role:admin'])->group(function () {

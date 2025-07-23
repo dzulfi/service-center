@@ -14,6 +14,9 @@
         {{-- Select2 --}}
         <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 
+        {{-- DataTable Laravel --}}
+        <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
@@ -112,9 +115,14 @@
         </div>
 
         {{-- Select2 --}}
-        <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+        {{-- <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script> --}}
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="{{ asset('js/select2.min.js') }}"></script>
 
+        {{-- DataTable Laravel --}}
+        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+
+        {{-- select2 --}}
         <script>
            jQuery(document).ready(function($) {
                 // Customer
@@ -140,11 +148,17 @@
                     language: "id"
                 });
 
+                // ranch Office
                 $('#branch_office_id').select2({
                     placeholder: "-- Pilih Kantor Cabang --",
                     language: "id"
                 });
-            })
+            });
+        </script>
+
+        {{-- DataTable --}}
+        <script>
+            let table = new DataTable('#data-tables');
         </script>
     </body>
 </html>
