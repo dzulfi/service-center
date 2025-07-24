@@ -200,9 +200,9 @@
                             <th>Kode Barang</th>
                             <th>Customer</th>
                             <th>Nama Barang</th>
+                            <th>Merk</th>
                             <th>Tipe Barang</th>
                             <th>Serial Number</th>
-                            <th>Merk</th>
                             <th>Dibuat oleh</th>
                             <th>Status Pengerjaan</th> 
                             <th>Aksi</th>
@@ -235,9 +235,9 @@
                                     @endif
                                 </td>
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->merk->merk_name ?? '-' }}</td>
                                 <td>{{ $item->itemType->type_name ?? '-' }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->itemType->merk->merk_name }}</td>
 
                                 {{-- author yang membuat barang service oleh user siapa --}}
                                 <td>{{ $item->creator->name ?? 'N/A' }}</td> 

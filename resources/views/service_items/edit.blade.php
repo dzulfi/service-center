@@ -119,7 +119,7 @@
                         <option value="">-- Pilih Mitra Bisnis --</option>
                         @foreach ($customers as $customer)
                             <option value="{{ $customer->id }}" {{ old('customer_id', $serviceItem->customer_id) == $customer->id ? 'selected' : '' }}>
-                                {{ $customer->name }} ({{ $customer->phone_number ?? 'Individu' }})
+                                ({{ $customer->code ?? 'Individu' }}) {{ $customer->name }}
                             </option>
                         @endforeach
                     </select>
@@ -135,15 +135,31 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="item_type">Tipe Barang:</label>
-                    <select name="item_type_id" id="item_type_id" required>
+                    <label for="merk_id">Merk:</label>
+                    <select name="merk_id" id="merk_id" required>
+                        <option value="">-- Merk --</option>
+                        @foreach ($merks as $merk)
+                            <option value="{{ $merk->id }}" {{ old('merk_id', $serviceItem->merk_id) == $merk->id ? 'selected' : '' }}>
+                                {{ $merk->merk_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="item_type_id">Tipe Barang:</label>
+                    <select id="item_type_id" name="item_type_id" class="form-control" style="width:100%">
+                        <option value="{{ $serviceItem->itemType->id }}" selected>
+                            {{ $serviceItem->itemType->type_name }}
+                        </option>
+                    </select>
+                    {{-- <select name="item_type_id" id="item_type_id" required>
                         <option value="">-- Tipe Barang --</option>
                         @foreach ($itemTypes as $itemType)
                             <option value="{{ $itemType->id }}" {{ old('item_type_id', $serviceItem->item_type_id) == $itemType->id ? 'selected' : '' }}>
                                 {{ $itemType->type_name }}
                             </option>
                         @endforeach
-                    </select>
+                    </select> --}}
                     @error('item_type_id')
                         <div class="error">{{ $message }}</div>
                     @enderror
@@ -163,13 +179,6 @@
                     <label for="analisa_kerusakan">Analisa Kerusakan:</label>
                     <textarea name="analisa_kerusakan" id="damage_analysis">{{ old('damage_analysis', $serviceItem->analisa_kerusakan) }}</textarea>
                     @error('analisa_kerusakan')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group">
-                    <label for="jumlah_item">Jumlah Item:</label>
-                    <input type="text" name="jumlah_item" id="jumlah_item" value="{{ old('jumlah_item', $serviceItem->jumlah_item) }}">
-                    @error('jumlah_item')
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>

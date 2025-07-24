@@ -12,6 +12,7 @@ use App\Http\Controllers\StockSparePartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchOfficeController;
 use App\Models\Customer;
+use App\Models\ItemType;
 use App\Models\StockSparePart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -49,7 +50,21 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('customers', CustomerController::class);
         Route::get('customers/data', [CustomerController::class, 'getData'])->name('customers.data');
+        Route::get('/api/item-types', function (Request $request) {
+            $search = $request->get('term');
+            $itemTypes = ItemType::query()
+                ->select('id', 'type_name')
+                ->when($search, function ($query, $search) {
+                    return $query->where('type_name', 'like', '%'. $search .'%');
+                })
+                ->limit(10)
+                ->get();
+            
+            // $itemTypes = ItemType::select('id', 'type_name')->get();
+            return response()->json($itemTypes);
+        });
     });
+
     // Route::middleware(['role:admin'])->group(function () {
     //     Route::resource('customers', CustomerController::class);
     //     Route::get('/customers/data', [CustomerController::class, 'getData'])->name('customers.data');
@@ -158,5 +173,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Route::get('/api/item_types', function () {
+//     $itemTypes = ItemType::select('id', 'type_name')->get();
+//     return response()->json($itemTypes);
+// });
 
 require __DIR__.'/auth.php';

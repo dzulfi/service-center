@@ -194,8 +194,8 @@
                                 <th>Nama Barang</th>
                                 <th>Dibuat Oleh</th>
                                 <th>Serial Number</th>
-                                <th>Tipe Barang</th>
                                 <th>Merk</th>
+                                <th>Tipe Barang</th>
                                 <th>Ditangani</th>
                                 <th>Status Pengerjaan</th>
                                 <th>Aksi</th>
@@ -230,8 +230,8 @@
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->creator->name ?? 'N/A' }} ({{ $item->creator->branchOffice->name }})</td>
                                     <td>{{ $item->serial_number ?? '-' }}</td>
+                                    <td>{{ $item->merk->merk_name }}</td>
                                     <td>{{ $item->itemType->type_name ?? '-' }}</td>
-                                    <td>{{ $item->itemType->merk->merk_name }}</td>
                                     @if ($item->serviceProcesses->isEmpty())
                                         <td style="color: red;">Belum ada</td>
                                     @else

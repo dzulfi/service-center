@@ -110,8 +110,12 @@
                 <span>{{ $serviceItem->name }}</span>
             </div>
             <div class="detail-group">
+                <strong>Merk:</strong> 
+                <span>{{ $serviceItem->merk->merk_name }}</span>
+            </div>
+            <div class="detail-group">
                 <strong>Tipe Barang:</strong> 
-                <span>{{ $item->itemType->type_name ?? '-' }}</span>
+                <span>{{ $serviceItem->itemType->type_name ?? '-' }}</span>
             </div>
             <div class="detail-group">
                 <strong>Serial Number:</strong> 
@@ -123,11 +127,7 @@
             </div>
             <div class="detail-group">
                 <strong>Analisa Kerusakan:</strong> 
-                <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Merk:</strong> 
-                <span>{{ $serviceItem->itemType->merk->merk_name }}</span>
+                <span>{{ $serviceItem->analisa_kerusakan ?? '-' }}</span>
             </div>
             <div class="detail-group">
                 <strong>Service Masuk:</strong> 

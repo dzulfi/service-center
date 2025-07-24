@@ -18,20 +18,16 @@ class ItemTypeController extends Controller
 
     public function create()
     {
-        $merks = Merk::all();
-
-        return view('item_types.create', compact('merks', ));
+        return view('item_types.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'merk_id' => 'required|exists:merks,id',
             'type_name' => 'required|string',
         ]);
 
         ItemType::create([
-            'merk_id' => $request->merk_id,
             'type_name' => $request->type_name,
         ]);
 
@@ -45,14 +41,12 @@ class ItemTypeController extends Controller
 
     public function edit(ItemType $itemType)
     {
-        $merks = Merk::all();
-        return view('item_types.edit', compact('itemType', 'merks'));
+        return view('item_types.edit', compact('itemType'));
     }
 
     public function update(Request $request, ItemType $itemType)
     {
         $request->validate([
-            'merk_id' => 'required|exists:merks,id',
             'type_name' => 'required|string|max:255',
         ]);
 

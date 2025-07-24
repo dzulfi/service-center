@@ -13,11 +13,6 @@ class ItemType extends Model
         'type_name',
     ];
 
-    public function merk()
-    {
-        return $this->belongsTo(Merk::class, 'merk_id');
-    }
-
     public function serviceItems()
     {
         return $this->hasMany(ServiceItem::class,'item_type_id');

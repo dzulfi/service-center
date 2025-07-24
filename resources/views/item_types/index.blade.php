@@ -18,7 +18,6 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Merk</th>
                             <th>Tipe Barang</th>
                             <th>Aksi</th>
                         </tr>
@@ -27,7 +26,6 @@
                         @foreach ($itemTypes as $itemType)
                             <tr>
                                 <td>{{ ($itemTypes->currentPage() - 1) * $itemTypes->perPage() + $loop->iteration }}</td>
-                                <td>{{ $itemType->merk->merk_name }}</td>
                                 <td>{{ $itemType->type_name }}</td>
                                 <td class="actions">
                                     {{-- <a href="#" class="view-button">Lihat</a> --}}

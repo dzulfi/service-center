@@ -8,6 +8,7 @@ use App\Enums\ShipmentTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\ItemType;
+use App\Models\Merk;
 use App\Models\ServiceItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -52,7 +53,8 @@ class ServiceItemController extends Controller
 
         $customers = Customer::all(); // mengambil semua Mitra Bisnis untuk di dropdown
         $itemTypes = ItemType::all();
-        return view('service_items.create', compact('customers', 'itemTypes'));
+        $merks = Merk::all();
+        return view('service_items.create', compact('customers', 'itemTypes', 'merks'));
     }
 
     /**
@@ -68,12 +70,11 @@ class ServiceItemController extends Controller
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'name' => 'required|string|max:255',
-            // 'type' => 'nullable|string|max:255',
-            'serial_number' => 'nullable|string|max:255',
-            // 'merk' => 'nullable|string|max:255',
-            'analisa_kerusakan' => 'nullable|string',
-            'jumlah_item' => 'nullable|string',
-            'item_type_id' => 'nullable|exists:item_types,id',
+            'serial_number' => 'required|string|max:255',
+            'analisa_kerusakan' => 'required|string',
+            // 'item_type_id' => 'required|exists:item_types,id',
+            'item_type_id'=> 'required|string|max:255',
+            'merk_id'=> 'required|exists:merks,id',
         ]);
 
         // Logika pembuatan generate kode service
@@ -109,18 +110,30 @@ class ServiceItemController extends Controller
             $generatedCode = $branchOfficeCode . $datePart . $formattedSequentialNumber;
         }
 
+        // Fitur checking item type tersedia atau tidak ada jika tidak ada maka dibuatkan
+        $itemTypeInput = $request->input('item_type_id'); // request input dari user 
+        // Cek apakah input berupa ID numerik (dari dropdown)
+        if (is_numeric($itemTypeInput)) {
+            $itemTypeId = $itemTypeInput; // cek jika ada dan berupa ID maka tidka perlu buat baru
+        } else {
+            // jika bukan angka atau ID, berarti ini nama baru - cari atau buat
+            $itemType = ItemType::firstOrCreate([
+                'type_name' => $itemTypeInput
+            ]);
+            $itemTypeId = $itemType->id;
+        }
+
         $serviceItem = ServiceItem::create([
             'customer_id' => $request->customer_id,
             'name' => $request->name,
-            // 'type' => $request->type,
             'serial_number' => $request->serial_number,
             'code' => $generatedCode, // Hasil penggabungan kode.
-            // 'merk' => $request->merk,
             'analisa_kerusakan' => $request->analisa_kerusakan,
-            'jumlah_item' => $request->jumlah_item,
             'created_by_user_id' => Auth::id(), // Simpan ID user yang sedang login
             'location_status' => LocationStatusEnum::AtBranch,
-            'item_type_id' => $request->item_type_id,
+            // 'item_type_id' => $request->item_type_id,
+            'item_type_id' => $itemTypeId,
+            'merk_id' => $request->merk_id,
         ]);
 
         return redirect()->route('service_items.index')->with('success', 'Barang servis berhasil ditambahkan!');
@@ -148,8 +161,17 @@ class ServiceItemController extends Controller
     public function edit(ServiceItem $serviceItem)
     {
         $customers = Customer::all();
-        $itemTypes = ItemType::all();
-        return view('service_items.edit', compact('serviceItem', 'customers', 'itemTypes'));
+        // $itemTypes = ItemType::all();
+        $merks = Merk::all();
+
+        $serviceItem->load('itemType');
+
+        return view('service_items.edit', compact(
+            'serviceItem', 
+            'customers', 
+            // 'itemTypes', 
+            'merks'
+        ));
     }
 
     /**
@@ -160,15 +182,36 @@ class ServiceItemController extends Controller
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'name' => 'required|string|max:255',
-            // 'type' => 'required|string|max:255',
             'serial_number' => 'required|string|max:255',
             'analisa_kerusakan' => 'nullable|string',
-            // 'merk' => 'required|string|',
-            'jumlah_item' => 'required|integer',
-            'item_type_id' => 'nullable|exists:item_types,id',
+            'item_type_id' => 'required|string|max:255',
+            'merk_id'=> 'required|exists:merks,id',
         ]);
 
-        $serviceItem->update($request->all());
+        // $serviceItem->update($request->all());
+
+        // Fitur checking item type tersedia atau tidak ada jika tidak ada maka akan dibuatkan data item type baru
+        $itemTypeInput = $request->input('item_type_id');
+        // Cek apakah input berupa ID numerik (dropdown)
+        if (is_numeric($itemTypeInput)) {
+            $itemTypeId = $itemTypeInput; // cek jika ada dan berupa ID maka tidak perlu buat baru
+        } else {
+            // jika bukan angka atau ID, berarti ini nama baru - cari atau buat
+            $itemType = ItemType::firstOrCreate([
+                'type_name' => $itemTypeInput,
+            ]);
+            $itemTypeId = $itemType->id;
+        }
+
+        $serviceItem->update([
+            'customer_id' => $request->customer_id,
+            'name'=> $request->name,
+            'serial_number' => $request->serial_number,
+            'analisa_kerusakan' => $request->analisa_kerusakan,
+            'item_type_id' => $itemTypeId,
+            'merk_id' => $request->merk_id,
+        ]);
+
         return redirect()->route('service_items.index')->with('success', 'Data berhasil diperbarui');
     }
 

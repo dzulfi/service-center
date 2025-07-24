@@ -112,20 +112,6 @@
                 @csrf
                 @method('PUT')
                 <div class="form-group">
-                    <label for="merk_id">Pilih Merk:</label>
-                    <select name="merk_id" id="merk_id" required>
-                        <option value="">-- Pilih Merk --</option>
-                        @foreach ($merks as $merk)
-                            <option value="{{ $merk->id }}" {{ old('merk_id', $itemType->merk_id) == $merk->merk_name ? 'selected' : '' }}>
-                                {{ $merk->merk_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('merk_id')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="form-group">
                     <label for="type_name">Tipe Barang:</label>
                     <input type="text" name="type_name" id="type_name" value="{{ old('type_name', $itemType->type_name) }}" required>
                     @error('type_name')

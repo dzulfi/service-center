@@ -160,6 +160,10 @@
                 <span>{{ $serviceItem->name }}</span>
             </div>
             <div class="detail-group">
+                <strong>Merk:</strong> 
+                <span>{{ $serviceItem->merk->merk_name ?? '-' }}</span>
+            </div>
+            <div class="detail-group">
                 <strong>Tipe Barang:</strong> 
                 <span>{{ $serviceItem->type ?? '-' }}</span>
             </div>
@@ -174,11 +178,6 @@
             <div class="detail-group">
                 <strong>Analisa Kerusakan:</strong> 
                 <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Merk:</strong> 
-                {{-- <span>{{ $serviceItem->merk ?? '-' }}</span> --}}
-                <span>{{ $serviceItem->itemType->merk->merk_name }}</span>
             </div>
             <div class="detail-group">
                 <strong>Service Masuk:</strong> 

@@ -132,8 +132,41 @@
                 });
 
                 // item type
+                // $('#item_type_id').select2({
+                //     tags: true
+                // });
                 $('#item_type_id').select2({
-                    tags: true
+                    tags: true,
+                    placeholder: 'Pilih atau ketik tipe barang',
+                    ajax: {
+                        url: '/api/item-types',
+                        dataType: 'json',
+                        delay: 250,
+                        processResults: function (data) {
+                            return {
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.type_name
+                                }))
+                            };
+                        },
+                        cache: true
+                    },
+                    createTag: function (params) {
+                        return {
+                            id: params.term,
+                            text: params.term,
+                            newOption: true
+                        };
+                    },
+                    templateResult: function (data) {
+                        var $result = $("<span></span>");
+                        $result.text(data.text);
+                        if (data.newOption) {
+                            $result.append(" <em>(buat baru)</em>");
+                        }
+                        return $result;
+                    }
                 });
 
                 // sparepart (out RMA)
@@ -148,11 +181,16 @@
                     language: "id"
                 });
 
-                // ranch Office
+                // Branch Office
                 $('#branch_office_id').select2({
                     placeholder: "-- Pilih Kantor Cabang --",
                     language: "id"
                 });
+
+                $('#merk_id').select2({
+                    placeholder: "-- Pilih Merk --",
+                    language: "id"
+                })
             });
         </script>
 
