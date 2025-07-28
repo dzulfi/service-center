@@ -94,6 +94,12 @@ Route::middleware('auth')->group(function () {
         // Edit Resi pengiriman dan rubah service item
         Route::get('shipments/admin/resi-outbound-to-rma/edit/{shipment}', [ShipmentController::class, 'editResiOutboundToRma'])->name('resi_outbound_to_rma.edit');
         Route::put('shipments/admin/resi-outbound-to-rma/update/{shipment}', [ShipmentController::class, 'updateResiOutboundToRma'])->name('resi_outbound_to_rma.update');
+
+        // Downlooad Shipment PDF
+        Route::get('/shipments/admin/resi-outbound-to-rma/{shipment}/pdf', [ShipmentController::class, 'pdfResiOutboundToRma'])->name('resi_outbound_to_rma.pdf');
+
+        // Delete Resi
+        Route::delete('/shipments/admin/resi-outbound-to-rma/{id}', [ShipmentController::class,'destroyResiOutstandingToRma'])->name('resi_outbound_to_rma.destroy');
     });
 
     // proses servis (RMA/Teknisi saja) akan menyimpan handle_by_user_id

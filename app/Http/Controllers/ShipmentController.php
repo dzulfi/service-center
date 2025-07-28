@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PDF;
 
 class ShipmentController extends Controller
 {
@@ -180,5 +181,41 @@ class ShipmentController extends Controller
         }
 
         return redirect()->route('shipments.admin.resi_outbound_to_rma.index')->with('success', 'Data resi berhasil diperbarui.');
+    }
+
+    public function pdfResiOutboundToRma(Shipment $shipment)
+    {
+        $shipment->load('serviceItems', 'responsibleUser'); // eager load user & items
+
+        $pdf = PDF::loadView('shipments.admin.resi_outstanding_to_rma_pdf', [
+            'shipment' => $shipment
+        ])->setPaper('a4','landscape');
+
+        return $pdf->stream('resi_shipment_to_rma_' . $shipment->id . '.pdf');
+    }
+
+    public function destroyResiOutstandingToRma($id)
+    {
+        $shipment = Shipment::with('serviceItems')->findOrFail($id);
+
+        // cek apakah resi sudah diterima
+        if ($shipment->status === ShipmentStatusEnum::Diterima) {
+            return redirect()->route('shipments.admin.resi_outbound_to_rma.index')
+                ->with('error', 'Resi Tidak dapat dihapus karena sudah diterima Admin RMA');
+        }
+
+        // Kembalikan status lokasi semua service item ke AtBranch
+        foreach ($shipment->serviceItems as $item) {
+            $item->location_status = LocationStatusEnum::AtBranch;
+            $item->save();
+        }
+
+        // Hapus relasi di pivot 
+        $shipment->serviceItems()->detach();
+
+        // Hapus resi 
+        $shipment->delete();
+
+        return redirect()->route('shipments.admin.resi_outbound_to_rma.index')->with('success','Resi berhasil dihapus dan semua service item dikembalikan ke kantor cabang');
     }
 }

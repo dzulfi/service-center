@@ -35,11 +35,13 @@
                             <th>Pilih</th>
                             <th>Code Item</th>
                             <th>Serial Number</th>
+                            <th>    Name</th>
                             <th>Item Type</th>
                             <th>Merk</th>
-                            <th>Tipe Barang</th>
+                            <th>User Create</th>
+                            <th>Branch Office</th>
                             <th>Status</th>
-                            <th>Keterangan</th>
+                            {{-- <th>Notes</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -54,8 +56,10 @@
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->itemType->type_name ?? '-' }}</td>
                                 <td>{{ $item->merk->merk_name }}</td>
+                                <td>{{ $item->creator->name }}</td>
+                                <td>{{ $item->creator->branchOffice->name }}</td>
                                 <td>{{ $item->location_status }}</td>
-                                <td>{{ $item->analisa_kerusakan ?? '-' }}</td>
+                                {{-- <td>{{ $item->analisa_kerusakan ?? '-' }}</td> --}}
                             </tr>
                         @endforeach
                     </tbody>
