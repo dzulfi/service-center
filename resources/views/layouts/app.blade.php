@@ -196,7 +196,34 @@
 
         {{-- DataTable --}}
         <script>
-            let table = new DataTable('#data-tables');
+            $(document).ready(function() {
+                $('#data-tables').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('customers.data') }}", // pastikan route ini benar
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'code', name: 'code' },
+                        { data: 'phone_number', name: 'phone_number' },
+                        { data: 'company', name: 'company' },
+                        { data: 'kota', name: 'kota' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectAll = document.getElementById('select_all');
+                if (selectAll) {
+                    selectAll.addEventListener('click', function (e) {
+                        const checkboxes = document.querySelectorAll('input[name="service_item_ids[]"]');
+                        checkboxes.forEach(cb => cb.checked = e.target.checked);
+                    });
+                }
+            });
         </script>
     </body>
 </html>

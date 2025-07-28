@@ -107,6 +107,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('shipments.admin.resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('resi_outbound_to_rma.*') ? 'active' : '' }}">
+                            Resi Kirim Barang ke RMA
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shiments.admin.inbound_from_rma.*') ? 'active' : '' }}">
                             Barang Masuk Dari RMA
                         </a>

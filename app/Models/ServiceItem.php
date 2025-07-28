@@ -61,8 +61,13 @@ class ServiceItem extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class);
+        return $this->belongsToMany(Shipment::class, 'shipment_items');
     }
+
+    // public function shipments()
+    // {
+    //     return $this->hasMany(Shipment::class);
+    // }
 
     public function stockSpareparts()
     {

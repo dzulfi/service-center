@@ -146,26 +146,41 @@ class CustomerController extends Controller
         return DataTables::of($query)
             ->addColumn('action', function ($row) {
                 return '
-                    <a href="' . route('customers.edit', $row->id) . '" class="btn btn-sm btn-warning">Edit</a>
+                    <div class="actions">
+                    <a href="' . route('customers.show', $row->id) . '" class="view-button">Lihat</a>
+                    <a href="' . route('customers.edit', $row->id) . '" class="edit-button">Edit</a>
                     <form action="' . route('customers.destroy', $row->id) . '" method="POST" style="display:inline;">
                         ' . csrf_field() . method_field('DELETE') . '
-                        <button class="btn btn-sm btn-danger" onclick="return confirm(\'Yakin hapus data ini?\')">Hapus</button>
-                    </form>
-                ';
+                        <button type="submit" class="delete-button" onclick="return confirm(\'Anda yakin ingin menghapus pelanggan ini?\')">Hapus</button>
+                    </form></div>';
             })
-            ->rawColumns(['action'])
-            ->filter(function ($query) use ($request) {
-                if ($request->has('columns')) {
-                    foreach ($request->get('columns') as $column) {
-                        $value = $column['search']['value'] ?? '';
-                        $name = $column['name'] ?? '';
-                        if ($value && $name && !in_array($name, ['action', 'DT_RowIndex'])) {
-                            $query->where($name, 'like', '%' . $value . '%');
-                        }
-                    }
-                }
-            })
-            ->addIndexColumn() // untuk kolom No
+            ->rawColumns(['action']) // agar kolom action tidak di-escape
+            ->addIndexColumn()
             ->make(true);
+
+        // return DataTables::of($query)
+        //     ->addColumn('action', function ($row) {
+        //         return '
+        //             <a href="' . route('customers.edit', $row->id) . '" class="btn btn-sm btn-warning">Edit</a>
+        //             <form action="' . route('customers.destroy', $row->id) . '" method="POST" style="display:inline;">
+        //                 ' . csrf_field() . method_field('DELETE') . '
+        //                 <button class="btn btn-sm btn-danger" onclick="return confirm(\'Yakin hapus data ini?\')">Hapus</button>
+        //             </form>
+        //         ';
+        //     })
+        //     ->rawColumns(['action'])
+        //     ->filter(function ($query) use ($request) {
+        //         if ($request->has('columns')) {
+        //             foreach ($request->get('columns') as $column) {
+        //                 $value = $column['search']['value'] ?? '';
+        //                 $name = $column['name'] ?? '';
+        //                 if ($value && $name && !in_array($name, ['action', 'DT_RowIndex'])) {
+        //                     $query->where($name, 'like', '%' . $value . '%');
+        //                 }
+        //             }
+        //         }
+        //     })
+        //     ->addIndexColumn() // untuk kolom No
+        //     ->make(true);
     }
 }

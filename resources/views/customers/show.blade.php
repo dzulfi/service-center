@@ -83,7 +83,7 @@
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->type ?? '-' }}</td>
                             <td>{{ $item->serial_number ?? '-' }}</td>
-                            <td>{{ $item->merk ?? '-' }}</td>
+                            <td>{{ $item->merk->merk_name ?? '-' }}</td>
                             <td>
                                 <span class="status-badge status-{{ $statusSlug }}">
                                     {{ $status }}

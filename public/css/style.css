@@ -252,6 +252,15 @@ tr:hover {
     background-color: #ff8400;
 }
 
+.actions a.download-button {
+    background-color: #3fb508;
+    color: #ffffff;
+}
+
+.actions a.download-button:hover {
+    background-color: #2f9d00;
+}
+
 .no-data {
     text-align: center;
     padding: 20px;
