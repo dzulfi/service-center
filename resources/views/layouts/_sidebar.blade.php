@@ -60,7 +60,8 @@
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <h2>JMEDIA TECHNOLOGY</h2>
+        {{-- <h2>JMEDIA TECHNOLOGY</h2> --}}
+        <img src="{{ asset('logos/logo_techma.png') }}" alt="">
     </div>
     <nav class="sidebar-menu">
         <ul>
