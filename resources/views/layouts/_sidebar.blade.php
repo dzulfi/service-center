@@ -60,7 +60,7 @@
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <h2>Service Center</h2>
+        <h2>JMEDIA TECHNOLOGY</h2>
     </div>
     <nav class="sidebar-menu">
         <ul>
