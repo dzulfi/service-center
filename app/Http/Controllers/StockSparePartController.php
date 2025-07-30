@@ -69,8 +69,6 @@ class StockSparepartController extends Controller
         return redirect()->route('spareparts.index')->with('success','Sparepart berhasil dikurangi');
     }
 
-
-
     public function stockOut(ServiceItem $serviceItem)
     {
         if (!Auth::user()->isRma()) {

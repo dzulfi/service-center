@@ -73,33 +73,73 @@ Route::middleware('auth')->group(function () {
         });
     });
 
+    /**
+     * Side: Admin cabang
+     */
     // ROUTE UNTUK SISTEM KIRIM BARANG (RESI)
     // Admin Side (Mengirim Barang Ke RMA)
     Route::middleware(['role:admin'])->prefix('shipments/admin')->name('shipments.admin.')->group( function () {
-        Route::get('outbound-to-rma', [ShipmentController::class, 'indexOutboundToRma'])->name('outbound_to_rma.index'); // Daftar barang siap kirim
-        Route::get('outbound_to_rma/{serviceItem}/create', [ShipmentController::class, 'createOutboundToRma'])->name('outbound_to_rma.create'); // Form kirim
-        Route::post('outbound-to-rma/{serviceItem}/store', [ShipmentController::class, 'storeOutboundToRma'])->name('outbound_to_rma.store'); // Simpan Kirim
-
+        
+        // Route::get('outbound_to_rma/{serviceItem}/create', [ShipmentController::class, 'createOutboundToRma'])->name('outbound_to_rma.create'); // Form kirim
+        // Route::post('outbound-to-rma/{serviceItem}/store', [ShipmentController::class, 'storeOutboundToRma'])->name('outbound_to_rma.store'); // Simpan Kirim
+        
         // Admin: Menerima Barang dari RMA
         Route::get('inbound-from-rma', [ShipmentController::class, 'indexInboundFromRma'])->name('inbound_from_rma.index'); // Daftar barang masuk dari RMA
         Route::post('inbound-from-rma/{shipment}/receive', [ShipmentController::class, 'receiveInboundFromRma'])->name('inbound_from_rma.receive'); // Aksi Terima
+        
+        // Menampilkan seluruh data service 
+        Route::get('outbound-to-rma', [ShipmentController::class, 'indexOutboundToRma'])->name('outbound_to_rma.index'); // Daftar barang siap kirim
 
         // multiple choice service item
-        Route::get('shipments/admin/outbound-to-rma/create-multiple', [ShipmentController::class, 'createOutboundMultiple'])->name('outbound_to_rma.bulk_create');
-        Route::post('shipments/admin/outbound-to-rma/store-multiple', [ShipmentController::class, 'storeOutboundMultiple'])->name('outbound_to_rma.bulk_store');
+        Route::get('outbound-to-rma/create-multiple', [ShipmentController::class, 'createOutboundMultiple'])->name('outbound_to_rma.bulk_create');
+        Route::post('outbound-to-rma/store-multiple', [ShipmentController::class, 'storeOutboundMultiple'])->name('outbound_to_rma.bulk_store');
 
         // Menampilkan Resi pengiriman barang service
-        Route::get('shipments/admin/resi-outbound-to-rma', [ShipmentController::class,'indexResiOutboundToRma'])->name('resi_outbound_to_rma.index');
+        Route::get('resi-outbound-to-rma', [ShipmentController::class,'indexResiOutboundToRma'])->name('resi_outbound_to_rma.index');
 
         // Edit Resi pengiriman dan rubah service item
-        Route::get('shipments/admin/resi-outbound-to-rma/edit/{shipment}', [ShipmentController::class, 'editResiOutboundToRma'])->name('resi_outbound_to_rma.edit');
-        Route::put('shipments/admin/resi-outbound-to-rma/update/{shipment}', [ShipmentController::class, 'updateResiOutboundToRma'])->name('resi_outbound_to_rma.update');
+        Route::get('resi-outbound-to-rma/edit/{shipment}', [ShipmentController::class, 'editResiOutboundToRma'])->name('resi_outbound_to_rma.edit');
+        Route::put('resi-outbound-to-rma/update/{shipment}', [ShipmentController::class, 'updateResiOutboundToRma'])->name('resi_outbound_to_rma.update');
 
         // Downlooad Shipment PDF
-        Route::get('/shipments/admin/resi-outbound-to-rma/{shipment}/pdf', [ShipmentController::class, 'pdfResiOutboundToRma'])->name('resi_outbound_to_rma.pdf');
+        Route::get('resi-outbound-to-rma/{shipment}/pdf', [ShipmentController::class, 'pdfResiOutboundToRma'])->name('resi_outbound_to_rma.pdf');
 
         // Delete Resi
-        Route::delete('/shipments/admin/resi-outbound-to-rma/{id}', [ShipmentController::class,'destroyResiOutstandingToRma'])->name('resi_outbound_to_rma.destroy');
+        Route::delete('resi-outbound-to-rma/{id}', [ShipmentController::class,'destroyResiOutstandingToRma'])->name('resi_outbound_to_rma.destroy');
+    });
+
+    /**
+     * Side: RMA Admin
+     */
+    // RMA Side (Menerima Barang dari Admin & Mengirim Kembali ke Admin)
+    Route::middleware(['role:rma_admin'])->prefix('shipments/rma')->name('shipments.rma.')->group(function () {
+        // Route::get('inbound-from-admin', [ShipmentController::class, 'indexInboundFromAdmin'])->name('inbound_from_admin.index'); // Daftar barang masuk dari admin
+        // Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); // Aksi terima
+
+        Route::get('outbound-from-rma', [ShipmentController::class,'indexOutboundFromRma'])->name('outbound_from_rma.index'); // Daftar barang siap kirim kembali
+        Route::get('outbound-from-rma/{serviceItem}/create', [ShipmentController::class,'createOutboundFromRma'])->name('outbound_from_rma.create'); // form kirim kembali
+        Route::post('outbound-from-rma/{serviceItem}/store', [ShipmentController::class,'storeOutboundFromRma'])->name('outbound_from_rma.store'); // Simpan Kirim Kembali
+
+        // Barang service masuk dari admin
+        Route::get('inbound-from-admin', [ShipmentController::class, 'indexInboundFromAdmin'])->name('inbound_from_admin.index'); // Daftar barang masuk dari admin
+        Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); // Aksi terima
+
+        // Multiple choice service item
+        Route::get('outbound-from-rma/create-multiple', [ShipmentController::class, 'createOutboundMultipleFromRma'])->name('outbound_from_rma.bulk_create');
+        Route::post('outbound-from-rma/store-multiple', [ShipmentController::class, 'storeOutboundMultipleFromRma'])->name('outbound_from_rma.bulk_store');
+
+        // Menampilkan resi pengiriman barang service
+        Route::get('outbound-from-rma/resi-outbound-from-rma', [ShipmentController::class,'indexResiOutboundFromRma'])->name('resi_outbound_from_rma.index');
+
+        // Edit Resi pengiriman dan rubah service item
+        Route::get('resi-outbound-from-rma/edit/{shipment}', [ShipmentController::class, 'editResiOutboundFromRma'])->name('resi_outbound_from_rma.edit');
+        Route::put('resi-outbound-from-rma/update/{shipment}', [ShipmentController::class, 'updateResiOutboundFromRma'])->name('resi_outbound_from_rma.update');
+
+        // Downlooad Shipment PDF
+        Route::get('resi-outbound-from-rma/{shipment}/pdf', [ShipmentController::class, 'pdfResiOutboundFromRma'])->name('resi_outbound_from_rma.pdf');
+
+        // Delete Resi
+        Route::delete('resi-outbound-to-rma/{id}', [ShipmentController::class,'destroyResiOutboundFromRma'])->name('resi_outbound_from_rma.destroy');
     });
 
     // proses servis (RMA/Teknisi saja) akan menyimpan handle_by_user_id
@@ -147,16 +187,6 @@ Route::middleware('auth')->group(function () {
         // melihat daftar & barang service
         Route::get('activity/service-items', [ServiceItemController::class, 'indexAllServiceItems'])->name('activity.service_items.index');
         Route::get('activity/service-items/{serviceItem}', [ServiceItemController::class, 'showDetailActivityServiceItem'])->name('activity.service_items.detail_activity_service_item');
-    });
-
-    // RMA Side (Menerima Barang dari Admin & Mengirim Kembali ke Admin)
-    Route::middleware(['role:rma,rma_admin'])->prefix('shipments/rma')->name('shipments.rma.')->group(function () {
-        Route::get('inbound-from-admin', [ShipmentController::class, 'indexInboundFromAdmin'])->name('inbound_from_admin.index'); // Daftar barang masuk dari admin
-        Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); // Aksi terima
-
-        Route::get('outbound-from-rma', [ShipmentController::class,'indexOutboundFromRma'])->name('outbound_from_rma.index'); // Daftar barang siap kirim kembali
-        Route::get('outbound-from-rma/{serviceItem}/create', [ShipmentController::class,'createOutboundFromRma'])->name('outbound_from_rma.create'); // form kirim kembali
-        Route::post('outbound-from-rma/{serviceItem}/store', [ShipmentController::class,'storeOutboundFromRma'])->name('outbound_from_rma.store'); // Simpan Kirim Kembali
     });
 
     // RMA (Stock Sparepart)

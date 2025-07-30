@@ -2,7 +2,7 @@
 <div class="container">
     <h2>Edit Resi Pengiriman</h2>
 
-    <form method="POST" action="{{ route('shipments.admin.resi_outbound_to_rma.update', $shipment->id) }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('shipments.rma.resi_outbound_from_rma.update', $shipment->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -33,7 +33,7 @@
                             <th>Pilih</th>
                             <th>Code Item</th>
                             <th>Serial Number</th>
-                            <th>    Name</th>
+                            <th>Name</th>
                             <th>Item Type</th>
                             <th>Merk</th>
                             <th>User Create</th>
@@ -67,7 +67,7 @@
 
         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
         <br>
-        <a href="{{ route('shipments.admin.resi_outbound_to_rma.index') }}" class="btn btn-secondary">Batal</a>
+        <a href="{{ route('shipments.rma.resi_outbound_from_rma.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
 @endsection

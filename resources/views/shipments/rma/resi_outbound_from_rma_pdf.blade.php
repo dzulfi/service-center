@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Resi Pengiriman Ke RMA</title>
+    <title>Resi Pengiriman Kembali ke Admin Cabang</title>
     <style>
         body { font-family: sans-serif; font-size: 12px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <h2>Resi Pengiriman ke RMA</h2>
+    <h2>Resi Pengiriman ke Admin Cabang</h2>
 
     <p><strong>No Resi:</strong> {{ $shipment->resi_number }}</p>
     <p><strong>Tanggal Pembuatan:</strong> {{ $shipment->created_at->format('d-m-Y') }}</p>

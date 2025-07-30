@@ -17,33 +17,6 @@
             <p class="no-data">Tidak ada barang yang siap dikirim ke RMA.</p>
         @else
             <div class="table-responsive">
-                {{-- <table>
-                    <thead>
-                        <tr>
-                            <th>ID Barang</th>
-                            <th>Nama Barang</th>
-                            <th>Serial Number</th>
-                            <th>Mitra Bisnis</th>
-                            <th>Dibuat Oleh</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($serviceItems as $item)
-                            <tr>
-                                <td>{{ $item->id }}</td>
-                                <td>{{ $item->name }}</td>
-                                <td>{{ $item->serial_number ?? '-' }}</td>
-                                <td>{{ $item->customer->name ?? '-' }}</td>
-                                <td>{{ $item->creator->name ?? 'N/A' }}</td>
-                                <td class="actions">
-                                    <a href="{{ route('shipments.admin.outbound_to_rma.create', $item->id) }}" class="add-button" style="background-color: #28a745;">Kirim Sekarang</a>
-                                    <a href="{{ route('service_items.show', $item->id) }}" class="view-button">Lihat Detail</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table> --}}
                 <form action="{{ route('shipments.admin.outbound_to_rma.bulk_create') }}" method="GET">
                     <button type="submit">Kirim Barang Terpilih</button>
                     <table>

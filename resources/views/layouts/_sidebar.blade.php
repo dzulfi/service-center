@@ -108,8 +108,8 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('shipments.admin.resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('resi_outbound_to_rma.*') ? 'active' : '' }}">
-                            Resi Kirim Barang ke RMA
+                        <a href="{{ route(name: 'shipments.admin.resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('resi_outbound_to_rma.*') ? 'active' : '' }}">
+                            Resi Kirim Service ke RMA
                         </a>
                     </li>
                     <li>
@@ -131,6 +131,11 @@
                     <li>
                         <a href="{{ route('shipments.rma.outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.outbound_from_rma.*') ? 'active' : '' }}">
                             Siap Kirim Balik Ke Admin
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.resi_outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.resi_outbound_from_rma.*') ? 'active' : '' }}">
+                            Resi Kirim Balik Ke Admin
                         </a>
                     </li>
                 @endif
