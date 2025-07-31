@@ -18,26 +18,32 @@
         @else
             <div class="table-responsive">
                 <form action="{{ route('shipments.admin.outbound_to_rma.bulk_create') }}" method="GET">
-                    <button type="submit">Kirim Barang Terpilih</button>
+                    <button type="submit" class="kirim-button">Kirim Barang Terpilih</button>
                     <table>
                         <thead>
                             <tr>
                                 <th><input type="checkbox" id="select_all"></th>
-                                <th>ID Barang</th>
-                                <th>Nama Barang</th>
+                                <th>No</th>
+                                <th>Kode</th>
                                 <th>Serial Number</th>
+                                <th>Nama Barang</th>
+                                <th>Tipe</th>
+                                <th>Merk</th>
                                 <th>Mitra Bisnis</th>
                                 <th>Dibuat Oleh</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($serviceItems as $item)
+                            @foreach ($serviceItems as $serviceItem => $item)
                                 <tr>
                                     <td><input type="checkbox" name="service_item_ids[]" value="{{ $item->id }}"></td>
-                                    <td>{{ $item->id }}</td>
-                                    <td>{{ $item->name }}</td>
+                                    <td>{{ $serviceItem + 1 }}</td>
+                                    <td>{{ $item->code }}</td>
                                     <td>{{ $item->serial_number ?? '-' }}</td>
+                                    <td>{{ $item->name }}</td>
+                                    <td>{{ $item->itemType->type_name }}</td>
+                                    <td>{{ $item->merk->merk_name }}</td>
                                     <td>{{ $item->customer->name ?? '-' }}</td>
                                     <td>{{ $item->creator->name ?? 'N/A' }}</td>
                                     <td class="actions">

@@ -146,6 +146,12 @@
 
             <h2>Informasi Barang Servis</h2>
             <div class="form-group">
+                <strong>Kode Barang:</strong> <span>{{ $serviceItem->code ?? '-' }}</span>
+            </div>
+            <div class="form-group">
+                <strong>Serial Number:</strong> <span>{{ $serviceItem->serial_number ?? '-' }}</span>
+            </div>
+            <div class="form-group">
                 <strong>Mitra Bisnis:</strong>
                 <span>
                     @if ($serviceItem->customer)
@@ -159,16 +165,13 @@
                 <strong>Nama Barang:</strong> <span>{{ $serviceItem->name }}</span>
             </div>
             <div class="form-group">
-                <strong>Tipe Barang:</strong> <span>{{ $serviceItem->type ?? '-' }}</span>
+                <strong>Tipe Barang:</strong> <span>{{ $serviceItem->itemType->type_name ?? '-' }}</span>
             </div>
             <div class="form-group">
-                <strong>Serial Number:</strong> <span>{{ $serviceItem->serial_number ?? '-' }}</span>
+                <strong>Merk:</strong> <span>{{ $serviceItem->merk->merk_name ?? '-' }}</span>
             </div>
             <div class="form-group">
                 <strong>Analisa Kerusakan Awal:</strong> <span>{{ $serviceItem->analisa_kerusakan ?? '-' }}</span>
-            </div>
-            <div class="form-group">
-                <strong>Merk:</strong> <span>{{ $serviceItem->merk ?? '-' }}</span>
             </div>
             @if ($latestProcess)
                 <div class="form-group">
@@ -244,7 +247,7 @@
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
-                <button type="submit">Simpan Proses Servis</button>
+                <button type="submit" class="kirim-button">Simpan Proses Servis</button>
             </form>
 
             <a href="{{ route('service_processes.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>

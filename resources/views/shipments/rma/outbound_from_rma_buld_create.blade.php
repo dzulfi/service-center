@@ -47,7 +47,7 @@
                     </tbody>
                 </table>
             </div>
-            <button type="submit">Kirim Semua Barang</button>
+            <button type="submit" class="kirim-button">Kirim Semua Barang</button>
         </form>
     </div>
 @endsection
