@@ -60,6 +60,12 @@ class StockSparepartController extends Controller
             'quantity'=> 'required|integer|min:1',
         ]);
 
+        $currentStock = $sparepart->getStock();
+
+        if ($request->quantity > $currentStock) {
+            return redirect()->back()->withInput()->with('error', 'Jumlah yang dikurangi melebihi stok saat ini (' . $currentStock . ')');
+        }
+
         StockSparepart::create([
             'sparepart_id' => $sparepart->id,
             'stock_type' => StockTypeEnum::Out,
@@ -87,6 +93,14 @@ class StockSparepartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]); 
 
+        // ambil model sparepart
+        $sparepart = Sparepart::findOrFail($request->sparepart_id);
+        $currentStock = $sparepart->getStock();
+
+        if ($request->quantity > $currentStock) {
+            return redirect()->back()->withInput()->with('error', 'Jumlah yang digunakan melebihi stok saat ini (' . $currentStock . ')');
+        }
+
         StockSparepart::create([
             'sparepart_id' => $request->sparepart_id,
             'service_item_id' => $serviceItem->id,
@@ -95,5 +109,52 @@ class StockSparepartController extends Controller
         ]);
 
         return redirect()->route('service_processes.index')->with('success','Sparepart berhasil di gunakan');
+    }
+
+    public function stockReturn(ServiceItem $serviceItem)
+    {
+        if (!Auth::user()->isRma()) abort(403, 'Akses Ditolak Hanya RMA');
+
+        $spareparts = Sparepart::get();
+
+        return view('stock_spareparts.stock_in.return_stock', compact('serviceItem','spareparts'));
+    }
+
+    public function storeStockReturn(Request $request, ServiceItem $serviceItem)
+    {
+        $request->validate([
+            'sparepart_id' => 'required|exists:spareparts,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $sparepartId = $request->sparepart_id;
+        $quantityReturn = $request->quantity;
+
+        // Hitung jumlah out untuk sparepart tertentu pada service item ini
+        $totalOut = StockSparepart::where('sparepart_id', $sparepartId)
+            ->where('service_item_id', $serviceItem->id)
+            ->where('stock_type', StockTypeEnum::Out)
+            ->sum('quantity');
+
+        // Hitung Jumlah pengembalian (IN) sebelumnya untuk sparepart tersebut
+        $totalReturned = StockSparepart::where('sparepart_id', $sparepartId)
+            ->where('service_item_id', $serviceItem->id)
+            ->where('stock_type', StockTypeEnum::In)
+            ->sum('quantity');
+
+        $maxReturnable = $totalOut - $totalReturned;
+
+        if ($quantityReturn > $maxReturnable) {
+            return redirect()->back()->withInput()->with('error', 'Jumlah pengembalian melebihi yang pernah digunakan. Maksimal yang dapat dikembalikan: ' . $maxReturnable);
+        }
+
+        StockSparepart::create([
+            'sparepart_id' => $sparepartId,
+            'service_item_id' => $serviceItem->id,
+            'stock_type' => StockTypeEnum::In,
+            'quantity' => $quantityReturn,
+        ]);
+
+        return redirect()->route('service_processes.index')->with('success', 'Sparepart berhasil dikembalikan ke stok');
     }
 }

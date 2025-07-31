@@ -74,6 +74,22 @@ class ServiceItem extends Model
         return $this->hasMany(StockSparepart::class, 'service_item_id');
     }
 
+    // Hitung stock sparepart yang digunakan dan hitung stock sparepart jika ada pengembalian
+    public function getCurrentStockForSparepart($sparepartId)
+    {
+        $stockOut = $this->stockSpareparts()
+            ->where('sparepart_id', $sparepartId)
+            ->where('stock_type', 'out')
+            ->sum('quantity');
+
+        $stockIn = $this->stockSpareparts()
+            ->where('sparepart_id', $sparepartId)
+            ->where('stock_type', 'in')
+            ->sum('quantity');
+
+        return $stockOut - $stockIn;
+    }
+
     public function itemType()
     {
         return $this->belongsTo(ItemType::class, 'item_type_id');

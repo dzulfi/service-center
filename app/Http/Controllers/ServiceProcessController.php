@@ -32,36 +32,36 @@ class ServiceProcessController extends Controller
             ->where('location_status', LocationStatusEnum::AtRMA)
             ->get();
 
-            // Filter di Collection
-            $filterServiceItem = $serviceItems->filter(function ($item) {
-                // filter yang belum selesai atau batal secara proses
-                $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
-                $finalProcessStatuses = ['Selesai', 'Tidak bisa diperbaiki'];
-                $isNotFinished = !$latestProcess || !in_array($latestProcess->process_status, $finalProcessStatuses);
+        // Filter di Collection
+        $filterServiceItem = $serviceItems->filter(function ($item) {
+            // filter yang belum selesai atau batal secara proses
+            $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
+            $finalProcessStatuses = ['Selesai', 'Tidak bisa diperbaiki'];
+            $isNotFinished = !$latestProcess || !in_array($latestProcess->process_status, $finalProcessStatuses);
 
-                // Pastikan ada shipment terakhir dari admin dan statusnya 'Diterima'
-                $latestInboundShipment = $item->shipments->first(); // Karena sudah kita limit
+            // Pastikan ada shipment terakhir dari admin dan statusnya 'Diterima'
+            $latestInboundShipment = $item->shipments->first(); // Karena sudah kita limit
 
-                $isReceivedFromAdmin = $latestInboundShipment && $latestInboundShipment->shipment_type === ShipmentTypeEnum::ToRMA && $latestInboundShipment->status === ShipmentStatusEnum::Diterima;
-                
-                // return ((!$latestProcess || $latestProcess->process_status !== 'Selesai') && (!$latestProcess || $latestProcess->process_status !== 'Tidak bisa diperbaiki'));
-                // return !$latestProcess || !in_array($latestProcess->process_status, $finalProcessStatuses);
+            $isReceivedFromAdmin = $latestInboundShipment && $latestInboundShipment->shipment_type === ShipmentTypeEnum::ToRMA && $latestInboundShipment->status === ShipmentStatusEnum::Diterima;
+            
+            // return ((!$latestProcess || $latestProcess->process_status !== 'Selesai') && (!$latestProcess || $latestProcess->process_status !== 'Tidak bisa diperbaiki'));
+            // return !$latestProcess || !in_array($latestProcess->process_status, $finalProcessStatuses);
 
-                return $isNotFinished && $isReceivedFromAdmin;
-            });
+            return $isNotFinished && $isReceivedFromAdmin;
+        });
 
-            // Manual Pagination 
-            $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Mengambil nomor halaman saat ini dari query string (contoh: ?page=2). Misal URL: example.com/barang?page=3, maka resolveCurrentPage() akan mengembalikan 3.
-            $perPage = 10; // Jumlah data yang ditampilkan dalam satu page
-            $currentItem = $filterServiceItem->slice(($currentPage - 1) * $perPage, $perPage)->values(); // mengambil jumlah item yang ditampilkan di halaman itu
-            $paginationItems = new LengthAwarePaginator(
-                $currentItem, // item yang ditampilkan di halaman ini
-                $filterServiceItem->count(), // totak seluruh item setelah di filter
-                $perPage, // jumlah item per halaman
-                $currentPage // halaman saat ini
-            );
+        // Manual Pagination 
+        $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Mengambil nomor halaman saat ini dari query string (contoh: ?page=2). Misal URL: example.com/barang?page=3, maka resolveCurrentPage() akan mengembalikan 3.
+        $perPage = 10; // Jumlah data yang ditampilkan dalam satu page
+        $currentItem = $filterServiceItem->slice(($currentPage - 1) * $perPage, $perPage)->values(); // mengambil jumlah item yang ditampilkan di halaman itu
+        $paginationItems = new LengthAwarePaginator(
+            $currentItem, // item yang ditampilkan di halaman ini
+            $filterServiceItem->count(), // totak seluruh item setelah di filter
+            $perPage, // jumlah item per halaman
+            $currentPage // halaman saat ini
+        );
 
-            $paginationItems->withPath(request()->url()); // agar pagination link tetap benar
+        $paginationItems->withPath(request()->url()); // agar pagination link tetap benar
         
         return view('service_processes.index', ['serviceItems' => $paginationItems]);
     }

@@ -204,6 +204,10 @@ Route::middleware('auth')->group(function () {
         // minus stock
         Route::get('stock_sparepart/{sparepart}/stock_out_minus', [StockSparepartController::class,'stockOutMinus'])->name('stock_out_minus.create');
         Route::post('stock_sparepart/{sparepart}/stock_out_minus', [StockSparepartController::class,'storeStockOutMinus'])->name('stock_out_minus.store');
+
+        // Pengembalian
+        Route::get('stock-sparepart/stock-return/{serviceItem}', [StockSparepartController::class,'stockReturn'])->name('stock_return.create');
+        Route::post('stock-sparepart/stock_return/{serviceItem}', [StockSparepartController::class,'storeStockReturn'])->name('stock_return.store');
     });
 
     // logout

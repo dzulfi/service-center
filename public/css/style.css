@@ -261,6 +261,24 @@ tr:hover {
     background-color: #2f9d00;
 }
 
+.actions a.stock-out {
+    background-color: #006eff;
+    color: #ffffff;
+}
+
+.actions a.stock-out:hover {
+    background-color: #000f98;
+}
+
+.actions a.stock-return {
+    background-color: #ffe600;
+    color: #000000;
+}
+
+.actions a.stock-return:hover {
+    background-color: #c1ae00;
+}
+
 .no-data {
     text-align: center;
     padding: 20px;
