@@ -70,7 +70,7 @@
                     <div class="error">{{ $message }}</div>
                 @enderror
             </div>
-            <button type="submit">Simpan Barang Servis</button>
+            <button type="submit" class="kirim-button">Simpan Barang Servis</button>
         </form>
         <a href="{{ route('service_items.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>
     </div>

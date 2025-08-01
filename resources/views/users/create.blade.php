@@ -158,7 +158,7 @@
                     <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number') }}">
                     @error('phone_number') <div class="error">{{ $message }}</div> @enderror
                 </div>
-                <button type="submit">Simpan Pengguna</button>
+                <button type="submit" class="kirim-button">Simpan User</button>
             </form>
             <a href="{{ route('users.index') }}" class="back-link">Kembali ke Daftar Pengguna</a>
         </div>

@@ -141,7 +141,7 @@
                     @enderror
                 </div>
 
-                <button type="submit">Simpan</button>
+                <button type="submit" class="kirim-button">Simpan</button>
             </form>
         </div>
     @endsection

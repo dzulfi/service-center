@@ -142,7 +142,7 @@
                     <input type="text" name="city" id="city" value="{{ old('city') }}" required>
                     @error('city') <div class="error">{{ $message }}</div> @enderror
                 </div>
-                <button type="submit">Simpan Kantor Cabang</button>
+                <button type="submit" class="kirim-button">Simpan Kantor Cabang</button>
             </form>
             <a href="{{ route('branch_offices.index') }}" class="back-link">Kembali ke Daftar Cabang</a>
         </div>
