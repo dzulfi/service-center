@@ -4,91 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Barang Servis: {{ $serviceItem->item_name }}</title>
-    {{-- <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f7f6;
-            color: #333;
+    <style>
+        .list-disc{
+            list-style-type: disc;
         }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        .detail-group {
-            display: flex;
-            margin-bottom: 15px;
-            align-items: flex-start;
-        }
-        .detail-group strong {
-            flex: 0 0 180px; /* Lebar tetap untuk label */
-            color: #555;
-            font-weight: 600;
-        }
-        .detail-group span, .detail-group a {
-            flex: 1;
-            color: #333;
-        }
-        .detail-group a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        .detail-group a:hover {
-            text-decoration: underline;
-        }
-        .actions {
-            margin-top: 30px;
-            text-align: center;
-        }
-        .actions a, .actions button {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 0 10px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .actions a.edit-button {
-            background-color: #ffc107;
-            color: #333;
-        }
-        .actions a.edit-button:hover {
-            background-color: #e0a800;
-        }
-        .actions button.delete-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .actions button.delete-button:hover {
-            background-color: #c82333;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #3498db;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-        .back-link:hover {
-            color: #2980b9;
-            text-decoration: underline;
-        }
-    </style> --}}
+    </style>
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
@@ -164,6 +84,48 @@
                 <strong>Diterima Admin:</strong>
                 {{-- <span>{{ $diterimaCabang ? $diterimaCabang->format('d M Y H:i') : '-' }}</span> --}}
                 <span>{{ $serviceItem->diterima_cabang?->format('d M Y H:i') ?? '-' }}</span>
+            </div>
+
+            @foreach ($serviceItem->serviceProcesses as $item)
+                <div class="detail-group">
+                    <strong>Kerusakan:</strong>
+                    <span>{{ $item->damage_analysis_detail }}</span>
+                </div>
+                <div class="detail-group">
+                    <strong>Solusi:</strong>
+                    <span>{{ $item->solution }}</span>
+                </div>
+                <div class="detail-group">
+                    <strong>Progres pengerjaan:</strong>
+                    <span>
+                        @php
+                            $latestProcess = $serviceItem->serviceProcesses->sortByDesc('created_at')->first();
+                        @endphp
+                        @if ($latestProcess)
+                            <span class="status-badge status-{{ Str::slug($latestProcess->process_status) }}">
+                                {{ $latestProcess->process_status }}
+                            </span>
+                        @else
+                            <span class="status-badge status-pending">Pending</span>
+                        @endif
+                    </span>
+                </div>
+                <div class="detail-group">
+                    <strong>Keterangan tambahan:</strong>
+                    <span>{{ $item->keterangan }}</span>
+                </div>
+            @endforeach
+
+            <div class="detail-group">
+                <strong>Sparepart</strong>
+                <ul class="list-disc">
+                    @foreach ($serviceItem->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
+                        @php
+                            $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
+                        @endphp
+                        <li>{{ $sparepartName }} (stock: {{ $serviceItem->getCurrentStockForSparepart($sparepartId) }})</li>
+                    @endforeach
+                </ul>
             </div>
 
             <div class="actions">
