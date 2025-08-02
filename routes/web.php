@@ -190,7 +190,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // RMA (Stock Sparepart)
-    Route::middleware(['role:rma'])->group(function () {
+    Route::middleware(['role:rma,rma_admin'])->group(function () {
         Route::resource('spareparts', SparepartController::class);
         
         // Stock In

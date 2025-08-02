@@ -120,6 +120,16 @@
                 @endif
             @endauth
 
+            @auth
+                @if (auth()->user()->isRma() || auth()->user()->isRmaAdmin())
+                    <li>
+                        <a href="{{ route('spareparts.index') }}" class="{{ request()->routeIs('spareparts.*') ? 'active' : '' }}">
+                            Sparepart Service
+                        </a>
+                    </li>
+                @endif
+            @endauth
+
             {{-- RMA: Fitur Pengiriman Barang (RMA) --}}
             @auth
                 @if (auth()->user()->isRmaAdmin())
@@ -143,11 +153,6 @@
             {{-- mengerjakan daftar proses service (RMA only) --}}
             @auth
                 @if (auth()->user()->isRma())
-                    <li>
-                        <a href="{{ route('spareparts.index') }}" class="{{ request()->routeIs('spareparts.*') ? 'active' : '' }}">
-                            Sparepart Service
-                        </a>
-                    </li>
                     <li>
                         <a href="{{ route('service_processes.index') }}" class="{{ request()->routeIs('service_processes.*') ? 'active' : '' }}">
                             Antrian Service

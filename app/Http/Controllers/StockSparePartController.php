@@ -15,7 +15,7 @@ class StockSparepartController extends Controller
 {
     public function stockIn(Sparepart $sparepart)
     {
-        if (!Auth::user()->isRma()) {
+        if (!Auth::user()->isRma() && !Auth::user()->isRmaAdmin()) {
             abort(403, "Akses Ditolak");
         }
 
@@ -24,7 +24,7 @@ class StockSparepartController extends Controller
 
     public function storeStockIn(Request $request, Sparepart $sparepart)
     {
-        if (!Auth::user()->isRma()) {
+        if (!Auth::user()->isRma() && !Auth::user()->isRmaAdmin()) {
             abort(403, 'Akses Ditolak');
         }
 
@@ -43,7 +43,7 @@ class StockSparepartController extends Controller
 
     public function stockOutMinus(Sparepart $sparepart)
     {
-        if (!Auth::user()->isRma()) {
+        if (!Auth::user()->isRma() && !Auth::user()->isRmaAdmin()) {
             abort(403, 'Akses Ditolak');
         }
 
@@ -52,7 +52,7 @@ class StockSparepartController extends Controller
 
     public function storeStockOutMinus(Request $request, Sparepart $sparepart)
     {
-        if (!Auth::user()->isRma()) {
+        if (!Auth::user()->isRma() && !Auth::user()->isRmaAdmin()) {
             abort(403   , 'Akses Ditolak');
         }
 
