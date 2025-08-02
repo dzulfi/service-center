@@ -243,6 +243,20 @@ class ShipmentController extends Controller
         return view('shipments.admin.inbound_from_rma_index', compact('shipments'));
     }
 
+    public function showInboundFromRma(Shipment $shipment)
+    {
+        $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
+            $q->where('process_status', 'Selesai');
+        })->where(function ($q) use ($shipment) {
+            $q->whereDoesntHave('shipments', function ($q2) use ($shipment) {
+                $q2->where('shipment_type', ShipmentTypeEnum::FromRMA)
+                    ->where('shipments.id', '!=', $shipment->id);
+            });
+        })->get();
+
+        return view('shipments.admin.inbound_from_rma_show', compact('shipment', 'availableItems'));
+    }
+
     public function receiveInboundFromRma(Shipment $shipment)
     {
         if (Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
@@ -288,7 +302,7 @@ class ShipmentController extends Controller
             $q->where('shipments.id', $shipment->id);
         })->get();
 
-        return view('shipments.rma.resi_inbound_from_admin_show', compact('shipment', 'availableItems'));
+        return view('shipments.rma.inbound_from_admin_show', compact('shipment', 'availableItems'));
     }
 
     public function receiveInboundFromAdmin(Shipment $shipment)
@@ -364,7 +378,7 @@ class ShipmentController extends Controller
 
         // Upload file jika ada 
         if ($request->hasFile('resi_image')) {
-            $path = $request->file('resi_image')->store('resi_rma_images');
+            $path = $request->file('resi_image')->store('resi_images/from_rma', 'public');
             $shipment->resi_image_path = $path;
             $shipment->save();
         }
@@ -426,8 +440,12 @@ class ShipmentController extends Controller
         ]);
 
         // Update ulang gambar resi jika ada
+        $imagePath = $shipment->resi_image_path;
         if ($request->hasFile('resi_image')) {
-            $path = $request->file('resi_image')->store('resi_rma_images');
+            if ($shipment->resi_image_path) {
+                Storage::disk('public')->delete($shipment->resi_image_path);
+            }
+            $path = $request->file('resi_image')->store('resi_images/from_rma', 'public');
             $shipment->resi_image_path = $path;
             $shipment->save();
         }
@@ -491,6 +509,9 @@ class ShipmentController extends Controller
         $shipment->serviceItems()->detach();
 
         // Hapus resi
+        if ($shipment->resi_image_path) {
+            Storage::disk('public')->delete($shipment->resi_image_path);
+        }
         $shipment->delete();
 
         return redirect()->route('shipments.rma.resi_outbound_from_rma.index')->with('success','Resi berhasil dihapus dan semua service item dikembalikan ke RMA');

@@ -86,6 +86,9 @@ Route::middleware('auth')->group(function () {
         // Admin: Menerima Barang dari RMA
         Route::get('inbound-from-rma', [ShipmentController::class, 'indexInboundFromRma'])->name('inbound_from_rma.index'); // Daftar barang masuk dari RMA
         Route::post('inbound-from-rma/{shipment}/receive', [ShipmentController::class, 'receiveInboundFromRma'])->name('inbound_from_rma.receive'); // Aksi Terima
+
+        // Detail service masuk dari RMA
+        Route::get('inbound-from-rma/{shipment}', [ShipmentController::class,'showInboundFromRma'])->name('inbound_from_rma.show');
         
         // Menampilkan seluruh data service 
         Route::get('outbound-to-rma', [ShipmentController::class, 'indexOutboundToRma'])->name('outbound_to_rma.index'); // Daftar barang siap kirim

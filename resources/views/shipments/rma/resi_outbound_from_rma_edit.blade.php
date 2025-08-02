@@ -20,7 +20,10 @@
             <label>Ganti Gambar Resi</label>
             <input type="file" name="resi_image" class="form-control">
             @if ($shipment->resi_image_path)
-                <p>Gambar saat ini: <a href="{{ asset('storage/' . $shipment->resi_image_path) }}" target="_blank">Lihat</a></p>
+                <p>Gambar saat ini: 
+                    {{-- <a href="{{ asset('storage/' . $shipment->resi_image_path) }}" target="_blank">Lihat</a> --}}
+                    <img src="{{ Storage::url($shipment->resi_image_path) }}" alt="{{ $shipment->resi_number }}" style="width: auto; height: 150px; object-fit: cover;">
+                
             @endif
         </div>
 

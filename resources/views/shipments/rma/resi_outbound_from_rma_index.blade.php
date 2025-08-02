@@ -32,7 +32,13 @@
                             <tr>
                                 <td>{{ $shipment + 1 }}</td>
                                 <td>{{ $item->resi_number }}</td>
-                                <td>-</td>
+                                <td>
+                                    @if ($item->resi_image_path)
+                                        <img src="{{ Storage::url($item->resi_image_path) }}" alt="{{ $item->resi_number }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                    @else
+                                        Tidak ada gambar
+                                    @endif
+                                </td>
                                 <td>{{ $item->notes }}</td>
                                 <td class="actions">
                                     <a href="{{ route('shipments.rma.resi_outbound_from_rma.edit', $item->id) }}" class="edit-button">Edit</a>
