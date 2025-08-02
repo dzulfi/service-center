@@ -16,7 +16,11 @@
     <p><strong>No Resi:</strong> {{ $shipment->resi_number }}</p>
     <p><strong>Tanggal Pembuatan:</strong> {{ $shipment->created_at->format('d-m-Y') }}</p>
     <p><strong>Pengiriman:</strong> {{ $shipment->responsibleUser->name }}</p>
-    <p><strong>Gambar</strong></p>
+    <p><strong>Gambar</strong></p> 
+    {{-- <img src="{{ str_replace('\\', '/', public_path('storage/' . $shipment->resi_image_path)) }}" alt="Gambar Resi"> --}}
+    {{-- @php
+        dd(str_replace('\\', '/', public_path('storage/' . $shipment->resi_image_path)))
+    @endphp --}}
     <p><strong>Notes:</strong> {{ $shipment->notes ?? '-' }}</p>
 
     <h3>Daftar Barang:</h3>

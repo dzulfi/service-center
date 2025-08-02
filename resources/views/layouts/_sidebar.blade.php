@@ -121,7 +121,7 @@
             @endauth
 
             @auth
-                @if (auth()->user()->isRma() || auth()->user()->isRmaAdmin())
+                @if (auth()->user()->isRmaAdmin())
                     <li>
                         <a href="{{ route('spareparts.index') }}" class="{{ request()->routeIs('spareparts.*') ? 'active' : '' }}">
                             Sparepart Service

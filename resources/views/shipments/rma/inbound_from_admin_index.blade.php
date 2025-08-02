@@ -40,7 +40,7 @@
                                 <td>{{ $shipment->resi_number ?? '-' }}</td>
                                 <td>
                                     @if ($shipment->resi_image_path)
-                                        <img src="{{ Storage::url('resi_images/'. $shipment->resi_image_path) }}" alt="" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <img src="{{ Storage::url($shipment->resi_image_path) }}" alt="{{ $shipment->resi_number }}" style="width: 50px; height: 50px; object-fit: cover;">
                                     @else
                                         Tidak ada gambar
                                     @endif
@@ -50,7 +50,7 @@
                                 <td>{{ $shipment->responsibleUser->branchOffice->name }}</td>
                                 <td>{{ $shipment->created_at->format('d M Y H:i') }}</td>
                                 <td class="actions">
-                                    {{-- <a href="{{ route('shipments.show', $shipment->id) }}" class="view-button">Lihat Detail</a> --}}
+                                    <a href="{{ route('shipments.rma.inbound_from_admin.show', $shipment->id) }}" class="view-button">Lihat Detail</a>
                                     <form action="{{ route('shipments.rma.inbound_from_admin.receive', $shipment->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="add-button" style="background-color: #28a745;" onclick="return confirm('Anda yakin ingin menerima barang ini di cabang?')">Terima Barang</button>

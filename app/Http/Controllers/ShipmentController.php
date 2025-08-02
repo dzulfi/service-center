@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use PDF;
 
 class ShipmentController extends Controller
@@ -81,7 +82,7 @@ class ShipmentController extends Controller
 
         // Upload file jika ada
         if ($request->hasFile('resi_image')) {
-            $path = $request->file('resi_image')->store('resi_images');
+            $path = $request->file('resi_image')->store('resi_images/to_rma', 'public');
             $shipment->resi_image_path = $path;
             $shipment->save();
         }
@@ -150,8 +151,12 @@ class ShipmentController extends Controller
         ]);
 
         // Update ulang gambar resi jika ada
+        $imagePath = $shipment->resi_image_path; // Pertahankan gambar lama jika tidak ada perubahan
         if ($request->hasFile('resi_image')) {
-            $path = $request->file('resi_image')->store('resi_images');
+            if($shipment->resi_image_path) {
+                Storage::disk('public')->delete($shipment->resi_image_path);
+            }
+            $path = $request->file('resi_image')->store('resi_images/to_rma', 'public');
             $shipment->resi_image_path = $path;
             $shipment->save();
         }
@@ -218,6 +223,9 @@ class ShipmentController extends Controller
         $shipment->serviceItems()->detach();
 
         // Hapus resi 
+        if ($shipment->resi_image_path) {
+            Storage::disk('public')->delete($shipment->resi_image_path);
+        }
         $shipment->delete();
 
         return redirect()->route('shipments.admin.resi_outbound_to_rma.index')->with('success','Resi berhasil dihapus dan semua service item dikembalikan ke kantor cabang');
@@ -270,6 +278,17 @@ class ShipmentController extends Controller
             ->get();
 
         return view('shipments.rma.inbound_from_admin_index', compact('shipments'));
+    }
+    
+    public function showInboundFromAdmin(Shipment $shipment)
+    {
+        $availableItems = ServiceItem::whereDoesntHave('shipments', function ($q) {
+            $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
+        })->orWhereHas('shipments', function ($q) use ($shipment) {
+            $q->where('shipments.id', $shipment->id);
+        })->get();
+
+        return view('shipments.rma.resi_inbound_from_admin_show', compact('shipment', 'availableItems'));
     }
 
     public function receiveInboundFromAdmin(Shipment $shipment)

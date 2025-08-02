@@ -124,6 +124,9 @@ Route::middleware('auth')->group(function () {
         Route::get('inbound-from-admin', [ShipmentController::class, 'indexInboundFromAdmin'])->name('inbound_from_admin.index'); // Daftar barang masuk dari admin
         Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); // Aksi terima
 
+        // Detail service masuk dari admin
+        Route::get('inbound-from-admin/{shipment}', [ShipmentController::class, 'showInboundFromAdmin'])->name('inbound_from_admin.show');
+
         // Multiple choice service item
         Route::get('outbound-from-rma/create-multiple', [ShipmentController::class, 'createOutboundMultipleFromRma'])->name('outbound_from_rma.bulk_create');
         Route::post('outbound-from-rma/store-multiple', [ShipmentController::class, 'storeOutboundMultipleFromRma'])->name('outbound_from_rma.bulk_store');
