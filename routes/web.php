@@ -123,9 +123,12 @@ Route::middleware('auth')->group(function () {
         Route::get('outbound-from-rma/{serviceItem}/create', [ShipmentController::class,'createOutboundFromRma'])->name('outbound_from_rma.create'); // form kirim kembali
         Route::post('outbound-from-rma/{serviceItem}/store', [ShipmentController::class,'storeOutboundFromRma'])->name('outbound_from_rma.store'); // Simpan Kirim Kembali
 
-        // Barang service masuk dari admin
+        // Daftar barang service masuk dari admin
         Route::get('inbound-from-admin', [ShipmentController::class, 'indexInboundFromAdmin'])->name('inbound_from_admin.index'); // Daftar barang masuk dari admin
-        Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); // Aksi terima
+        // Aksi terima resi
+        Route::post('inbound-from-admin/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdmin'])->name('inbound_from_admin.receive'); 
+        // Aksi terima resi detail
+        Route::post('inbound-from-admin-detail/{shipment}/receive', [ShipmentController::class,'receiveInboundFromAdminDetail'])->name('inbound_from_admin_detail.receive');
 
         // Detail service masuk dari admin
         Route::get('inbound-from-admin/{shipment}', [ShipmentController::class, 'showInboundFromAdmin'])->name('inbound_from_admin.show');

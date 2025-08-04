@@ -182,6 +182,21 @@
                         </span>
                     </span>
                 </div>
+            @else
+                <div class="form-group">
+                    <strong>Status Proses Terakhir:</strong> <span class="status-badge status-pending">Belum ada proses</span>
+                </div>
+            @endif
+
+            {{-- @if ($latestProcess)
+                <div class="form-group">
+                    <strong>Status Proses Terakhir:</strong>
+                    <span>
+                        <span class="status-badge status-{{ Str::slug($latestProcess->process_status) }}">
+                            {{ $latestProcess->process_status }}
+                        </span>
+                    </span>
+                </div>
                 <div class="form-group">
                     <strong>Analisa Terakhir:</strong> <span>{{ $latestProcess->damage_analysis_detail ?? '-' }}</span>
                 </div>
@@ -198,7 +213,7 @@
                 <div class="form-group">
                     <strong>Status Proses Terakhir:</strong> <span class="status-badge status-pending">Belum ada proses</span>
                 </div>
-            @endif
+            @endif --}}
 
 
             <h2>Form Proses Servis</h2>

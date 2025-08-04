@@ -22,7 +22,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th><input type="checkbox" id="select_all"></th>
+                                <th><input type="checkbox" id="shipment-from-rma"></th>
                                 <th>No</th>
                                 <th>Kode</th>
                                 <th>Serial Number</th>
@@ -39,7 +39,9 @@
                         <tbody>
                             @foreach ($serviceItems as $serviceItem => $item)
                                 <tr>
-                                    <td><input type="checkbox" name="service_item_ids[]" value="{{ $item->id }}"></td>
+                                    <td>
+                                        <input type="checkbox" name="service_item_ids[]" value="{{ $item->id }}" data-branch-id="{{ $item->creator->branchOffice->id }}">
+                                    </td>
                                     <td>{{ $serviceItem + 1 }}</td>
                                     <td>{{ $item->code }}</td>
                                     <td>{{ $item->serial_number ?? '-' }}</td>

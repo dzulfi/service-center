@@ -60,6 +60,12 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="actions">
+                    <form action="{{ route('shipments.rma.inbound_from_admin_detail.receive', $shipment->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="add-button" style="background-color: #28a745;" onclick="return confirm('Anda yakin ingin menerima barang ini di cabang?')">Terima Semua Barang</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

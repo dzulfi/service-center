@@ -27,14 +27,15 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Nama Barang</th>
+                            <th>Kode</th>
                             <th>Serial Number</th>
+                            <th>Nama Barang</th>
                             <th>Mitra Bisnis</th>
-                            <th>Analisa Kerusakan Awal</th>
+                            <th>Analisa Kerusakan</th>
                             {{-- <th>Dikerjakan oleh</th> --}}
-                            <th>Kerusakan</th>
+                            {{-- <th>Kerusakan</th>
                             <th>Solusi</th>
-                            <th>Keterangan</th>
+                            <th>Keterangan</th> --}}
                             <th>Status Terakhir</th>
                             <th>Sparepart</th>
                             <th>Aksi</th>
@@ -46,8 +47,9 @@
                         @foreach ($serviceItems as $item)
                             <tr>
                                 <td>{{ ($serviceItems->currentPage() - 1) * $serviceItems->perPage() + $loop->iteration }}</td>
-                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->code }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
+                                <td>{{ $item->name }}</td>
                                 <td>
                                     @if ($item->customer)
                                         <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
@@ -58,7 +60,7 @@
                                 <td>{{ Str::limit($item->analisa_kerusakan ?? '-', 50) }}</td>
                                 
                                 {{-- @foreach ($item->serviceProcesses as $service) --}}
-                                    @php
+                                    {{-- @php
                                         $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
                                     @endphp
                                     @if ($latestProcess)
@@ -69,7 +71,7 @@
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
-                                    @endif
+                                    @endif --}}
                                 {{-- @endforeach --}}
 
                                 <td>
@@ -85,14 +87,25 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <ul class="list-disc">
-                                        @foreach ($item->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
-                                            @php
-                                                $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
-                                            @endphp
-                                            <li>{{ $sparepartName }} (stock: {{ $item->getCurrentStockForSparepart($sparepartId) }})</li>
-                                        @endforeach
-                                    </ul>
+                                    @if ($item->stockSpareparts->isEmpty())
+                                        <div style="color: rgb(255, 93, 93); font-weight: bold;">
+                                            Tidak memakai sparepart
+                                        </div>
+                                    @else
+                                        <ul class="list-disc">
+                                            @foreach ($item->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
+                                                @php
+                                                    $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
+                                                    $currentStock = $item->getCurrentStockForSparepart($sparepartId);
+                                                @endphp
+                                                @if ($currentStock != 0)
+                                                    <li>
+                                                        {{ $sparepartName }} (stock: {{ $item->getCurrentStockForSparepart($sparepartId) }})
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </td>
                                 <td class="actions">
                                     <a href="{{ route('service_processes.work_on', $item->id) }}" class="work-button">Kerjakan</a>

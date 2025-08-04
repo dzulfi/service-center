@@ -1,6 +1,17 @@
 @extends('layouts.app') @section('content')
 <div class="container">
     <h2>Edit Resi Pengiriman</h2>
+    
+    @if (session('success'))
+        <div class="message success-message">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="message error-message">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <form method="POST" action="{{ route('shipments.rma.resi_outbound_from_rma.update', $shipment->id) }}" enctype="multipart/form-data">
         @csrf
@@ -23,7 +34,6 @@
                 <p>Gambar saat ini: 
                     {{-- <a href="{{ asset('storage/' . $shipment->resi_image_path) }}" target="_blank">Lihat</a> --}}
                     <img src="{{ Storage::url($shipment->resi_image_path) }}" alt="{{ $shipment->resi_number }}" style="width: auto; height: 150px; object-fit: cover;">
-                
             @endif
         </div>
 
@@ -68,7 +78,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <button type="submit" class="kirim-button">Simpan Perubahan</button>
         <br>
         <a href="{{ route('shipments.rma.resi_outbound_from_rma.index') }}" class="btn btn-secondary">Batal</a>
     </form>

@@ -33,13 +33,13 @@
                     <thead>
                         <tr>
                             <th>Pilih</th>
-                            <th>Code Item</th>
+                            <th>Kode</th>
                             <th>Serial Number</th>
-                            <th>    Name</th>
+                            <th>Name</th>
                             <th>Item Type</th>
                             <th>Merk</th>
-                            <th>User Create</th>
-                            <th>Branch Office</th>
+                            <th>Kode Mitra</th>
+                            <th>Mitra Bisnis</th>
                             <th>Status</th>
                             {{-- <th>Notes</th> --}}
                         </tr>
@@ -56,8 +56,8 @@
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->itemType->type_name ?? '-' }}</td>
                                 <td>{{ $item->merk->merk_name }}</td>
-                                <td>{{ $item->creator->name }}</td>
-                                <td>{{ $item->creator->branchOffice->name }}</td>
+                                <td>{{ $item->customer->code }}</td>
+                                <td>{{ $item->customer->name }}</td>
                                 <td>{{ $item->location_status }}</td>
                                 {{-- <td>{{ $item->analisa_kerusakan ?? '-' }}</td> --}}
                             </tr>
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <button type="submit" class="kirim-button">Simpan Perubahan</button>
         <br>
         <a href="{{ route('shipments.admin.resi_outbound_to_rma.index') }}" class="btn btn-secondary">Batal</a>
     </form>

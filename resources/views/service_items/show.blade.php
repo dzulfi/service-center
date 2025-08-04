@@ -114,30 +114,35 @@
                     <strong>Keterangan tambahan:</strong>
                     <span>{{ $item->keterangan }}</span>
                 </div>
+                <div class="detail-group">
+                    <strong>Sparepart</strong>
+                    <ul class="list-disc">
+                        @foreach ($serviceItem->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
+                            @php
+                                $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
+                                $currentStock = $serviceItem->getCurrentStockForSparepart($sparepartId);
+                            @endphp
+                            @if ($currentStock != 0)
+                                <li>{{ $sparepartName }} (stock: {{ $serviceItem->getCurrentStockForSparepart($sparepartId) }})</li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div>
             @endforeach
 
-            <div class="detail-group">
-                <strong>Sparepart</strong>
-                <ul class="list-disc">
-                    @foreach ($serviceItem->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
-                        @php
-                            $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
-                        @endphp
-                        <li>{{ $sparepartName }} (stock: {{ $serviceItem->getCurrentStockForSparepart($sparepartId) }})</li>
-                    @endforeach
-                </ul>
-            </div>
+            {{-- Hanya ditampilkan jika user adalah admin cabang saja --}}
+            @if (Auth::user() && Auth::user()->isAdmin())
+                <div class="actions">
+                    <a href="{{ route('service_items.edit', $serviceItem->id) }}" class="edit-button">Edit Barang Servis</a>
+                    <form action="{{ route('service_items.destroy', $serviceItem->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus Barang Servis</button>
+                    </form>
+                </div>
+                <a href="{{ route('service_items.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>
+            @endif
 
-            <div class="actions">
-                <a href="{{ route('service_items.edit', $serviceItem->id) }}" class="edit-button">Edit Barang Servis</a>
-                <form action="{{ route('service_items.destroy', $serviceItem->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus Barang Servis</button>
-                </form>
-            </div>
-
-            <a href="{{ route('service_items.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>
         </div>
     @endsection
 </body>

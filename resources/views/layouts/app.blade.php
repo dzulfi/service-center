@@ -215,6 +215,7 @@
             });
         </script>
 
+        {{-- Multiple choice shipment Admin Branch to RMA--}}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const selectAll = document.getElementById('select_all');
@@ -224,6 +225,72 @@
                         checkboxes.forEach(cb => cb.checked = e.target.checked);
                     });
                 }
+            });
+        </script>
+
+        {{-- Multiple choice shipment RMA to Admin Branch --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectAll = document.getElementById('shipment-from-rma');
+                const checkboxes = document.querySelectorAll('input[name="service_item_ids[]"]');
+                const form = document.querySelector('form');
+
+                let selectedBranchId = null;
+
+                checkboxes.forEach(cb => {
+                    cb.addEventListener('change', function () {
+                        const branchId = this.dataset.branchId;
+
+                        if (this.checked) {
+                            if (!selectedBranchId) {
+                                selectedBranchId = branchId; // set awal
+                            } else if (branchId !== selectedBranchId) {
+                                this.checked = false;
+                                alert('Kantor cabang harus sama untuk semua barang service yang dikirim.');
+                            }
+                        } else {
+                            // Jika semua tidak dicentang, reset branch ID
+                            const anyChecked = Array.from(checkboxes).some(box => box.checked);
+                            if (!anyChecked) {
+                                selectedBranchId = null;
+                            }
+                        }
+                    });
+                });
+
+                if (selectAll) {
+                    selectAll.addEventListener('click', function (e) {
+                        selectedBranchId = null;
+                        const branchMap = new Map();
+
+                        checkboxes.forEach(cb => {
+                            const branchId = cb.dataset.branchId;
+                            if (!branchMap.has(branchId)) {
+                                branchMap.set(branchId, []);
+                            }
+                            branchMap.get(branchId).push(cb);
+                        });
+
+                        if (branchMap.size > 1) {
+                            alert('Terdapat lebih dari satu kantor cabang. Harap Pilih manual untuk satu cabang saja.')
+                            e.preventDefault();
+                            return;
+                        }
+
+                        checkboxes.forEach(cb => cb.checked = e.target.checked);
+                        selectedBranchId = checkboxes[0]?.dataset.branchId || null;
+                    });
+                }
+
+                // Validasi submit (jika mau tambahan proteksi)
+                form.addEventListener('submit', function (e) {
+                    const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                    const branches = [...new Set(checked.map(cb => cb.dataset.branchId))];
+                    if (branches.length > 1) {
+                        alert('Kantor cabang harus sama untuk semua barang yang dikirim.');
+                        e.preventDefault();
+                    }
+                });
             });
         </script>
     </body>

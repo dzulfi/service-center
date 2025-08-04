@@ -28,13 +28,13 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Code</th>
+                <th>Kode</th>
                 <th>Serial Number</th>
                 <th>Nama</th>
                 <th>Tipe Barang</th>
                 <th>Merk</th>
-                <th>Nama Admin</th>
-                <th>Kantor Cabang</th>
+                <th>Kode Mitra</th>
+                <th>Mitra Bisnis</th>
                 <th>Analisa Kerusakan</th>
             </tr>
         </thead>
@@ -47,8 +47,8 @@
                     <td>{{ $item->name }}</td>
                     <td>{{ $item->itemType->type_name }}</td>
                     <td>{{ $item->merk->merk_name }}</td>
-                    <td>{{ $item->creator->name }}</td>
-                    <td>{{ $item->creator->branchOffice->name }}</td>
+                    <td>{{ $item->customer->code }}</td>
+                    <td>{{ $item->customer->name }}</td>
                     <td>{{ $item->analisa_kerusakan }}</td>
                 </tr>
             @endforeach

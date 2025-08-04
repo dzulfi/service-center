@@ -122,10 +122,11 @@ class ShipmentController extends Controller
     
     public function editResiOutboundToRma(Shipment $shipment)
     {
-        // $this->authorize('update', $shipment);
+        $loggedInUserId = Auth::id();
         
         // Ambil semua service item yang belum dipilih oleh shipment lain
-        $availableItems = ServiceItem::whereDoesntHave('shipments', function ($q) {
+        $availableItems = ServiceItem::where('created_by_user_id', $loggedInUserId)
+        ->whereDoesntHave('shipments', function ($q) {
             $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
         })->orWhereHas('shipments', function ($q) use ($shipment) {
             $q->where('shipments.id', $shipment->id);
@@ -235,10 +236,18 @@ class ShipmentController extends Controller
     {
         if (Auth::user()->isRmaAdmin()) abort(403, 'Aksi Ditolak Hanya RMA Admin');
 
+        $userBranchId = Auth::user()->branch_office_id;
+
         $shipments = Shipment::with('responsibleUser', 'serviceItems')
             ->where('shipment_type', ShipmentTypeEnum::FromRMA)
             ->where('status', ShipmentStatusEnum::KirimKembali)
-            ->get();
+            ->get()
+            // Filter hanya shipment yang punya service item untuk cabang yang sama dengan user
+            ->filter (function ($shipment) use ($userBranchId) {
+                return $shipment->serviceItems->contains(function ($item) use ($userBranchId) {
+                    return $item->creator && $item->creator->branch_office_id == $userBranchId;
+                });
+            });
 
         return view('shipments.admin.inbound_from_rma_index', compact('shipments'));
     }
@@ -326,6 +335,27 @@ class ShipmentController extends Controller
         return redirect()->back()->with('success', 'Pengiriman berhasil diterima dan semua barang berada di RMA');
     }
 
+    public function receiveInboundFromAdminDetail(Shipment $shipment)
+    {
+        if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+        if ($shipment->status === ShipmentStatusEnum::Diterima) {
+            return redirect()->back()->with('error', 'Resi sudah diterima sebelumnya');
+        }
+
+        // update status shipment menjadi diterima
+        $shipment->status = ShipmentStatusEnum::Diterima;
+        $shipment->save();
+
+        // Ubah status lokasi setiap barang service
+        foreach ($shipment->serviceItems as $item) {
+            $item->location_status = LocationStatusEnum::AtRMA;
+            $item->save();
+        }
+
+        return redirect()->route('shipments.rma.inbound_from_admin.index')->with('success', 'Pengiriman berhasil diterima dan semua barang berada di RMA');
+    }
+
     public function indexOutboundFromRma()
     {
         if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
@@ -334,7 +364,7 @@ class ShipmentController extends Controller
             ->where('location_status', LocationStatusEnum::AtRMA)
             ->get()
             ->filter(function ($item) {
-                return $item->latestServiceProcess && $item->latestServiceProcess->process_status  === 'Selesai';
+                return $item->latestServiceProcess && $item->latestServiceProcess->process_status  === 'Selesai' || $item->latestServiceProcess->process_status  === 'Tidak bisa diperbaiki';
             });
 
             return view('shipments.rma.outbound_from_rma_index', compact('serviceItems')); 
@@ -413,7 +443,7 @@ class ShipmentController extends Controller
     public function editResiOutboundFromRma(Shipment $shipment)
     {
         $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
-            $q->where('process_status', 'Selesai');
+            $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
         })->where(function ($q) use ($shipment) {
             $q->whereDoesntHave('shipments', function ($q2) use ($shipment) {
                 $q2->where('shipment_type', ShipmentTypeEnum::FromRMA)
@@ -433,6 +463,16 @@ class ShipmentController extends Controller
             'service_item_ids'=> 'required|array',
             'service_item_ids.*'=> 'exists:service_items,id',
         ]);
+
+        $branchIds = ServiceItem::whereIn('id', $validated['service_item_ids'])
+            ->with('creator.branchOffice')
+            ->get()
+            ->pluck('creator.branch_office_id')
+            ->unique();
+
+        if ($branchIds->count() > 1) {
+            return redirect()->back()->with('error', 'Semua service item harus berasal dari cabang yang sama.');
+        }
 
         $shipment->update([
             'resi_number' => $validated['resi_number'],
