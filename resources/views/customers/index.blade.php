@@ -1,42 +1,38 @@
-@extends('layouts.app')
+@extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
+    <div class="container">
+        <h1>Daftar Customer</h1>
 
-@section('title', 'Daftar Mitra Bisnis')
+        @if (session('success'))
+            <div class="message success-message">
+                {{ session('success') }}
+            </div>
+        @endif
 
-@section('content')
-<div class="container">
-    <h1>Daftar Customer</h1>
+        <a href="{{ route('customers.create') }}" class="add-button">Tambah Mitra Bisnis Baru</a>
 
-    @if (session('success'))
-        <div class="message success-message">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <a href="{{ route('customers.create') }}" class="add-button">Tambah Mitra Bisnis Baru</a>
-
-    <table id="data-tables" class="display">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Kode</th>
-                <th>No. Telepon</th>
-                <th>Perusahaan</th>
-                <th>Kota</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        {{-- <tfoot>
-            <tr>
-                <th></th>
-                <th><input type="text" placeholder="Cari Nama"></th>
-                <th><input type="text" placeholder="Cari Kode"></th>
-                <th><input type="text" placeholder="Cari Telepon"></th>
-                <th><input type="text" placeholder="Cari Perusahaan"></th>
-                <th><input type="text" placeholder="Cari Kota"></th>
-                <th></th>
-            </tr>
-        </tfoot> --}}
-    </table>
-</div>
+        <table id="customer-data-tables" class="display">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Kode</th>
+                    <th>No. Telepon</th>
+                    <th>Perusahaan</th>
+                    <th>Kota</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            {{-- <tfoot>
+                <tr>
+                    <th></th>
+                    <th><input type="text" placeholder="Cari Nama"></th>
+                    <th><input type="text" placeholder="Cari Kode"></th>
+                    <th><input type="text" placeholder="Cari Telepon"></th>
+                    <th><input type="text" placeholder="Cari Perusahaan"></th>
+                    <th><input type="text" placeholder="Cari Kota"></th>
+                    <th></th>
+                </tr>
+            </tfoot> --}}
+        </table>
+    </div>
 @endsection

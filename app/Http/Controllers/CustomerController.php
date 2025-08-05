@@ -139,7 +139,8 @@ class CustomerController extends Controller
         return redirect()->route('customers.index')->with('success', 'Mitra Bisnis berhasil dihapus');
     }
 
-    public function getData(Request $request)
+    // Datatables Customer
+    public function getDataCustomer(Request $request)
     {
         $query = Customer::query();
 
@@ -157,30 +158,23 @@ class CustomerController extends Controller
             ->rawColumns(['action']) // agar kolom action tidak di-escape
             ->addIndexColumn()
             ->make(true);
+    }
 
-        // return DataTables::of($query)
-        //     ->addColumn('action', function ($row) {
-        //         return '
-        //             <a href="' . route('customers.edit', $row->id) . '" class="btn btn-sm btn-warning">Edit</a>
-        //             <form action="' . route('customers.destroy', $row->id) . '" method="POST" style="display:inline;">
-        //                 ' . csrf_field() . method_field('DELETE') . '
-        //                 <button class="btn btn-sm btn-danger" onclick="return confirm(\'Yakin hapus data ini?\')">Hapus</button>
-        //             </form>
-        //         ';
-        //     })
-        //     ->rawColumns(['action'])
-        //     ->filter(function ($query) use ($request) {
-        //         if ($request->has('columns')) {
-        //             foreach ($request->get('columns') as $column) {
-        //                 $value = $column['search']['value'] ?? '';
-        //                 $name = $column['name'] ?? '';
-        //                 if ($value && $name && !in_array($name, ['action', 'DT_RowIndex'])) {
-        //                     $query->where($name, 'like', '%' . $value . '%');
-        //                 }
-        //             }
-        //         }
-        //     })
-        //     ->addIndexColumn() // untuk kolom No
-        //     ->make(true);
+    // Datatables Customer Activity
+    public function getDataCustomerActivity(Request $request)
+    {
+        $query = Customer::query();
+
+        return DataTables::of($query)
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('activity.customers.detail_activity_customer', $row->id) . '" class="view-button">Lihat</a>
+                    </div>
+                ';
+            })
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
     }
 }

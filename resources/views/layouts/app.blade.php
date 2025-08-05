@@ -225,10 +225,27 @@
         {{-- DataTable --}}
         <script>
             $(document).ready(function() {
-                $('#data-tables').DataTable({
+                // Customer Index
+                $('#customer-data-tables').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: "{{ route('customers.data') }}", // pastikan route ini benar
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'code', name: 'code' },
+                        { data: 'phone_number', name: 'phone_number' },
+                        { data: 'company', name: 'company' },
+                        { data: 'kota', name: 'kota' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                // Customer Activity
+                $('#customer-activity-data-tables').DataTable({
+                    processing:true,
+                    serverSide: true,
+                    ajax: "{{ route('activity-customers') }}",
                     columns: [
                         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                         { data: 'name', name: 'name' },

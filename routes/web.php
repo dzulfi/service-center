@@ -49,12 +49,12 @@ Route::middleware('auth')->group(function () {
 
     // Hanya Admin
     Route::middleware(['auth', 'role:admin'])->group(function () {
-        // server side customer DataTable
-        Route::get('customers/data', [CustomerController::class, 'getData'])->name('customers.data');
-        
+        // Server Side Customer DataTable
+        Route::get('customers/data', [CustomerController::class, 'getDataCustomer'])->name('customers.data');
+
         // CRUD Customer
         Route::resource('customers', CustomerController::class);
-
+        
         // CRUD Service Item
         Route::resource('service_items', ServiceItemController::class);
         
@@ -201,8 +201,11 @@ Route::middleware('auth')->group(function () {
 
     // melihat aktivitas service (developer, superadmin)
     Route::middleware(['role:developer,superadmin'])->group(function () {
-        // melihat daftar & detail customer
+        // Melihat List Customer All
         Route::get('activity/customers', [CustomerController::class, 'indexAll'])->name('activity.customers.index');
+        // Datatables Customer Activity
+        Route::get('activity/data', [CustomerController::class, 'getDataCustomerActivity'])->name('activity-customers');
+        // Show Detail Customer
         Route::get('activity/customers/{customer}', [CustomerController::class, 'showDetailAktivityCustomer'])->name('activity.customers.detail_activity_customer');
         
         // melihat daftar & barang service
