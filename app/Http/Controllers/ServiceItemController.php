@@ -74,7 +74,8 @@ class ServiceItemController extends Controller
             'analisa_kerusakan' => 'required|string',
             // 'item_type_id' => 'required|exists:item_types,id',
             'item_type_id'=> 'required|string|max:255',
-            'merk_id'=> 'required|exists:merks,id',
+            // 'merk_id'=> 'required|exists:merks,id',
+            'merk_id' => 'required|string|max:255',
         ]);
 
         // Logika pembuatan generate kode service
@@ -110,6 +111,7 @@ class ServiceItemController extends Controller
             $generatedCode = $branchOfficeCode . $datePart . $formattedSequentialNumber;
         }
 
+        // DYNAMIC OPTIONS ITEM TYPES
         // Fitur checking item type tersedia atau tidak ada jika tidak ada maka dibuatkan
         $itemTypeInput = $request->input('item_type_id'); // request input dari user 
         // Cek apakah input berupa ID numerik (dari dropdown)
@@ -123,6 +125,20 @@ class ServiceItemController extends Controller
             $itemTypeId = $itemType->id;
         }
 
+        // DYNAMIC OPTIONS MERKS
+        // Fitur checking item type tersedia atau tidak ada jika tidak ada maka dibuatkan
+        $merkInput = $request->input('merk_id'); // request input dari user 
+        // Cek apakah input berupa ID numerik (dari dropdown)
+        if (is_numeric($merkInput)) {
+            $merkId = $merkInput; // cek jika ada dan berupa ID maka tidka perlu buat baru
+        } else {
+            // jika bukan angka atau ID, berarti ini nama baru - cari atau buat
+            $merk = Merk::firstOrCreate([
+                'merk_name' => $merkInput
+            ]);
+            $merkId = $merk->id;
+        }
+
         $serviceItem = ServiceItem::create([
             'customer_id' => $request->customer_id,
             'name' => $request->name,
@@ -133,7 +149,7 @@ class ServiceItemController extends Controller
             'location_status' => LocationStatusEnum::AtBranch,
             // 'item_type_id' => $request->item_type_id,
             'item_type_id' => $itemTypeId,
-            'merk_id' => $request->merk_id,
+            'merk_id' => $merkId,
         ]);
 
         return redirect()->route('service_items.index')->with('success', 'Barang servis berhasil ditambahkan!');
@@ -170,7 +186,7 @@ class ServiceItemController extends Controller
             'serviceItem', 
             'customers', 
             // 'itemTypes', 
-            'merks'
+            // 'merks'
         ));
     }
 
@@ -185,11 +201,12 @@ class ServiceItemController extends Controller
             'serial_number' => 'required|string|max:255',
             'analisa_kerusakan' => 'nullable|string',
             'item_type_id' => 'required|string|max:255',
-            'merk_id'=> 'required|exists:merks,id',
+            'merk_id'=> 'required|string|max:255',
         ]);
 
         // $serviceItem->update($request->all());
 
+        // DYNAMIC OPTION ITEM TYPES
         // Fitur checking item type tersedia atau tidak ada jika tidak ada maka akan dibuatkan data item type baru
         $itemTypeInput = $request->input('item_type_id');
         // Cek apakah input berupa ID numerik (dropdown)
@@ -203,13 +220,27 @@ class ServiceItemController extends Controller
             $itemTypeId = $itemType->id;
         }
 
+        // DYNAMIC OPTION MERKS
+        // Fitur checking item type tersedia atau tidak ada jika tidak ada maka akan dibuatkan data merk baru
+        $merkInput = $request->input('merk_id');
+        // Cek apakah input berupa ID numerik (dropdown)
+        if (is_numeric($merkInput)) {
+            $merkId = $merkInput; // cek jika ada dan berupa ID maka tidak perlu buat baru
+        } else {
+            // jika bukan angka atau ID, berarti ini nama baru - cari atau buat
+            $merk = Merk::firstOrCreate([
+                'merk_name' => $merkInput,
+            ]);
+            $merkId = $merk->id;
+        }
+
         $serviceItem->update([
             'customer_id' => $request->customer_id,
             'name'=> $request->name,
             'serial_number' => $request->serial_number,
             'analisa_kerusakan' => $request->analisa_kerusakan,
             'item_type_id' => $itemTypeId,
-            'merk_id' => $request->merk_id,
+            'merk_id' => $merkId,
         ]);
 
         return redirect()->route('service_items.index')->with('success', 'Data berhasil diperbarui');

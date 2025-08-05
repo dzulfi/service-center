@@ -136,14 +136,19 @@
                 </div>
                 <div class="form-group">
                     <label for="merk_id">Merk:</label>
-                    <select name="merk_id" id="merk_id" required>
+                    <select name="merk_id" id="merk_id" class="form-control" style="width: 100%">
+                        <option value="{{ $serviceItem->merk->id }}" selected>
+                            {{ $serviceItem->merk->merk_name }}
+                        </option>
+                    </select>
+                    {{-- <select name="merk_id" id="merk_id" required>
                         <option value="">-- Merk --</option>
                         @foreach ($merks as $merk)
                             <option value="{{ $merk->id }}" {{ old('merk_id', $serviceItem->merk_id) == $merk->id ? 'selected' : '' }}>
                                 {{ $merk->merk_name }}
                             </option>
                         @endforeach
-                    </select>
+                    </select> --}}
                 </div>
                 <div class="form-group">
                     <label for="item_type_id">Tipe Barang:</label>

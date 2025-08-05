@@ -35,26 +35,11 @@
             </div>
             <div class="form-group">
                 <label for="merk_id">Merk</label>
-                <select name="merk_id" id="merk_id" required>
-                    <option value="">-- Pilih Merk --</option>
-                    @foreach ($merks as $merk)
-                        <option value="{{ $merk->id }}" {{ old('merk_id') == $merk->id ? 'selected' : '' }}>
-                            {{ $merk->merk_name }}
-                        </option>
-                    @endforeach
-                </select>
+                <select id="merk_id" name="merk_id" class="form-control" style="width:100%"></select>
             </div>
             <div class="form-group">
                 <label for="item_type_id">Tipe Barang</label>
                 <select id="item_type_id" name="item_type_id" class="form-control" style="width:100%"></select>
-                {{-- <select name="item_type_id" id="item_type_id" required>
-                    <option value="">-- Pilih Tipe Barang --</option>
-                    @foreach ($itemTypes as $itemType)
-                        <option value="{{ $itemType->id }}" {{ old('item_type_id') == $itemType->id ? 'selected' : '' }}>
-                            {{ $itemType->type_name }}
-                        </option>
-                    @endforeach
-                </select> --}}
             </div>
             <div class="form-group">
                 <label for="serial_number">Serial Number:</label>

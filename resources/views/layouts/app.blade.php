@@ -125,20 +125,17 @@
 
         {{-- select2 --}}
         <script>
-           jQuery(document).ready(function($) {
+            jQuery(document).ready(function($) {
                 // Customer
                 $('#customer_id').select2({
                     placeholder: "-- Pilih Mitra Bisnis --",
                     language: "id"
                 });
 
-                // item type
-                // $('#item_type_id').select2({
-                //     tags: true
-                // });
+                // Dynamic Options Item Type
                 $('#item_type_id').select2({
                     tags: true,
-                    placeholder: 'Pilih atau ketik tipe barang',
+                    placeholder: 'Pilih atau buat Tipe Barang',
                     ajax: {
                         url: '/api/item-types',
                         dataType: 'json',
@@ -148,6 +145,41 @@
                                 results: data.map(item => ({
                                     id: item.id,
                                     text: item.type_name
+                                }))
+                            };
+                        },
+                        cache: true
+                    },
+                    createTag: function (params) {
+                        return {
+                            id: params.term,
+                            text: params.term,
+                            newOption: true
+                        };
+                    },
+                    templateResult: function (data) {
+                        var $result = $("<span></span>");
+                        $result.text(data.text);
+                        if (data.newOption) {
+                            $result.append(" <em>(buat baru)</em>");
+                        }
+                        return $result;
+                    }
+                });
+
+                // Dynamic Options merk
+                $('#merk_id').select2({
+                    tags: true,
+                    placeholder: 'Pilih atau buat Merk Barang',
+                    ajax: {
+                        url: '/api/merks',
+                        dataType: 'json',
+                        delay: 250,
+                        processResults: function (data) {
+                            return {
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.merk_name
                                 }))
                             };
                         },
@@ -187,11 +219,6 @@
                     placeholder: "-- Pilih Kantor Cabang --",
                     language: "id"
                 });
-
-                $('#merk_id').select2({
-                    placeholder: "-- Pilih Merk --",
-                    language: "id"
-                })
             });
         </script>
 

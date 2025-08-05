@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchOfficeController;
 use App\Models\Customer;
 use App\Models\ItemType;
+use App\Models\Merk;
 use App\Models\StockSparePart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -57,7 +58,7 @@ Route::middleware('auth')->group(function () {
         // CRUD Service Item
         Route::resource('service_items', ServiceItemController::class);
         
-        // api dynamic option item type
+        // API Dynamic Option Item Type
         Route::get('/api/item-types', function (Request $request) {
             $search = $request->get('term');
             $itemTypes = ItemType::query()
@@ -67,9 +68,20 @@ Route::middleware('auth')->group(function () {
                 })
                 ->limit(10)
                 ->get();
-            
-            // $itemTypes = ItemType::select('id', 'type_name')->get();
             return response()->json($itemTypes);
+        });
+
+        // API Dynamic Option Merks
+        Route::get('/api/merks', function (Request $request) {
+            $search = $request->get('term');
+            $merks = Merk::query()
+                ->select('id', 'merk_name')
+                ->when($search, function ($query, $search) {
+                    return $query->where('merk_name', 'like', '%'. $search .'%');
+                })
+                ->limit(10)
+                ->get();
+            return response()->json($merks);
         });
     });
 
