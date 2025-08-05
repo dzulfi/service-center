@@ -364,7 +364,9 @@ class ShipmentController extends Controller
             ->where('location_status', LocationStatusEnum::AtRMA)
             ->get()
             ->filter(function ($item) {
-                return $item->latestServiceProcess && $item->latestServiceProcess->process_status  === 'Selesai';
+                $process = $item->latestServiceProcess;
+                return $process && in_array($process->process_status, ['Selesai', 'Tidak bisa diperbaiki']);
+                // return $item->latestServiceProcess && $item->latestServiceProcess->process_status  === 'Selesai';
             });
 
             return view('shipments.rma.outbound_from_rma_index', compact('serviceItems')); 
