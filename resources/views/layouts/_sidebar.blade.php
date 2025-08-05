@@ -73,32 +73,22 @@
                     </a>
                 </li>
             @endauth
-
-            {{-- CRUD Customer/Pelanggan (admin only) --}}
+            
             @auth
                 @if (auth()->user()->isAdmin())
+                    {{-- CRUD Customer/Pelanggan (admin only) --}}
                     <li>
                         <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
                             Daftar Customer
                         </a>
                     </li>
-                @endif
-            @endauth
-
-            {{-- CRUD Daftar Barang yang diservice (admin only) --}}
-            @auth
-                @if (auth()->user()->isAdmin())
+                    {{-- CRUD Daftar Barang yang diservice (admin only) --}}
                     <li>
                         <a href="{{ route('service_items.index') }}" class="{{ request()->routeIs('service_items.*') ? 'active' : '' }}">
                             Daftar Barang Service
                         </a>
                     </li>
-                @endif
-            @endauth
-
-            {{-- Admin: Fitur pengiriman barang --}}
-            @auth
-                @if (auth()->user()->isAdmin())
+                    {{-- Admin: Fitur pengiriman barang --}}
                     <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
                         Logistik Admin
                     </li>
@@ -115,6 +105,11 @@
                     <li>
                         <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shiments.admin.inbound_from_rma.*') ? 'active' : '' }}">
                             Barang Masuk Dari RMA
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            Histori Pengiriman
                         </a>
                     </li>
                 @endif
