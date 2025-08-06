@@ -253,12 +253,12 @@ tr:hover {
 }
 
 .actions a.download-button {
-    background-color: #3fb508;
+    background-color: #ff7b00;
     color: #ffffff;
 }
 
 .actions a.download-button:hover {
-    background-color: #2f9d00;
+    background-color: #ce6400;
 }
 
 .actions a.stock-out {

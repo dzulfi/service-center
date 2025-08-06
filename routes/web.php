@@ -121,6 +121,10 @@ Route::middleware('auth')->group(function () {
 
         // Delete Resi
         Route::delete('resi-outbound-to-rma/{id}', [ShipmentController::class,'destroyResiOutstandingToRma'])->name('resi_outbound_to_rma.destroy');
+
+        // History Pengiriman
+        Route::get('resi-outbound-to-rma/history', [ShipmentController::class,'historyResiOutboundToRma'])->name('history_resi_outbound_to_rma.index');
+        Route::get('resi-outbound-to-rma/history-show/{shipment}', [ShipmentController::class,'historyShowResiOutboundToRma'])->name('history_resi_outbound_to_rma.show');
     });
 
     /**

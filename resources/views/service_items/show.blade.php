@@ -99,17 +99,23 @@
                         <td>{{ Str::limit($process->solution ?? '-', 50) }}</td>
                         <td>{{ Str::limit($process->keterangan ?? '-', 50) }}</td>
                         <td>
-                            <ul class="list-disc">
-                                @foreach ($serviceItem->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
-                                    @php
-                                        $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
-                                        $currentStock = $serviceItem->getCurrentStockForSparepart($sparepartId);
-                                    @endphp
-                                    @if ($currentStock != 0)
-                                        <li>{{ $sparepartName }} (stock: {{ $serviceItem->getCurrentStockForSparepart($sparepartId) }})</li>
-                                    @endif
-                                @endforeach
-                            </ul>
+                            @if ($serviceItem->stockSpareparts->isEmpty())
+                                <div style="color: rgb(255, 93, 93); font-weight: bold;">
+                                    Tidak memakai sparepart
+                                </div>
+                            @else
+                                <ul class="list-disc">
+                                    @foreach ($serviceItem->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
+                                        @php
+                                            $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
+                                            $currentStock = $serviceItem->getCurrentStockForSparepart($sparepartId);
+                                        @endphp
+                                        @if ($currentStock != 0)
+                                            <li>{{ $sparepartName }} (stock: {{ $serviceItem->getCurrentStockForSparepart($sparepartId) }})</li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            @endif
                         </td>
                         <td>
                             <span class="status-badge status-{{ Str::slug($process->process_status) }}">

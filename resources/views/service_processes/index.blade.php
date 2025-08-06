@@ -30,7 +30,7 @@
                             <th>Kode</th>
                             <th>Serial Number</th>
                             <th>Nama Barang</th>
-                            <th>Mitra Bisnis</th>
+                            <th>Kantor Cabang</th>
                             <th>Analisa Kerusakan</th>
                             {{-- <th>Dikerjakan oleh</th> --}}
                             {{-- <th>Kerusakan</th>
@@ -51,11 +51,12 @@
                                 <td>{{ $item->serial_number ?? '-' }}</td>
                                 <td>{{ $item->name }}</td>
                                 <td>
-                                    @if ($item->customer)
+                                    {{ $item->creator->branchOffice->name }}
+                                    {{-- @if ($item->customer)
                                         <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
                                     @else
                                         <span style="color: #999;">(Tidak Ditemukan)</span>
-                                    @endif
+                                    @endif --}}
                                 </td>
                                 <td>{{ Str::limit($item->analisa_kerusakan ?? '-', 50) }}</td>
                                 

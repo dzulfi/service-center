@@ -255,7 +255,7 @@ class ShipmentController extends Controller
     public function showInboundFromRma(Shipment $shipment)
     {
         $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
-            $q->where('process_status', 'Selesai');
+            $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
         })->where(function ($q) use ($shipment) {
             $q->whereDoesntHave('shipments', function ($q2) use ($shipment) {
                 $q2->where('shipment_type', ShipmentTypeEnum::FromRMA)
@@ -287,6 +287,35 @@ class ShipmentController extends Controller
         return redirect()->back()->with('success','Pengiriman berhasu diterima dan semua barang kembali ke admin cabang');
     }
 
+    public function historyResiOutboundToRma()
+    {
+        if (!Auth::user()->isAdmin()) (abort(403, 'Akses Ditolah Hanya Admin Cabang'));
+
+        // Ambil ID user yang login dimana hanya user tersebut yang dapat melihat datanya saja tidak dapat melihat data user lain
+        $loggedInUserId = Auth::id();
+        
+        // Ambil Semua Service Item yang terkait dengan shipment ini
+        $shipments = Shipment::where('responsible_user_id', $loggedInUserId)
+            ->where('shipment_type', ShipmentTypeEnum::ToRMA)
+            ->where('status', ShipmentStatusEnum::Diterima)
+            ->get();
+
+        return view('shipments.admin.resi_outbound_to_rma_history', compact('shipments'));
+    }
+
+    public function historyShowResiOutboundToRma(Shipment $shipment)
+    {
+        // $availableItems = ServiceItem::whereDoesntHave('shipments', function ($q) {
+        //     $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
+        // })->orWhereHas('shipments', function ($q) use ($shipment) {
+        //     $q->where('shipments.id', $shipment->id);
+        // })->get();
+
+        $availableItems = $shipment->serviceItems()->get();
+
+        return view('shipments.admin.resi_outbound_to_rma_history_show', compact('shipment', 'availableItems'));
+    }
+
     /**
      * Side: RMA Admin
      */
@@ -305,11 +334,14 @@ class ShipmentController extends Controller
     
     public function showInboundFromAdmin(Shipment $shipment)
     {
-        $availableItems = ServiceItem::whereDoesntHave('shipments', function ($q) {
-            $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
-        })->orWhereHas('shipments', function ($q) use ($shipment) {
-            $q->where('shipments.id', $shipment->id);
-        })->get();
+        // $availableItems = ServiceItem::whereDoesntHave('shipments', function ($q) {
+        //     $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
+        // })->orWhereHas('shipments', function ($q) use ($shipment) {
+        //     $q->where('shipments.id', $shipment->id);
+        // })->get();
+
+        $availableItems = $shipment->serviceItems()->get();
+        // dd($availableItems);
 
         return view('shipments.rma.inbound_from_admin_show', compact('shipment', 'availableItems'));
     }

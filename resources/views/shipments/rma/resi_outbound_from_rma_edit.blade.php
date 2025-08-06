@@ -69,7 +69,15 @@
                                 <td>{{ $item->merk->merk_name }}</td>
                                 <td>{{ $item->creator->name }}</td>
                                 <td>{{ $item->creator->branchOffice->name }}</td>
-                                <td>{{ $item->location_status }}</td>
+                                <td>
+                                    @if ($item->latestServiceProcess)
+                                        <span class="status-badge status-{{ Str::slug($item->latestServiceProcess->process_status) }}">
+                                            {{ $item->latestServiceProcess->process_status }}
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 {{-- <td>{{ $item->analisa_kerusakan ?? '-' }}</td> --}}
                             </tr>
                         @endforeach

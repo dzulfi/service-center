@@ -98,20 +98,25 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route(name: 'shipments.admin.resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('resi_outbound_to_rma.*') ? 'active' : '' }}">
+                        <a href="{{ route(name: 'shipments.admin.resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.resi_outbound_to_rma.*') ? 'active' : '' }}">
                             Resi Kirim Service ke RMA
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shiments.admin.inbound_from_rma.*') ? 'active' : '' }}">
+                        <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.admin.inbound_from_rma.*') ? 'active' : '' }}">
                             Barang Masuk Dari RMA
                         </a>
                     </li>
                     <li>
-                        <a href="">
+                        <a href="{{ route('shipments.admin.history_resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.history_resi_outbound_to_rma.*') ? 'active' : '' }}">
                             Histori Pengiriman
                         </a>
                     </li>
+                    {{-- <li>
+                        <a href="">
+                            Histori Penerimaan
+                        </a>
+                    </li> --}}
                 @endif
             @endauth
 

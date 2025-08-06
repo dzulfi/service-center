@@ -28,6 +28,7 @@
                             <th>Merk</th>
                             <th>Tipe</th>
                             <th>Mitra Bisnis</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,6 +41,15 @@
                                 <td>{{ $item->merk->merk_name }}</td>
                                 <td>{{ $item->itemType->type_name }}</td>
                                 <td>{{ $item->customer->name }}</td>
+                                <td>
+                                    @if ($item->latestServiceProcess)
+                                        <span class="status-badge status-{{ Str::slug($item->latestServiceProcess->process_status) }}">
+                                            {{ $item->latestServiceProcess->process_status }}
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                             </tr>
                             {{-- Input hidden barang service yang dipilih (id barang yang disimpan) --}}
                             <input type="hidden" name="service_item_ids[]" value="{{ $item->id }}">
