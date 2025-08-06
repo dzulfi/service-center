@@ -50,8 +50,8 @@
                                     <td>{{ $item->itemType->type_name }}</td>
                                     <td>{{ $item->merk->merk_name }}</td>
                                     @foreach ($item->serviceProcesses as $process)
-                                        <td>{{ $process->damage_analysis_detail }}</td>
-                                        <td>{{ $process->solution }}</td>
+                                        <td>{{ $process->damage_analysis_detail ?? '-' }}</td>
+                                        <td>{{ $process->solution ?? '-' }}</td>
                                     @endforeach
                                     <td>
                                         @if ($item->stockSpareparts->isEmpty())
