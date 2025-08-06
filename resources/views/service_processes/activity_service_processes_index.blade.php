@@ -49,10 +49,15 @@
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->itemType->type_name }}</td>
                                     <td>{{ $item->merk->merk_name }}</td>
-                                    @foreach ($item->serviceProcesses as $process)
-                                        <td>{{ $process->damage_analysis_detail ?? '-' }}</td>
-                                        <td>{{ $process->solution ?? '-' }}</td>
-                                    @endforeach
+
+                                    @forelse ($item->serviceProcesses as $process)
+                                        <td>{{ $process->damage_analysis_detail }}</td>
+                                        <td>{{ $process->solution }}</td>
+                                    @empty
+                                        <td>-</td>
+                                        <td>-</td>
+                                    @endforelse
+
                                     <td>
                                         @if ($item->stockSpareparts->isEmpty())
                                             <div style="color: rgb(255, 93, 93); font-weight: bold;">
@@ -78,14 +83,16 @@
                                                 {{ $item->latestServiceProcess->process_status }}
                                             </span>
                                         @else
-                                            -
+                                            <span class="status-badge status-pending">Pending</span>
                                         @endif
                                     </td>
-                                    @foreach ($item->serviceProcesses as $process)
+                                    @forelse ($item->serviceProcesses as $process)
                                         <td>
-                                            {{ $process->handler->name }}
+                                            {{ $process->handler->name}}
                                         </td>
-                                    @endforeach
+                                    @empty
+                                        <td style="color: rgb(255, 74, 74); font-weight: bold;">Belum ada</td>
+                                    @endforelse
                                     <td>{{ $item->mulai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
                                     <td>{{ $item->selesai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
                                 </tr>
