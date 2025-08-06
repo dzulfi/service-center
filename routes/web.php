@@ -215,6 +215,9 @@ Route::middleware('auth')->group(function () {
         // melihat daftar & barang service
         Route::get('activity/service-items', [ServiceItemController::class, 'indexAllServiceItems'])->name('activity.service_items.index');
         Route::get('activity/service-items/{serviceItem}', [ServiceItemController::class, 'showDetailActivityServiceItem'])->name('activity.service_items.detail_activity_service_item');
+
+        // Activity Service Processes
+        Route::get('activity/service-processes', [ServiceProcessController::class, 'indexActivityServiceProcesses'])->name('activity.service_processes.index');
     });
 
     // RMA (Stock Sparepart)

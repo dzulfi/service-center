@@ -122,17 +122,14 @@
 
             @auth
                 @if (auth()->user()->isRmaAdmin())
+                    {{-- CRUD Sparepart --}}
                     <li>
                         <a href="{{ route('spareparts.index') }}" class="{{ request()->routeIs('spareparts.*') ? 'active' : '' }}">
                             Sparepart Service
                         </a>
                     </li>
-                @endif
-            @endauth
 
-            {{-- RMA: Fitur Pengiriman Barang (RMA) --}}
-            @auth
-                @if (auth()->user()->isRmaAdmin())
+                    {{-- RMA: Fitur Shipment Service (RMA) --}}
                     <li>
                         <a href="{{ route('shipments.rma.inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.inbound_from_admin.*') ? 'active' : '' }}">
                             Barang Masuk Dari Admin
@@ -150,6 +147,7 @@
                     </li>
                 @endif
             @endauth
+
             {{-- mengerjakan daftar proses service (RMA only) --}}
             @auth
                 @if (auth()->user()->isRma())
@@ -204,6 +202,11 @@
                     <li>
                         <a href="{{ route('activity.service_items.index') }}" class="{{ request()->routeIs('activity.service_items.*') ? 'active' : '' }}">
                             Aktivitas Barang Service
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('activity.service_processes.index') }}" class="{{ request()->routeIs('activity.service_processes.*') ? 'active' : '' }}">
+                            Aktivitas RMA
                         </a>
                     </li>
                 @endif
