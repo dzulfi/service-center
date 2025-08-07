@@ -8,6 +8,9 @@
         .list-disc{
             list-style-type: disc;
         }
+        form {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -15,12 +18,52 @@
         <div class="container">
             <h1>Aktivitas: Daftar Semua Proses Servis</h1>
 
-            {{-- <div class="filter-menu"> 
-                <button class="filter-btn active" data-filter="all">Semua</button>
-                <button class="filter-btn" data-filter="selesai">Selesai</button>
-                <button class="filter-btn" data-filter="tidak-bisa-diperbaiki">Tidak Bisa Diperbaiki</button>
-                <button class="filter-btn" data-filter="proses-pengerjaan">Proses Pengerjaan</button>
-            </div> --}}
+            @php
+                $handlers = collect();
+
+                foreach ($serviceItems as $item) {
+                    foreach ($item->serviceProcesses as $process) {
+                        if ($process->handler) {
+                            $handlers->push($process->handler->name);
+                        }
+                    }
+                }
+
+                $uniqueHandlers = $handlers->unique()->sort()->values();
+            @endphp
+
+            <form id="filterForm" class="flex flex-wrap items-start gap-6 my-4">
+
+                <!-- Filter Akun RMA -->
+                <div class="flex flex-col">
+                    <p class="text-sm font-medium mb-1">Filter Akun RMA:</p>
+                    <select id="handler" name="handler" class="border rounded px-3 py-2 min-w-[200px]">
+                        <option value="all">Semua</option>
+                        @foreach ($uniqueHandlers as $handlerName)
+                            <option value="{{ Str::slug($handlerName) }}">{{ $handlerName }}</option>
+                        @endforeach
+                        <option value="belum-ditangani">Belum Ditangani</option>
+                    </select>
+                </div>
+
+                <!-- Filter Status Proses -->
+                <div class="flex flex-col">
+                    <p class="text-sm font-medium mb-1">Filter Status Proses:</p>
+                    <select id="status" name="status" class="border rounded px-3 py-2 min-w-[200px]">
+                        <option value="all">Semua</option>
+                        <option value="selesai">Selesai</option>
+                        <option value="tidak-bisa-diperbaiki">Tidak Bisa Diperbaiki</option>
+                        <option value="proses-pengerjaan">Proses Pengerjaan</option>
+                    </select>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div>
+                    <button type="submit" style="background-color: blue; padding: 5px; color: white; margin-top: 20px;">
+                        Terapkan Filter
+                    </button>
+                </div>
+            </form>
 
             @if ($serviceItems->isEmpty())
                 <p class="no-data">Belum ada proses servis yang terdaftar.</p>
@@ -30,6 +73,8 @@
                         <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Mulai</th>
+                                <th>Selesai</th>
                                 <th>Barang Servis</th>
                                 <th>Tipe</th>
                                 <th>Merk</th>
@@ -38,14 +83,32 @@
                                 <th>Sparepart</th>
                                 <th>Status</th>
                                 <th>Ditangani</th>
-                                <th>Dikerjakan</th>
-                                <th>Selesai</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($serviceItems as $serviceItem => $item)
-                                <tr>
+                                @php
+                                    $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
+                                    $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                                    $statusSlug = Str::slug($status);
+                                    $filterGroup = '';
+
+                                    if ($status === 'Selesai') {
+                                        $filterGroup = 'selesai';
+                                    } elseif ($status === 'Batal' || $status === 'Tidak bisa diperbaiki') {
+                                        $filterGroup = 'tidak-bisa-diperbaiki';
+                                    } else {
+                                        $filterGroup = 'proses-pengerjaan';
+                                    }
+                                @endphp
+                                <tr 
+                                    data-filter-group="{{ $filterGroup }}"
+                                    {{-- data-handler="{{ $latestProcess?->handler?->name ? Str::slug($latestProcess->handler->name) : 'belum-ditangani' }}" --}}
+                                    data-handler="{{ $latestProcess?->handler?->name ? Str::slug($latestProcess->handler->name) : 'belum-ditangani' }}"
+                                >
                                     <td>{{ $serviceItem + 1 }}</td>
+                                    <td>{{ $item->mulai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
+                                    <td>{{ $item->selesai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->itemType->type_name }}</td>
                                     <td>{{ $item->merk->merk_name }}</td>
@@ -78,13 +141,20 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($item->latestServiceProcess)
+                                        @if ($latestProcess)
+                                            <span class="status-badge status-{{ $statusSlug }}">
+                                                {{ $status }}
+                                            </span>
+                                        @else
+                                            <span class="status-badge status-pending">Pending</span>
+                                        @endif
+                                        {{-- @if ($item->latestServiceProcess)
                                             <span class="status-badge status-{{ Str::slug($item->latestServiceProcess->process_status) }}">
                                                 {{ $item->latestServiceProcess->process_status }}
                                             </span>
                                         @else
                                             <span class="status-badge status-pending">Pending</span>
-                                        @endif
+                                        @endif --}}
                                     </td>
                                     @forelse ($item->serviceProcesses as $process)
                                         <td>
@@ -93,8 +163,6 @@
                                     @empty
                                         <td style="color: rgb(255, 74, 74); font-weight: bold;">Belum ada</td>
                                     @endforelse
-                                    <td>{{ $item->mulai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
-                                    <td>{{ $item->selesai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -103,5 +171,69 @@
             @endif
         </div>
     @endsection
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#filterForm').on('submit', function (e) {
+                e.preventDefault();
+
+                let selectedStatus = $('#status').val();
+                let selectedHandler = $('#handler').val();
+
+                $('#serviceProcessesTable tbody tr').each(function () {
+                    let row = $(this);
+                    let rowStatus = row.data('filter-group');
+                    let rowHandler = row.data('handler');
+
+                    let matchStatus = (selectedStatus === 'all' || rowStatus === selectedStatus);
+                    let matchHandler = (selectedHandler === 'all' || rowHandler === selectedHandler);
+
+                    if (matchStatus && matchHandler) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                });
+            });
+        });
+    </script>
+    {{-- <script>
+        $(document).ready(function () {
+            let activeStatus = 'all';
+            let activeHandler = 'all';
+
+            function filterRows() {
+                $('#serviceProcessesTable tbody tr').each(function () {
+                    let row = $(this);
+                    let rowStatus = row.data('filter-group');
+                    let rowHandler = row.data('handler');
+
+                    let matchStatus = (activeStatus === 'all' || rowStatus === activeStatus);
+                    let matchHandler = (activeHandler === 'all' || rowHandler === activeHandler);
+
+                    if (matchStatus && matchHandler) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                });
+            }
+
+            $('.status-filter').on('click', function () {
+                $('.status-filter').removeClass('active');
+                $(this).addClass('active');
+                activeStatus = $(this).data('status');
+                filterRows();
+            });
+
+            $('.handler-filter').on('click', function () {
+                $('.handler-filter').removeClass('active');
+                $(this).addClass('active');
+                activeHandler = $(this).data('handler');
+                filterRows();
+            });
+        });
+    </script> --}}
 </body>
 </html>

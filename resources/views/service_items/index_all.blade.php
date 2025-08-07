@@ -211,7 +211,7 @@
 
                                     if ($status === 'Selesai') {
                                         $filterGroup = 'selesai';
-                                    } elseif ($status === 'Batal' || $status === 'Tidak Bisa Diperbaiki') {
+                                    } elseif ($status === 'Batal' || $status === 'Tidak bisa diperbaiki') {
                                         $filterGroup = 'tidak-bisa-diperbaiki';
                                     } else {
                                         $filterGroup = 'proses-pengerjaan';
