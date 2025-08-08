@@ -254,14 +254,23 @@ class ShipmentController extends Controller
 
     public function showInboundFromRma(Shipment $shipment)
     {
+        // $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
+        //     $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
+        // })->where(function ($q) use ($shipment) {
+        //     $q->whereDoesntHave('shipments', function ($q2) use ($shipment) {
+        //         $q2->where('shipment_type', ShipmentTypeEnum::FromRMA)
+        //             ->where('stattus', ShipmentStatusEnum::KirimKembali)
+        //             ->where('shipments.id', '!=', $shipment->id);
+        //     });
+        // })->get();
+
         $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
             $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
-        })->where(function ($q) use ($shipment) {
-            $q->whereDoesntHave('shipments', function ($q2) use ($shipment) {
-                $q2->where('shipment_type', ShipmentTypeEnum::FromRMA)
-                    ->where('shipments.id', '!=', $shipment->id);
-            });
-        })->get();
+        })
+        ->whereHas('shipments', function ($q) use ($shipment) {
+            $q->where('shipments.id', $shipment->id);
+        })
+        ->get();
 
         return view('shipments.admin.inbound_from_rma_show', compact('shipment', 'availableItems'));
     }
