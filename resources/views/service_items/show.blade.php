@@ -93,8 +93,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <td>
+                        @if ($serviceItem->rmaTechnicians->isNotEmpty())
+                            {{ $serviceItem->rmaTechnicians->pluck('name')->join(', ') }}
+                        @else
+                            -
+                        @endif
+                    </td>
                     @foreach ($serviceItem->serviceProcesses->sortBy('created_at') as $process)
-                        <td>{{ $process->handler->name }}</td>
+                        {{-- <td>{{ $process->handler->name }}</td> --}}
                         <td>{{ Str::limit($process->damage_analysis_detail ?? '-', 50) }}</td>
                         <td>{{ Str::limit($process->solution ?? '-', 50) }}</td>
                         <td>{{ Str::limit($process->keterangan ?? '-', 50) }}</td>

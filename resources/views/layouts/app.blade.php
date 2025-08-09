@@ -132,6 +132,12 @@
                     language: "id"
                 });
 
+                // Customer
+                $('#rma_technician_id').select2({
+                    placeholder: "-- Teknisi RMA --",
+                    language: "id"
+                });
+
                 // Dynamic Options Item Type
                 $('#item_type_id').select2({
                     tags: true,

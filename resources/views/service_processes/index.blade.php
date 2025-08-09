@@ -30,7 +30,6 @@
                             <th>Kode</th>
                             <th>Serial Number</th>
                             <th>Nama Barang</th>
-                            <th>Kantor Cabang</th>
                             <th>Analisa Kerusakan</th>
                             {{-- <th>Dikerjakan oleh</th> --}}
                             {{-- <th>Kerusakan</th>
@@ -38,6 +37,7 @@
                             <th>Keterangan</th> --}}
                             <th>Status Terakhir</th>
                             <th>Sparepart</th>
+                            <th>Teknisi</th>
                             <th>Aksi</th>
                             <th>Aksi Sparepart</th>
                         </tr>
@@ -50,14 +50,6 @@
                                 <td>{{ $item->code }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
                                 <td>{{ $item->name }}</td>
-                                <td>
-                                    {{ $item->creator->branchOffice->name }}
-                                    {{-- @if ($item->customer)
-                                        <a href="{{ route('customers.show', $item->customer->id) }}">{{ $item->customer->name }}</a>
-                                    @else
-                                        <span style="color: #999;">(Tidak Ditemukan)</span>
-                                    @endif --}}
-                                </td>
                                 <td>{{ Str::limit($item->analisa_kerusakan ?? '-', 50) }}</td>
                                 
                                 {{-- @foreach ($item->serviceProcesses as $service) --}}
@@ -106,6 +98,13 @@
                                                 @endif
                                             @endforeach
                                         </ul>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($item->rmaTechnicians->isNotEmpty())
+                                        {{ $item->rmaTechnicians->pluck('name')->join(', ') }}
+                                    @else
+                                        -
                                     @endif
                                 </td>
                                 <td class="actions">

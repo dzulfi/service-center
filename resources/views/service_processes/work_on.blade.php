@@ -262,6 +262,20 @@
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="form-group">
+                    <label for="rma_technician_id">Teknisi Menangani</label>
+                    <select name="rma_technician_id" id="rma_technician_id" class="form-control" style="width:100%" required>
+                        <option value="">-- Pilih Teknisi --</option>
+                        @foreach ($rmaTechnicians as $technician)
+                            <option value="{{ $technician->id }}" {{ old('rma_technician_id', $serviceItem->rmaTechnicians->first()->id ?? '') == $technician->id ? 'selected' : '' }}>
+                                {{ $technician->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('rma_technician_id')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
                 <button type="submit" class="kirim-button">Simpan Proses Servis</button>
             </form>
 

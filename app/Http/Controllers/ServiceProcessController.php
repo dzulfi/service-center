@@ -6,6 +6,7 @@ use App\Enums\LocationStatusEnum;
 use App\Enums\ShipmentStatusEnum;
 use App\Enums\ShipmentTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Models\RmaTechnician;
 use App\Models\ServiceItem;
 use App\Models\ServiceProcess;
 use Illuminate\Http\Request;
@@ -86,7 +87,10 @@ class ServiceProcessController extends Controller
         // status yang tersedia untuk dropdown
         $statuses = ['Pending', 'Diagnosa', 'Proses Pengerjaan', 'Menunggu Sparepart', 'Selesai', 'Tidak bisa diperbaiki'];
 
-        return view('service_processes.work_on', compact('serviceItem', 'latestProcess', 'statuses'));
+        // RMA Technicians
+        $rmaTechnicians = RmaTechnician::all();
+
+        return view('service_processes.work_on', compact('serviceItem', 'latestProcess', 'statuses', 'rmaTechnicians'));
     }
 
     /**
@@ -104,6 +108,7 @@ class ServiceProcessController extends Controller
             'solution' => 'nullable|string',
             'process_status' => 'required|string|in:Pending,Diagnosa,Proses Pengerjaan,Menunggu Sparepart,Selesai,Tidak bisa diperbaiki',
             'keterangan' => 'nullable|string',
+            'rma_technician_id' => 'required|exists:rma_technicians,id', // validasi teknisi
         ]);
 
         // pastikan barang memang ada di RMA sebelum dikerjakan
@@ -141,7 +146,10 @@ class ServiceProcessController extends Controller
             $message = 'Proses service berhasil ditambahkan';
         }
 
-        return redirect()->route('service_processes.index')->with('success', 'Proses service berhasil diperbaharui');
+        // Update/attach teknisi di pivot
+        $serviceItem->rmaTechnicians()->sync([$request->rma_technician_id]);
+
+        return redirect()->route('service_processes.index')->with('success', $message);
     }
 
     /**

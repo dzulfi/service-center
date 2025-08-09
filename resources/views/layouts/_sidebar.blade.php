@@ -188,6 +188,11 @@
                             Tipe Barang
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('rma_technicians.index') }}" class="{{ request()->routeIs('rma-technicians.*') ? 'active' : '' }}">
+                            Teknisi RMA
+                        </a>
+                    </li>
                 @endif
             @endauth
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\ItemTypeController;
 use App\Http\Controllers\MerkController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\RmaTechnicianController;
 use App\Http\Controllers\ServiceItemController;
 use App\Http\Controllers\ServiceProcessController;
 use App\Http\Controllers\ShipmentController;
@@ -12,10 +13,8 @@ use App\Http\Controllers\SparepartController;
 use App\Http\Controllers\StockSparePartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchOfficeController;
-use App\Models\Customer;
 use App\Models\ItemType;
 use App\Models\Merk;
-use App\Models\StockSparePart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -194,9 +193,12 @@ Route::middleware('auth')->group(function () {
         Route::resource('item_types', ItemTypeController::class);
     });
 
-    // CRUD kantor cabang (developer, superadmin)
     Route::middleware(['role:developer,superadmin'])->group(function () {
+        // CRUD kantor cabang (developer, superadmin)
         Route::resource('branch_offices', BranchOfficeController::class);
+        
+        // CRUD RMA Technicians
+        Route::resource('rma_technicians', RmaTechnicianController::class);
     });
 
     // melihat aktivitas service (developer, superadmin)

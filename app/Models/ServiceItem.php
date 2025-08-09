@@ -74,6 +74,11 @@ class ServiceItem extends Model
         return $this->hasMany(StockSparepart::class, 'service_item_id');
     }
 
+    public function rmaTechnicians()
+    {
+        return $this->belongsToMany(RmaTechnician::class, 'pivot_rma_technicians');
+    }
+
     // Hitung stock sparepart yang digunakan dan hitung stock sparepart jika ada pengembalian
     public function getCurrentStockForSparepart($sparepartId)
     {

@@ -19,17 +19,23 @@
             <h1>Aktivitas: Daftar Semua Proses Servis</h1>
 
             @php
-                $handlers = collect();
+                // $handlers = collect();
 
-                foreach ($serviceItems as $item) {
-                    foreach ($item->serviceProcesses as $process) {
-                        if ($process->handler) {
-                            $handlers->push($process->handler->name);
-                        }
-                    }
-                }
+                // foreach ($serviceItems as $item) {
+                //     foreach ($item->serviceProcesses as $process) {
+                //         if ($process->handler) {
+                //             $handlers->push($process->handler->name);
+                //         }
+                //     }
+                // }
 
-                $uniqueHandlers = $handlers->unique()->sort()->values();
+                // $uniqueHandlers = $handlers->unique()->sort()->values();
+
+                $handlers = $serviceItems
+                    ->flatMap(fn($item) => $item->rmaTechnicians->pluck('name'))
+                    ->unique()
+                    ->sort()
+                    ->values();
             @endphp
 
             <form id="filterForm" class="flex flex-wrap items-start gap-6 my-4">
@@ -39,7 +45,7 @@
                     <p class="text-sm font-medium mb-1">Filter Akun RMA:</p>
                     <select id="handler" name="handler" class="border rounded px-3 py-2 min-w-[200px]">
                         <option value="all">Semua</option>
-                        @foreach ($uniqueHandlers as $handlerName)
+                        @foreach ($handlers as $handlerName)
                             <option value="{{ Str::slug($handlerName) }}">{{ $handlerName }}</option>
                         @endforeach
                         <option value="belum-ditangani">Belum Ditangani</option>
@@ -100,11 +106,16 @@
                                     } else {
                                         $filterGroup = 'proses-pengerjaan';
                                     }
+
+                                    $technicianSlugs = $item->rmaTechnicians->pluck('name')
+                                        ->map(fn($name) => Str::slug($name))
+                                        ->implode(' ');
                                 @endphp
                                 <tr 
                                     data-filter-group="{{ $filterGroup }}"
+                                    data-handler="{{ $technicianSlugs ?: 'belum-ditangani' }}"
                                     {{-- data-handler="{{ $latestProcess?->handler?->name ? Str::slug($latestProcess->handler->name) : 'belum-ditangani' }}" --}}
-                                    data-handler="{{ $latestProcess?->handler?->name ? Str::slug($latestProcess->handler->name) : 'belum-ditangani' }}"
+                                    {{-- data-handler="{{ $latestProcess?->handler?->name ? Str::slug($latestProcess->handler->name) : 'belum-ditangani' }}" --}}
                                 >
                                     <td>{{ $serviceItem + 1 }}</td>
                                     <td>{{ $item->mulai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
@@ -156,13 +167,20 @@
                                             <span class="status-badge status-pending">Pending</span>
                                         @endif --}}
                                     </td>
-                                    @forelse ($item->serviceProcesses as $process)
+                                    <td>
+                                        @if ($item->rmaTechnicians->isNotEmpty())
+                                            {{ $item->rmaTechnicians->pluck('name')->join(', ') }}
+                                        @else
+                                            <div style="color: rgb(255, 74, 74); font-weight: bold;">Belum ada</div>
+                                        @endif
+                                    </td>
+                                    {{-- @forelse ($item->serviceProcesses as $process)
                                         <td>
                                             {{ $process->handler->name}}
                                         </td>
                                     @empty
                                         <td style="color: rgb(255, 74, 74); font-weight: bold;">Belum ada</td>
-                                    @endforelse
+                                    @endforelse --}}
                                 </tr>
                             @endforeach
                         </tbody>
