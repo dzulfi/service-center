@@ -214,19 +214,21 @@ Route::middleware('auth')->group(function () {
         Route::get('activity/service-items', [ServiceItemController::class, 'indexAllServiceItems'])->name('activity.service_items.index');
         Route::get('activity/service-items/{serviceItem}', [ServiceItemController::class, 'showDetailActivityServiceItem'])->name('activity.service_items.detail_activity_service_item');
 
-        // Activity Service Processes
-        Route::get('activity/service-processes', [ServiceProcessController::class, 'indexActivityServiceProcesses'])->name('activity.service_processes.index');
+        // Activity Service Processes RMA
+        Route::get('activity/service-process-rma', [ServiceProcessController::class, 'indexActivityServiceProcesses'])->name('activity.service_processes.index');
+        Route::get('activity/service-process-rma/change/{serviceItem}', [ServiceProcessController::class, 'changeWorkOn'])->name('activity.service_processes.change');
+        Route::post('activity/service-process-rma/change/{serviceItem}', [ServiceProcessController::class, 'storeChangeWorkOn'])->name('activity.service_processes.store');
     });
 
     // RMA (Stock Sparepart)
-    Route::middleware(['role:rma,rma_admin'])->group(function () {
+    Route::middleware(['role:rma,rma_admin,developer,superadmin'])->group(function () {
         Route::resource('spareparts', SparepartController::class);
         
         // Stock In
         Route::get('stock_sparepart/{sparepart}/stock_in', [StockSparepartController::class, 'stockIn'])->name('stock_in.create');
         Route::post('stock_sparepart/{sparepart}/stock_in', [StockSparepartController::class, 'StoreStockIn'])->name('stock_in.store');
 
-        // stock Out
+        // stock Out RMA
         Route::get('stock_sparepart/{serviceItem}/stock_out', [StockSparepartController::class, 'stockOut'])->name('stock_out.index');
         Route::post('stock_sparepart/{serviceItem}/stock_out', [StockSparepartController::class,'storeStockOut'])->name('stock_out.store');
         

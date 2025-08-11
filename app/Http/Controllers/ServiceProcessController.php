@@ -198,6 +198,66 @@ class ServiceProcessController extends Controller
         return view('service_processes.activity_service_processes_index', compact('serviceItems'));
     }
 
+    public function changeWorkOn(ServiceItem $serviceItem)
+    {
+        // Load proses terakhir untuk service item ini
+        $latestProcess = $serviceItem->serviceProcesses->sortByDesc('created_at')->first();
+
+        // status yang tersedia untuk dropdown
+        $statuses = ['Pending', 'Diagnosa', 'Proses Pengerjaan', 'Menunggu Sparepart', 'Selesai', 'Tidak bisa diperbaiki'];
+        
+        // RMA Technicians
+        $rmaTechnicians = RmaTechnician::all();
+
+        return view('service_processes.change_work_on', compact('serviceItem', 'latestProcess', 'statuses', 'rmaTechnicians'));
+    }
+
+    public function storeChangeWorkOn(Request $request, ServiceItem $serviceItem)
+    {
+        $request->validate([
+            'damage_analysis_detail' => 'nullable|string',
+            'solution' => 'nullable|string',
+            'process_status' => 'required|string|in:Pending,Diagnosa,Proses Pengerjaan,Menunggu Sparepart,Selesai,Tidak bisa diperbaiki',
+            'keterangan' => 'nullable|string',
+            'rma_technician_id' => 'required|exists:rma_technicians,id', // validasi teknisi
+        ]);
+
+        // cek apakah ada process terakhir untuk service item ini
+        $latestProcess = $serviceItem->serviceProcesses()->latest()->first();
+        // tentukan status-status yang dianggap final dan tidak boleh diupdate
+        // $finalStatuses = ['Selesai', 'Tidak bisa diperbaiki'];
+
+        if ($latestProcess && $latestProcess->process_status) {
+            $latestProcess->update([
+                'damage_analysis_detail' => $request->damage_analysis_detail,
+                'solution' => $request->solution,
+                'process_status' => $request->process_status,
+                'keterangan' => $request->keterangan,
+                'handle_by_user_id' => Auth::id(), // Simpan ID user yang sedang login saat ini dan mengerjakan update antrian service
+            ]);
+            $message = 'Process service berhasil diperbarui';
+        } else {
+            /**
+             * jika tidak ada process sama sekali atau process sudah final
+             * maka buat entri proses service baru
+             */
+            ServiceProcess::create([
+                'service_item_id' => $serviceItem->id,
+                'damage_analysis_detail' => $request->damage_analysis_detail,
+                'solution' => $request->solution,
+                'process_status' => $request->process_status,
+                'keterangan' => $request->keterangan,
+                'handle_by_user_id' => Auth::id(), // Simpan ID user yang sedang login saat mulai mengerjakan
+            ]);
+            $message = 'Proses service berhasil ditambahkan';
+        }
+
+        // Update/attach teknisi di pivot
+        $serviceItem->rmaTechnicians()->sync([$request->rma_technician_id]);
+
+        return redirect()->route('activity.service_processes.index')->with('success', $message);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

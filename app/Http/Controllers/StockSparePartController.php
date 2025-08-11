@@ -77,8 +77,8 @@ class StockSparepartController extends Controller
 
     public function stockOut(ServiceItem $serviceItem)
     {
-        if (!Auth::user()->isRma()) {
-            abort(403, 'Akses Ditolah');
+        if (!(Auth::user()->isRma() || Auth::user()->isDeveloper() || Auth::user()->isSuperAdmin())) {
+            abort(403, 'Akses Ditolak');
         }
 
         $spareparts = Sparepart::get(); // menambil semua data sparepart
@@ -108,12 +108,16 @@ class StockSparepartController extends Controller
             'quantity' => $request->quantity,
         ]);
 
-        return redirect()->route('service_processes.index')->with('success','Sparepart berhasil di gunakan');
+        if (Auth::user()->isDeveloper() || Auth::user()->isSuperAdmin()) {
+            return redirect()->route('activity.service_processes.index')->with('success','Sparepart berhasil di gunakan');
+        } else {
+            return redirect()->route('service_processes.index')->with('success','Sparepart berhasil di gunakan');
+        }
     }
 
     public function stockReturn(ServiceItem $serviceItem)
     {
-        if (!Auth::user()->isRma()) abort(403, 'Akses Ditolak Hanya RMA');
+        if (!(Auth::user()->isRma() || Auth::user()->isDeveloper() || Auth::user()->isSuperAdmin())) abort(403, 'Akses Ditolak Hanya RMA');
 
         $spareparts = Sparepart::get();
 
@@ -155,6 +159,10 @@ class StockSparepartController extends Controller
             'quantity' => $quantityReturn,
         ]);
 
-        return redirect()->route('service_processes.index')->with('success', 'Sparepart berhasil dikembalikan ke stok');
+        if (Auth::user()->isDeveloper() || Auth::user()->isSuperAdmin()) {
+            return redirect()->route('activity.service_processes.index')->with('success','Sparepart berhasil di gunakan');
+        } else {
+            return redirect()->route('service_processes.index')->with('success', 'Sparepart berhasil dikembalikan ke stok');
+        }
     }
 }

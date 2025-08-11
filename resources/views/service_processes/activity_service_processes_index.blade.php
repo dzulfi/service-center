@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Barang Servis</title>
+    {{-- <title>Daftar Barang Servis</title> --}}
     <style>
         .list-disc{
             list-style-type: disc;
@@ -19,18 +19,6 @@
             <h1>Aktivitas: Daftar Semua Proses Servis</h1>
 
             @php
-                // $handlers = collect();
-
-                // foreach ($serviceItems as $item) {
-                //     foreach ($item->serviceProcesses as $process) {
-                //         if ($process->handler) {
-                //             $handlers->push($process->handler->name);
-                //         }
-                //     }
-                // }
-
-                // $uniqueHandlers = $handlers->unique()->sort()->values();
-
                 $handlers = $serviceItems
                     ->flatMap(fn($item) => $item->rmaTechnicians->pluck('name'))
                     ->unique()
@@ -89,6 +77,8 @@
                                 <th>Sparepart</th>
                                 <th>Status</th>
                                 <th>Ditangani</th>
+                                <th>Aksi</th>
+                                <th>Aksi Sparepart</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -174,13 +164,13 @@
                                             <div style="color: rgb(255, 74, 74); font-weight: bold;">Belum ada</div>
                                         @endif
                                     </td>
-                                    {{-- @forelse ($item->serviceProcesses as $process)
-                                        <td>
-                                            {{ $process->handler->name}}
-                                        </td>
-                                    @empty
-                                        <td style="color: rgb(255, 74, 74); font-weight: bold;">Belum ada</td>
-                                    @endforelse --}}
+                                    <td class="actions">
+                                        <a href="{{ route('activity.service_processes.change', $item->id) }}" class="work-button">Perubahan</a>
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{{ route('stock_out.index', $item->id) }}" class="stock-out">Gunakan</a>
+                                        <a href="{{ route('stock_return.create', $item->id) }}" class="stock-return">Kembalikan</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
