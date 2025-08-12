@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Daftar Customer</h1>
 
         @if (session('success'))
@@ -22,17 +22,6 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            {{-- <tfoot>
-                <tr>
-                    <th></th>
-                    <th><input type="text" placeholder="Cari Nama"></th>
-                    <th><input type="text" placeholder="Cari Kode"></th>
-                    <th><input type="text" placeholder="Cari Telepon"></th>
-                    <th><input type="text" placeholder="Cari Perusahaan"></th>
-                    <th><input type="text" placeholder="Cari Kota"></th>
-                    <th></th>
-                </tr>
-            </tfoot> --}}
         </table>
     </div>
 @endsection

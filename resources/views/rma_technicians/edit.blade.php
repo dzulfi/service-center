@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Edit Teknisi RMA: {{ $rmaTechnician->name }}</h1>
         
         <form action="{{ route('rma_technicians.update', $rmaTechnician->id) }}" method="POST" enctype="multipart/form-data">

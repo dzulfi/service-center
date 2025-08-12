@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Admin: Barang Masuk Dari RMA') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Admin: Barang Masuk Dari RMA</h1>
 
         @if (session('success'))

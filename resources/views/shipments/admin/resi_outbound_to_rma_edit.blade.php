@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('content')
-<div class="container">
+<div class="container full-width">
     <h2>Edit Resi Pengiriman</h2>
 
     <form method="POST" action="{{ route('shipments.admin.resi_outbound_to_rma.update', $shipment->id) }}" enctype="multipart/form-data">
@@ -68,8 +68,7 @@
         </div>
 
         <button type="submit" class="kirim-button">Simpan Perubahan</button>
-        <br>
-        <a href="{{ route('shipments.admin.resi_outbound_to_rma.index') }}" class="btn btn-secondary">Batal</a>
+        <a href="{{ route('shipments.admin.resi_outbound_to_rma.index') }}" class="batal">Batal</a>
     </form>
 </div>
 @endsection

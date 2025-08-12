@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Daftar Tipe Barang') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Daftar Tipe Barang</h1>
 
         @if (session('success'))

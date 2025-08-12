@@ -1,25 +1,30 @@
 @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Detail Customer</h1>
 
         <div class="detail-group">
-            <strong>Nama:</strong>
-            <span>{{ $customer->name }}</span>
-        </div>
-        <div class="detail-group">
-            <strong>Kode:</strong>
+            <strong>Kode</strong>
+            <div class="space">:</div>
             <span>{{ $customer->code }}</span>
         </div>
         <div class="detail-group">
-            <strong>No. Telepon:</strong> 
+            <strong>Nama</strong>
+            <div class="space">:</div>
+            <span>{{ $customer->name }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>No. Telepon</strong> 
+            <div class="space">:</div>
             <span>{{ $customer->phone_number ?? '-' }}</span>
         </div>
         <div class="detail-group">
-            <strong>Perusahaan:</strong> 
+            <strong>Perusahaan</strong> 
+            <div class="space">:</div>
             <span>{{ $customer->company ?? '-' }}</span>
         </div>
         <div class="detail-group">
-            <strong>Alamat:</strong> 
+            <strong>Alamat</strong> 
+            <div class="space">:</div>
             <span>
                 {{ $customer->address ?? '-' }}, {{ $customer->kelurahan ?? '-' }}, {{ $customer->kecamatan ?? '-' }}, {{ $customer->kota ?? '-' }}
             </span>
@@ -35,7 +40,7 @@
         </div>
 
         {{-- Informasi service milik customer --}}
-        <h2 style="margin-top: 10px;">Barang Servis Milik Mitra Bisnis :</h2>
+        <h2 style="margin-top: 30px;">Barang Servis Milik Mitra Bisnis :</h2>
         {{-- Filter Menu --}}
         {{-- <label for="">Filter status service :</label> --}}
         <div class="filter-menu">

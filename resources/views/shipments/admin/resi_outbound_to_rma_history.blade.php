@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>History Resi Pengiriman Service Ke RMA</h1>
 
         @if ($shipments->isEmpty())

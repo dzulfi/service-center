@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('content')
-<div class="container">
+<div class="container full-width">
     <h2>Edit Resi Pengiriman</h2>
     
     @if (session('success'))
@@ -87,8 +87,7 @@
         </div>
 
         <button type="submit" class="kirim-button">Simpan Perubahan</button>
-        <br>
-        <a href="{{ route('shipments.rma.resi_outbound_from_rma.index') }}" class="btn btn-secondary">Batal</a>
+        <a href="{{ route('shipments.rma.resi_outbound_from_rma.index') }}" class="batal">Batal</a>
     </form>
 </div>
 @endsection

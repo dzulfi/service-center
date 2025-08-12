@@ -1,12 +1,14 @@
 @extends('layouts.app') @section('content')
-    <div class="container">
-        <div class="form-group">
-            <strong>No Resi:</strong>
+    <div class="container full-width">
+        <div class="detail-group">
+            <strong>No Resi</strong>
+            <div class="space">:</div>
             <span>{{ $shipment->resi_number }}</span>
         </div>
 
-        <div class="form-group">
+        <div class="detail-group">
             <strong>Gambar</strong>
+            <div class="space">:</div>
             <span>
                 @if ($shipment->resi_image_path)
                     <img src="{{ Storage::url($shipment->resi_image_path) }}" alt="{{ $shipment->resi_number }}" style="width: auto; height: 150px; object-fit: cover;">
@@ -16,8 +18,9 @@
             </span>
         </div>
 
-        <div class="form-group">
-            <strong>Keterangan: </strong>
+        <div class="detail-group">
+            <strong>Keterangan</strong>
+            <div class="space">:</div>
             <span>{{ $shipment->notes }}</span>
         </div>
 

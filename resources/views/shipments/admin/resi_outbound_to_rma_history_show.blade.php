@@ -1,15 +1,17 @@
 @extends('layouts.app') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Detail Resi Pengiriman</h1>
 
-        <div class="form-group">
-            <strong>No Resi: </strong>
+        <div class="detail-group">
+            <strong>No Resi</strong>
+            <div class="space">:</div>
             <span>{{ $shipment->resi_number }}</span>
             {{-- <input type="text" name="resi_number" value="{{ old('resi_number', $shipment->resi_number) }}" class="form-control" required> --}}
         </div>
 
-        <div class="form-group">
-            <strong>Gambar Resi: </strong>
+        <div class="detail-group">
+            <strong>Gambar Resi</strong>
+            <div class="space">:</div>
             <span>
                 @if ($shipment->resi_image_path)
                     <img src="{{ Storage::url($shipment->resi_image_path) }}" alt="{{ $shipment->resi_number }}" style="width: auto; height: 200px; object-fit: cover;">
@@ -19,8 +21,9 @@
             </span>
         </div>
 
-        <div class="form-group">
-            <strong>Keterangan: </strong>
+        <div class="detail-group">
+            <strong>Keterangan</strong>
+            <div class="space">:</div>
             <span>{{ $shipment->notes }}</span>
             {{-- <textarea name="notes" class="form-control">{{ old('notes', $shipment->notes) }}</textarea> --}}
         </div>

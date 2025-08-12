@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Daftar Teknisi RMA</h1>
 
         @if (session('success'))

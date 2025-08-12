@@ -1,46 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Barang Servis: {{ $serviceItem->item_name }}</title>
-    <style>
-        .list-disc{
-            list-style-type: disc;
-        }
-    </style>
-</head>
-<body>
-    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
-        <div class="container">
-            <h1>Detail Barang Servis</h1>
-            
-            <div class="detail-group">
-                <strong>Kode Service</strong>
-                <span>{{ $serviceItem->code }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Serial Number:</strong> 
-                <span>{{ $serviceItem->serial_number ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Nama Barang:</strong> 
-                <span>{{ $serviceItem->name }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Merk:</strong> 
-                <span>{{ $serviceItem->merk->merk_name ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Tipe Barang:</strong> 
-                <span>{{ $serviceItem->itemType->type_name ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Analisa Kerusakan:</strong> 
-                <span>{{ $serviceItem->analisa_kerusakan ?? '-' }}</span>
-            </div>
+@extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
+    <div class="container full-width">
+        <h1>Detail Barang Servis</h1>
+        
+        <div class="detail-group">
+            <strong>Kode Service</strong>
+            <div class="space">:</div>
+            <span>{{ $serviceItem->code }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Serial Number</strong> 
+            <div class="space">:</div>
+            <span>{{ $serviceItem->serial_number ?? '-' }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Nama Barang:</strong> 
+            <div class="space">:</div>
+            <span>{{ $serviceItem->name }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Merk</strong> 
+            <div class="space">:</div>
+            <span>{{ $serviceItem->merk->merk_name ?? '-' }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Tipe Barang</strong> 
+            <div class="space">:</div>
+            <span>{{ $serviceItem->itemType->type_name ?? '-' }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Analisa Kerusakan</strong>
+            <div class="space">:</div> 
+            <span>{{ $serviceItem->analisa_kerusakan ?? '-' }}</span>
+        </div>
 
-            <h2>Informasi Mitra Bisnis</h2>
+        <h2>Informasi Mitra Bisnis</h2>
+        <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
@@ -70,9 +64,11 @@
                     </tr>
                 </tbody>
             </table>
-            
+        </div>
+        
 
-            <h2>Timeline Barang Service</h2>
+        <h2>Timeline Barang Service</h2>
+        <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
@@ -97,8 +93,10 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
 
-            <h2>Informasi Pengerjaan RMA</h2>
+        <h2>Informasi Pengerjaan RMA</h2>
+        <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
@@ -138,6 +136,5 @@
                 </tbody>
             </table>
         </div>
-    @endsection
-</body>
-</html>
+    </div>
+@endsection

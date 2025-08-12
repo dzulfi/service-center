@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Tambah Barang Servis Baru</h1>
 
         @if ($errors->any())

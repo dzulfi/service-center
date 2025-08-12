@@ -99,7 +99,7 @@
                     </li>
                     <li>
                         <a href="{{ route(name: 'shipments.admin.resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.resi_outbound_to_rma.*') ? 'active' : '' }}">
-                            Resi Kirim Service ke RMA
+                            Resi Kirim ke RMA
                         </a>
                     </li>
                     <li>

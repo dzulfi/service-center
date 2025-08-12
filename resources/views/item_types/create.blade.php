@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Tambah Item Barang') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Tambah Item Barang Baru</h1>
 
         @if ($errors->any())
@@ -20,7 +20,7 @@
                 @enderror
             </div>
 
-            <button type="submit">Simpan</button>
+            <button type="submit" class="kirim-button">Simpan</button>
         </form>
     </div>
 @endsection

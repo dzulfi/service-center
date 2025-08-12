@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Admin: Kirim Barang ke RMA') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <form action="{{ route('shipments.admin.outbound_to_rma.bulk_store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
