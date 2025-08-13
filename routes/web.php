@@ -212,6 +212,8 @@ Route::middleware('auth')->group(function () {
         
         // melihat daftar & barang service
         Route::get('activity/service-items', [ServiceItemController::class, 'indexAllServiceItems'])->name('activity.service_items.index');
+        // Datatables Service Item
+        Route::get('activity/service-items/data', [ServiceItemController::class, 'getDataServiceItemActivity'])->name('activity.service_items_data');
         Route::get('activity/service-items/{serviceItem}', [ServiceItemController::class, 'showDetailActivityServiceItem'])->name('activity.service_items.detail_activity_service_item');
 
         // Activity Service Processes RMA

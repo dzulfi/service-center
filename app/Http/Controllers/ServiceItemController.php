@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\LocationStatusEnum;
-use App\Enums\ShipmentStatusEnum;
-use App\Enums\ShipmentTypeEnum;
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use App\Models\Merk;
 use App\Models\Customer;
 use App\Models\ItemType;
-use App\Models\Merk;
 use App\Models\ServiceItem;
-use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Enums\ShipmentTypeEnum;
+use App\Enums\LocationStatusEnum;
+use App\Enums\ShipmentStatusEnum;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 
 class ServiceItemController extends Controller
 {
@@ -37,8 +40,10 @@ class ServiceItemController extends Controller
      */
     public function indexAllServiceItems()
     {
-        $serviceItems = ServiceItem::with(['customer', 'creator'])->paginate(10);
-        return view('service_items.index_all', compact('serviceItems'));
+        // $serviceItems = ServiceItem::all();
+        return view('service_items.index_all'
+        // , compact('serviceItems')
+    );
     }
 
     /**
@@ -253,5 +258,81 @@ class ServiceItemController extends Controller
     {
         $serviceItem->delete();
         return redirect()->route('service_items.index')->with('success', 'Barang service berhasil dihapus');
+    }
+
+    /**
+     * Get Data Activity Service Items
+     */
+    public function getDataServiceItemActivity(Request $request)
+    {
+        $query = ServiceItem::select(
+                'service_items.*',
+                'customers.name as customer_name',
+                'item_types.type_name as type',
+                'merks.merk_name as merk',
+                DB::raw("CONCAT(users.name, ' (', IFNULL(branch_offices.name, '(Tidak Ditemukan)'), ')') as admin")
+            )
+            ->leftJoin('customers', 'customers.id', '=', 'service_items.customer_id')
+            ->leftJoin('item_types', 'item_types.id', '=', 'service_items.item_type_id')
+            ->leftJoin('merks', 'merks.id', '=', 'service_items.merk_id')
+            ->leftJoin('users', 'users.id', '=', 'service_items.created_by_user_id')
+            ->leftJoin('branch_offices', 'branch_offices.id', '=', 'users.branch_office_id');
+
+        return DataTables::of($query)
+            ->addColumn('status', function ($row) {
+                $latestProcess = $row->serviceProcesses
+                    ->sortByDesc('created_at')
+                    ->first();
+                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                $statusSlug = \Illuminate\Support\Str::slug($status);
+
+                return $latestProcess
+                    ? '<span class="status-badge status-' . $statusSlug . '">' . e($status) . '</span>'
+                    : '<span class="status-badge status-pending">Pending</span>';
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('activity.service_items.detail_activity_service_item', $row->id) . '" class="view-button">Lihat Detail</a>
+                    </div>
+                ';
+            })
+            ->filterColumn('code', function($query, $keyword) {
+                $query->where('service_items.code', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('serial_number', function($query, $keyword) {
+                $query->where('service_items.serial_number', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('name', function($query, $keyword) {
+                $query->where('service_items.name', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('type', function($query, $keyword) {
+                $query->where('item_types.type_name', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('merk', function($query, $keyword) {
+                $query->where('merks.merk_name', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('customer_name', function($query, $keyword) {
+                $query->where('customers.name', 'like', "%{$keyword}%");
+            })
+            ->filterColumn('admin', function($query, $keyword) {
+                $query->whereRaw("CONCAT(users.name, ' (', IFNULL(branch_offices.name, '(Tidak Ditemukan)'), ')') LIKE ?", ["%{$keyword}%"]);
+            })
+            ->filter(function ($query) use ($request) {
+                if ($request->status_filter) {
+                    $query->whereHas('serviceProcesses', function($q) use ($request) {
+                        if ($request->status_filter === 'selesai') {
+                            $q->where('process_status', 'selesai');
+                        } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                            $q->whereIn('process_status', ['Batal', 'Tidak bisa diperbaiki']);
+                        } elseif ($request->status_filter === 'proses-pengerjaan' ) {
+                            $q->whereNotIn('process_status', ['Selesai', 'Batal', 'Tidak bisa diperbaiki']);
+                        }
+                    });
+                }
+            }, true)
+            ->rawColumns(['action', 'status', 'rma_technician'])
+            ->addIndexColumn()
+            ->make(true);
     }
 }
