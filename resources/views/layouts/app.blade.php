@@ -273,7 +273,6 @@
                             d.status_filter = $('.filter-btn.active').data('filter'); // kirim nilai filter ke server
                         }
                     },
-                    // Data yang ditampilkan dalam view
                     columns: [
                         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                         { data: 'code', name: 'service_items.code' },
@@ -292,7 +291,7 @@
                 $('.filter-btn').on('click', function() {
                     $('.filter-btn').removeClass('active');
                     $(this).addClass('active');
-                    table.ajax.reload(); // reload data sesuai filter
+                    tableServiceItemActivitys.ajax.reload(); // reload data sesuai filter
                 })
             });
         </script>
