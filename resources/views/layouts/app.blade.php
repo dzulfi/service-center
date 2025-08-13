@@ -275,12 +275,12 @@
                     },
                     columns: [
                         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                        { data: 'code', name: 'service_items.code' },
-                        { data: 'serial_number', name: 'service_items.serial_number' },
-                        { data: 'name', name: 'service_items.name' },
-                        { data: 'type', name: 'item_types.type_name' },
-                        { data: 'merk', name: 'merks.merk_name' },
-                        { data: 'customer_name', name: 'customers.name'},
+                        { data: 'code', name: 'code' },
+                        { data: 'serial_number', name: 'serial_number' },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'customer_name', name: 'customer_name'},
                         { data: 'admin', name: 'admin' },
                         { data: 'status', name: 'status', orderable: false, searchable: false },
                         { data: 'action', name: 'action', orderable: false, searchable: false }

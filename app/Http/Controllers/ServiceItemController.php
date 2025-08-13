@@ -265,30 +265,55 @@ class ServiceItemController extends Controller
      */
     public function getDataServiceItemActivity(Request $request)
     {
-        $query = ServiceItem::select(
-                'service_items.*',
-                'customers.name as customer_name',
-                'item_types.type_name as type',
-                'merks.merk_name as merk',
-                DB::raw("CONCAT(users.name, ' (', IFNULL(branch_offices.name, '(Tidak Ditemukan)'), ')') as admin")
-            )
-            ->leftJoin('customers', 'customers.id', '=', 'service_items.customer_id')
-            ->leftJoin('item_types', 'item_types.id', '=', 'service_items.item_type_id')
-            ->leftJoin('merks', 'merks.id', '=', 'service_items.merk_id')
-            ->leftJoin('users', 'users.id', '=', 'service_items.created_by_user_id')
-            ->leftJoin('branch_offices', 'branch_offices.id', '=', 'users.branch_office_id');
+        // $query = ServiceItem::with(['serviceProcesses'])
+        //     ->select(
+        //         'service_items.*',
+        //         'customers.name as customer_name',
+        //         'item_types.type_name as type',
+        //         'merks.merk_name as merk',
+        //         DB::raw("CONCAT(users.name, ' (', IFNULL(branch_offices.name, '(Tidak Ditemukan)'), ')') as admin")
+        //     )
+        //     ->leftJoin('customers', 'customers.id', '=', 'service_items.customer_id')
+        //     ->leftJoin('item_types', 'item_types.id', '=', 'service_items.item_type_id')
+        //     ->leftJoin('merks', 'merks.id', '=', 'service_items.merk_id')
+        //     ->leftJoin('users', 'users.id', '=', 'service_items.created_by_user_id')
+        //     ->leftJoin('branch_offices', 'branch_offices.id', '=', 'users.branch_office_id');
+        
+        // $query = ServiceItem::query();
+
+        $query = ServiceItem::with([
+            'customer',
+            'itemType',
+            'merk',
+            'creator.branchOffice',
+            'serviceProcesses'
+        ]);
 
         return DataTables::of($query)
-            ->addColumn('status', function ($row) {
-                $latestProcess = $row->serviceProcesses
-                    ->sortByDesc('created_at')
-                    ->first();
-                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
-                $statusSlug = \Illuminate\Support\Str::slug($status);
+            ->addColumn('customer_name', function ($row) {
+                return $row->customer ? $row->customer->name : '-';
+            })
+            ->addColumn('type', function ($row) {
+                return $row->itemType ? $row->itemType->type_name : '-';
+            })
+            ->addColumn('merk', function ($row) {
+                return $row->merk ? $row->merk->merk_name : '-';
+            })
+            ->addColumn('admin', function ($row) {
+                if ($row->creator) {
+                    $adminName = $row->creator->name;
+                    $branchOffice = $row->creator->branchOffice ? $row->creator->branchOffice->name : '-';
 
-                return $latestProcess
-                    ? '<span class="status-badge status-' . $statusSlug . '">' . e($status) . '</span>'
-                    : '<span class="status-badge status-pending">Pending</span>';
+                    return $adminName . '(' . $branchOffice . ')';
+                }
+                return '-';
+            })
+            ->addColumn('status', function ($row) {
+                $latestProcess = $row->serviceProcesses->sortByDesc('created_at')->first();
+                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                $statusSlug = Str::slug($status);
+
+                return '<span class="status-badge status-' . $statusSlug . '">' . e($status) . '</span>';
             })
             ->addColumn('action', function ($row) {
                 return '
@@ -297,41 +322,77 @@ class ServiceItemController extends Controller
                     </div>
                 ';
             })
-            ->filterColumn('code', function($query, $keyword) {
-                $query->where('service_items.code', 'like', "%{$keyword}%");
-            })
-            ->filterColumn('serial_number', function($query, $keyword) {
-                $query->where('service_items.serial_number', 'like', "%{$keyword}%");
-            })
-            ->filterColumn('name', function($query, $keyword) {
-                $query->where('service_items.name', 'like', "%{$keyword}%");
-            })
+            // ->filterColumn('code', function($query, $keyword) {
+            //     $query->where('service_items.code', 'like', "%{$keyword}%");
+            // })
+            // ->filterColumn('serial_number', function($query, $keyword) {
+            //     $query->where('service_items.serial_number', 'like', "%{$keyword}%");
+            // })
+            // ->filterColumn('name', function($query, $keyword) {
+            //     $query->where('service_items.name', 'like', "%{$keyword}%");
+            // })
+
+            // === FILTER KOLOM RELASI TANPA MENGHAPUS DATA NULL ===
             ->filterColumn('type', function($query, $keyword) {
-                $query->where('item_types.type_name', 'like', "%{$keyword}%");
+                // $query->where('item_types.type_name', 'like', "%{$keyword}%");
+                $query->whereHas('itemType', function($q) use ($keyword) {
+                    $q->where('type_name', 'like', "%{$keyword}%");
+                });
             })
             ->filterColumn('merk', function($query, $keyword) {
-                $query->where('merks.merk_name', 'like', "%{$keyword}%");
+                // $query->where('merks.merk_name', 'like', "%{$keyword}%");
+                $query->whereHas('merk', function ($q) use ($keyword) {
+                    $q->where('merk_name', 'like', "%{$keyword}%");
+                });
             })
             ->filterColumn('customer_name', function($query, $keyword) {
-                $query->where('customers.name', 'like', "%{$keyword}%");
+                // $query->where('customers.name', 'like', "%{$keyword}%");
+                $query->whereHas('customer', function($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
             })
             ->filterColumn('admin', function($query, $keyword) {
-                $query->whereRaw("CONCAT(users.name, ' (', IFNULL(branch_offices.name, '(Tidak Ditemukan)'), ')') LIKE ?", ["%{$keyword}%"]);
+                // $query->whereRaw("CONCAT(users.name, ' (', IFNULL(branch_offices.name, '(Tidak Ditemukan)'), ')') LIKE ?", ["%{$keyword}%"]);
+                $query->whereHas('creator', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%")
+                        ->orWhereHas('branchOffice', function ($bq) use ($keyword) {
+                            $bq->where('name', 'like', "%{$keyword}%");
+                        });
+                });
             })
+            // === FILTER STATUS ===
             ->filter(function ($query) use ($request) {
+                // if ($request->status_filter) {
+                //     $query->whereHas('serviceProcesses', function($q) use ($request) {
+                //         if ($request->status_filter === 'selesai') {
+                //             $q->where('process_status', 'selesai');
+                //         } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                //             $q->whereIn('process_status', ['Batal', 'Tidak bisa diperbaiki']);
+                //         } elseif ($request->status_filter === 'proses-pengerjaan' ) {
+                //             $q->whereNotIn('process_status', ['Selesai', 'Batal', 'Tidak bisa diperbaiki']);
+                //         }
+                //     });
+                // }
                 if ($request->status_filter) {
-                    $query->whereHas('serviceProcesses', function($q) use ($request) {
-                        if ($request->status_filter === 'selesai') {
-                            $q->where('process_status', 'selesai');
-                        } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                    if ($request->status_filter === 'selesai') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->where('process_status', 'Selesai');
+                        });
+                    } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                        $query->whereHas('serviceProcesses', function ($q) {
                             $q->whereIn('process_status', ['Batal', 'Tidak bisa diperbaiki']);
-                        } elseif ($request->status_filter === 'proses-pengerjaan' ) {
-                            $q->whereNotIn('process_status', ['Selesai', 'Batal', 'Tidak bisa diperbaiki']);
-                        }
-                    });
+                        });
+                    } elseif ($request->status_filter === 'proses-pengerjaan') {
+                        $query->where(function ($q) {
+                            $q->whereDoesntHave('serviceProcesses') // belum ada proses sama seklai
+                              ->orWhereHas('serviceProcesses', function ($sq) {
+                                $sq->whereNotIn('process_status', ['Selesai', 'Batal', "Tidak bisa diperbaiki"]);
+                              });
+                        });
+                    }
                 }
             }, true)
-            ->rawColumns(['action', 'status', 'rma_technician'])
+            ->rawColumns(['action', 'status'])
             ->addIndexColumn()
             ->make(true);
     }
