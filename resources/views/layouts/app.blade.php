@@ -18,6 +18,9 @@
         {{-- DataTable Laravel --}}
         <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
 
+        {{-- Date Range Picker --}}
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
@@ -122,6 +125,10 @@
 
         {{-- DataTable Laravel --}}
         <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+        
+        {{-- Date Range Picker --}}
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
         {{-- select2 --}}
         <script>
@@ -263,7 +270,7 @@
                     ]
                 });
 
-                // Service Activity
+                // Service Item Activity
                 let tableServiceItemActivitys = $('#serviceItemTableActivity').DataTable({
                     processing: true,
                     serverSide: true,
@@ -286,13 +293,84 @@
                         { data: 'action', name: 'action', orderable: false, searchable: false }
                     ]
                 })
-
                 // event klik filter process service
                 $('.filter-btn').on('click', function() {
                     $('.filter-btn').removeClass('active');
                     $(this).addClass('active');
                     tableServiceItemActivitys.ajax.reload(); // reload data sesuai filter
                 })
+
+                // Aktivitas RMA
+                let tableActivityRma = $('#serviceProcessesTableActivity').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('activity.service_process.data') }}",
+                        data: function (d) {
+                            let mulaiRange = $('#dateRangeMulai').val().split(' - ');
+                            let selesaiRange = $('#dateRangeSelesai').val().split(' - ');
+
+                            d.start_mulai   = mulaiRange[0] || '';
+                            d.end_mulai     = mulaiRange[1] || '';
+                            d.start_selesai = selesaiRange[0] || '';
+                            d.end_selesai   = selesaiRange[1] || '';
+
+                            d.handler = $('#handler').val();
+                            d.status_filter = $('#status').val();
+
+                            // // tanggal mulai
+                            // d.start_mulai = $('#startMulai').val();
+                            // d.end_mulai = $('#endMulai').val();
+
+                            // // tanggal selesai
+                            // d.start_selesai = $('#startSelesai').val();
+                            // d.end_selesai = $('#endSelesai').val();
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'start_process', name: 'start_process', orderable: false, searchable: false },
+                        { data: 'finish_process', name: 'finish_process', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'damage_analysis_detail', name: 'damage_analysis_detail' },
+                        { data: 'solution', name: 'solution' },
+                        { data: 'sparepart', name: 'sparepart' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'technician', name: 'technician' },
+                        { data: 'action_process', name: 'action_process', orderable: false, searchable: false },
+                        { data: 'action_sparepart', name: 'action_sparepart', orderable: false, searchable: false }
+                    ]
+                });
+                // Filtering Aktivitas RMA
+                $('#filterFormRmaActivity').on('submit', function (e) {
+                    e.preventDefault();
+                    tableActivityRma.ajax.reload();
+                });
+
+                $(function() {
+                    $('#dateRangeMulai, #dateRangeSelesai').daterangepicker({
+                        autoUpdateInput: false,
+                        locale: { cancelLabel: 'Clear' }
+                    });
+
+                    $('#dateRangeMulai').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                    });
+
+                    $('#dateRangeMulai').on('cancel.daterangepicker', function(ev, picker) {
+                        $(this).val('');
+                    });
+
+                    $('#dateRangeSelesai').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                    });
+
+                    $('#dateRangeSelesai').on('cancel.daterangepicker', function(ev, picker) {
+                        $(this).val('');
+                    });
+                });
             });
         </script>
 

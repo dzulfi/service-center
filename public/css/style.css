@@ -134,6 +134,11 @@ button:hover {
     border: 1px solid #f5c6cb;
 }
 
+.no-rma {
+    color: rgb(255, 74, 74); 
+    font-weight: bold;
+}
+
 /* Add Button (for list pages) */
 .add-button {
     display: inline-block;
@@ -160,6 +165,7 @@ button:hover {
 /* Table Styles */
 table {
     width: 100%;
+    /* white-space: nowrap; */
     border-collapse: collapse;
     margin-bottom: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -404,4 +410,18 @@ tr:hover {
 
 .filter-menu button:hover, .filter-menu button.active {
     background-color: #31b0d5;
+}
+
+.daterangepicker {
+    z-index: 99999 !important; /* Supaya popup muncul di atas DataTables */
+    font-family: inherit; /* Supaya font konsisten */
+}
+
+.daterangepicker td, .daterangepicker th {
+    padding: 8px !important;
+}
+
+.daterangepicker .calendar-table {
+    background-color: white;
+    border: 1px solid #ddd;
 }

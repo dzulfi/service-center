@@ -12,6 +12,8 @@ use App\Models\ServiceProcess;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class ServiceProcessController extends Controller
 {
@@ -191,13 +193,6 @@ class ServiceProcessController extends Controller
         return view('service_processes.show', compact('serviceProcess'));
     }
 
-    // metode indexAll untuk developer/superadmin
-    public function indexActivityServiceProcesses() 
-    {
-        $serviceItems = ServiceItem::all();
-        return view('service_processes.activity_service_processes_index', compact('serviceItems'));
-    }
-
     public function changeWorkOn(ServiceItem $serviceItem)
     {
         // Load proses terakhir untuk service item ini
@@ -292,5 +287,196 @@ class ServiceProcessController extends Controller
     {
         $serviceProcess->delete();
         return redirect()->route('service_processes.index')->with('success', 'Proses servis berhasil dihapus!');
+    }
+
+    /**
+     * Aktivitas RMA 
+     */
+    public function indexActivityServiceProcesses() 
+    {
+        $serviceItems = ServiceItem::all();
+        return view('service_processes.activity_service_processes_index'
+            , compact('serviceItems')
+        );
+    }
+    
+    // Get Data Aktivitas RMA
+    public function getDataActivityRma(Request $request)
+    {
+        $query = ServiceItem::with([
+            'itemType',
+            'merk',
+            'serviceProcesses',
+            'stockSpareparts',
+            'rmaTechnicians',
+        ]);
+
+        return DataTables::of($query)
+            ->addColumn('start_process', function ($row) {
+                return $row->mulai_dikerjakan ? $row->mulai_dikerjakan->format('d M Y H:i') : '-';
+            })
+            ->addColumn('finish_process', function ($row) {
+                return $row->selesai_dikerjakan ? $row->selesai_dikerjakan->format('d M Y H:i') : '-';
+            })
+            ->addColumn('type', function ($row) {
+                return $row->itemType ? $row->itemType->type_name : '-';
+            })
+            ->addColumn('merk', function ($row) {
+                return $row->merk ? $row->merk->merk_name : '-';
+            })
+            ->addColumn('damage_analysis_detail', function ($row) {
+                if ($row->serviceProcesses->isNotEmpty()) {
+                    foreach($row->serviceProcesses as $service) {
+                        return $service ? $service->damage_analysis_detail : '-';
+                    }
+                }
+                return '-';
+            })
+            ->addColumn('solution', function ($row) {
+                if ($row->serviceProcesses->isNotEmpty()) {
+                    foreach($row->serviceProcesses as $service) {
+                        return $service ? $service->solution : '-';
+                    }
+                }
+                return '-';
+            })
+            ->addColumn('sparepart', function ($row) {
+                if ($row->stockSpareparts->isEmpty()) {
+                    return '<div style="color: rgb(255, 93, 93); font-weight: bold;">Tidak memakai sparepart</div>';
+                }
+
+                $items = [];
+                foreach ($row->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks) {
+                    $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
+                    $currentStock = $row->getCurrentStockForSparepart($sparepartId);
+
+                    if ($currentStock != 0) {
+                        $items[] = '<li>' . e($sparepartName) . ' (stock: ' . $currentStock . ')</li>';
+                    }
+                }
+
+                if (empty($items)) {
+                    return '<div style="color: rgb(255, 93, 93); font-weight: bold;">Tidak memakai sparepart</div>';
+                }
+
+                return '<ul class="list-disc">' . implode('', $items) . '</ul>';
+            })
+            ->addColumn('status', function ($row) {
+                $latestProcess = $row->serviceProcesses->sortByDesc('created_at')->first();
+                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                $statusSlug = Str::slug($status);
+
+                return '<span class="status-badge status-' . $statusSlug . '">' . e($status) . '</span>';
+            })
+            ->addColumn('technician', function ($row) {
+                if ($row->rmaTechnicians->isNotEmpty()) {
+                    return $row->rmaTechnicians->pluck('name')->join(', ');
+                }
+
+                return '
+                    <div class="no-rma">
+                        Belum ada
+                    </div>
+                ';
+            })
+            ->addColumn('action_process', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('activity.service_processes.change', $row->id) . '" class="work-button">Perubahan</a>
+                    </div>
+                ';
+            })
+            ->addColumn('action_sparepart', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('stock_out.index', $row->id) . '" class="stock-out">Gunakan</a>
+                        <a href="' . route('stock_return.create', $row->id) . '" class="stock-return">Kembalikan</a>
+                    </div>
+                ';
+            })
+            
+            // === FILTER KOLOM RELASI TANPA MENGHAPUS DATA NULL ===
+            ->filterColumn('type', function($query, $keyword) {
+                $query->whereHas('itemType', function($q) use ($keyword) {
+                    $q->where('type_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('merk', function($query, $keyword) {
+                $query->whereHas('merk', function ($q) use ($keyword) {
+                    $q->where('merk_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('damage_analysis_detail', function ($query, $keyword) {
+                $query->whereHas('serviceProcesses', function ($q) use ($keyword) {
+                    $q->where('damage_analysis_detail', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('solution', function ($query, $keyword) {
+                $query->whereHas('serviceProcesses', function ($q) use ($keyword) {
+                    $q->where('solution', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('sparepart', function ($query, $keyword) {
+                $query->whereHas('stockSpareparts.sparepart', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('technician', function ($query, $keyword) {
+                $query->whereHas('rmaTechnicians', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filter(function ($query) use ($request) {
+                // Filter berdasarkan Teknisi RMA
+                if ($request->handler && $request->handler !== 'all') {
+                    if ($request->handler === 'belum-ditangani') {
+                        $query->whereDoesntHave('rmaTechnicians');
+                    } else {
+                        $query->whereHas('rmaTechnicians', function ($q) use ($request) {
+                            $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower(str_replace('-', ' ', $request->handler)) . '%']);
+                        });
+                    }
+                }
+
+                // Filter berdasarkan status proses
+                if ($request->status_filter) {
+                    if ($request->status_filter === 'selesai') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->where('process_status', 'Selesai');
+                        });
+                    } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->whereIn('process_status', ['Batal', 'Tidak bisa diperbaiki']);
+                        });
+                    } elseif ($request->status_filter === 'proses-pengerjaan') {
+                        $query->where(function ($q) {
+                            $q->whereDoesntHave('serviceProcesses') // belum ada proses sama seklai
+                              ->orWhereHas('serviceProcesses', function ($sq) {
+                                $sq->whereNotIn('process_status', ['Selesai', 'Batal', "Tidak bisa diperbaiki"]);
+                              });
+                        });
+                    }
+                }
+
+                // Filter range Mulai
+                if ($request->start_mulai && $request->end_mulai) {
+                    $query->whereHas('serviceProcesses', function ($q) use ($request) {
+                        $q->whereDate('created_at', '>=', $request->start_mulai)
+                        ->whereDate('created_at', '<=', $request->end_mulai);
+                    });
+                }
+                
+                // filter range selesai
+                if ($request->start_selesai && $request->end_selesai) {
+                    $query->whereHas('serviceProcesses', function ($q) use ($request) {
+                        $q->where('process_status', 'Selesai')
+                        ->whereDate('updated_at', '>=', $request->start_selesai)
+                        ->whereDate('updated_at', '<=', $request->end_selesai);
+                    });
+                }
+            }, true)
+            ->rawColumns(['technician', 'action_process', 'action_sparepart', 'damage', 'solution', 'sparepart', 'status', 'damage_analysis_detail'])
+            ->addIndexColumn()
+            ->make(true);
     }
 }

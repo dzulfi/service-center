@@ -218,6 +218,8 @@ Route::middleware('auth')->group(function () {
 
         // Activity Service Processes RMA
         Route::get('activity/service-process-rma', [ServiceProcessController::class, 'indexActivityServiceProcesses'])->name('activity.service_processes.index');
+        // Datatables Activity Service Processes RMA
+        Route::get('activity/service-process-rma/data', [ServiceProcessController::class, 'getDataActivityRma'])->name('activity.service_process.data');
         Route::get('activity/service-process-rma/change/{serviceItem}', [ServiceProcessController::class, 'changeWorkOn'])->name('activity.service_processes.change');
         Route::post('activity/service-process-rma/change/{serviceItem}', [ServiceProcessController::class, 'storeChangeWorkOn'])->name('activity.service_processes.store');
     });
