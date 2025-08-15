@@ -18,26 +18,26 @@
             <button class="filter-btn" data-filter="proses-pengerjaan">Proses Pengerjaan</button>
         </div>
 
-        @if ($serviceItems->isEmpty())
+        {{-- @if ($serviceItems->isEmpty())
             <p class="no-data">Belum ada barang servis yang terdaftar.</p>
-        @else
+        @else --}}
             <div class="table-responsive">
-                <table id="serviceItemsTable">
+                <table id="serviceItemsTableAdmin">
                     <thead>
                         <tr>
                             <th>No</th>
                             <th>Kode Barang</th>
                             <th>Customer</th>
                             <th>Nama Barang</th>
-                            <th>Merk</th>
                             <th>Tipe Barang</th>
+                            <th>Merk</th>
                             <th>Serial Number</th>
-                            <th>Dibuat oleh</th>
+                            {{-- <th>Dibuat oleh</th> --}}
                             <th>Status Pengerjaan</th> 
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    {{-- <tbody>
                         @foreach ($serviceItems as $item)
                             @php
                                 $latestProcess = $item->serviceProcesses->sortByDesc('created_at')->first();
@@ -47,9 +47,9 @@
     
                                 if ($status === 'Selesai') {
                                     $filterGroup = 'selesai';
-                                } elseif ($status === 'Batal' || $status === 'Tidak bisa diperbaiki') { // Pastikan 'Batal' masuk ke sini jika itu menandakan tidak bisa diperbaiki
+                                } elseif ($status === 'Batal' || $status === 'Tidak bisa diperbaiki') {  Pastikan 'Batal' masuk ke sini jika itu menandakan tidak bisa diperbaiki
                                     $filterGroup = 'tidak-bisa-diperbaiki';
-                                } else { // Semua status selain Selesai, Batal, Tidak Bisa Diperbaiki dianggap proses pengerjaan
+                                } else {  Semua status selain Selesai, Batal, Tidak Bisa Diperbaiki dianggap proses pengerjaan
                                     $filterGroup = 'proses-pengerjaan';
                                 }
                             @endphp
@@ -68,11 +68,11 @@
                                 <td>{{ $item->itemType->type_name ?? '-' }}</td>
                                 <td>{{ $item->serial_number ?? '-' }}</td>
     
-                                {{-- author yang membuat barang service oleh user siapa --}}
+                                author yang membuat barang service oleh user siapa
                                 <td>{{ $item->creator->name ?? 'N/A' }}</td> 
                                 
                                 <td>
-                                    {{-- LOGIKA STATUS PROSES TERAKHIR --}}
+                                    LOGIKA STATUS PROSES TERAKHIR
                                     @if ($latestProcess)
                                         <span class="status-badge status-{{ $statusSlug }}">
                                             {{ $status }}
@@ -92,17 +92,17 @@
                                 </td>
                             </tr>
                         @endforeach
-                    </tbody>
+                    </tbody> --}}
                 </table>
             </div>
-            <div class="pagination-wrapper">
+            {{-- <div class="pagination-wrapper">
                 {{ $serviceItems->links() }}
-            </div>
-        @endif
+            </div> --}}
+        {{-- @endif --}}
     </div>
 @endsection
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.filter-btn').on('click', function() {
@@ -121,4 +121,4 @@
             }
         });
     });
-</script>
+</script> --}}

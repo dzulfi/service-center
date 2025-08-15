@@ -25,14 +25,7 @@ class ServiceItemController extends Controller
      */
     public function index()
     {
-        // mengambil ID user yang sedang login
-        $loggedInUserId = Auth::id();
-        
-        $serviceItems = ServiceItem::with('customer', 'creator', 'serviceProcesses') // load relasi yang dibutuhkan untuk tampilan dan status
-            ->where('created_by_user_id', $loggedInUserId)
-            ->paginate(10); // Load relasi customer
-            
-        return view('service_items.index', compact('serviceItems'));
+        return view('service_items.index');
     }
 
     /**
@@ -373,6 +366,94 @@ class ServiceItemController extends Controller
                 //         }
                 //     });
                 // }
+                if ($request->status_filter) {
+                    if ($request->status_filter === 'selesai') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->where('process_status', 'Selesai');
+                        });
+                    } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->whereIn('process_status', ['Batal', 'Tidak bisa diperbaiki']);
+                        });
+                    } elseif ($request->status_filter === 'proses-pengerjaan') {
+                        $query->where(function ($q) {
+                            $q->whereDoesntHave('serviceProcesses') // belum ada proses sama seklai
+                              ->orWhereHas('serviceProcesses', function ($sq) {
+                                $sq->whereNotIn('process_status', ['Selesai', 'Batal', "Tidak bisa diperbaiki"]);
+                              });
+                        });
+                    }
+                }
+            }, true)
+            ->rawColumns(['action', 'status'])
+            ->addIndexColumn()
+            ->make(true);
+    }
+
+    /**
+     * Get Data List Service Item Role Admin
+     */
+    public function getDataServiceItemAdmin(Request $request)
+    {
+        $loggedInUserId = Auth::id();
+        $query = ServiceItem::with([
+            'customer',
+            'merk',
+            'itemType',
+            'creator',
+        ])->where('created_by_user_id', $loggedInUserId);
+
+        return DataTables::of($query)
+            ->addColumn('customer_name', function ($row) {
+                return $row->customer ? $row->customer->name : '-';
+            })
+            ->addColumn('type', function ($row) {
+                return $row->itemType ? $row->itemType->type_name : '-';
+            })
+            ->addColumn('merk', function ($row) {
+                return $row->merk ? $row->merk->merk_name : '-';
+            })
+            ->addColumn('status', function ($row) {
+                $latestProcess = $row->serviceProcesses->sortByDesc('created_at')->first();
+                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                $statusSlug = Str::slug($status);
+
+                return '<span class="status-badge status-' . $statusSlug . '">' . e($status) . '</span>';
+            })
+            ->addColumn('action', function ($row) {
+                $csrf = csrf_field();
+                $method = method_field('DELETE');
+
+                return '
+                    <div class="actions">
+                        <a href="'. route('service_items.show', $row->id)  . '" class="view-button">Lihat</a>
+                        <a href="' . route('service_items.edit', $row->id) . '" class="edit-button">Edit</a>
+                        <form action="' . route('service_items.destroy', $row->id) . '" method="POST" style="display:inline;">
+                            ' . $csrf . '
+                            ' . $method . '
+                            <button type="submit" class="delete-button" onclick="return confirm(\'Anda yakin ingin menghapus barang servis ini?\')">Hapus</button>
+                        </form>
+                    </div>
+                ';
+            })
+            ->filterColumn('customer_name', function ($query, $keyword) {
+                $query->whereHas('customer', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('type', function ($query, $keyword) {
+                $query->whereHas('itemType', function ($q) use ($keyword) {
+                    $q->where('type_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('merk', function ($query, $keyword) {
+                $query->whereHas('merk', function ($q) use ($keyword) {
+                    $q->where('merk_name', 'like', "%{$keyword}%");
+                });
+            })
+            
+            // === Filter Status ===
+            ->filter(function ($query) use ($request) {
                 if ($request->status_filter) {
                     if ($request->status_filter === 'selesai') {
                         $query->whereHas('serviceProcesses', function ($q) {

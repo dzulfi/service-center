@@ -57,6 +57,8 @@ Route::middleware('auth')->group(function () {
         
         // CRUD Service Item
         Route::resource('service_items', ServiceItemController::class);
+        // Get Datatables Service Items
+        Route::get('service_item/datas', [ServiceItemController::class, 'getDataServiceItemAdmin'])->name('service_items.data');
         
         // API Dynamic Option Item Type
         Route::get('/api/item-types', function (Request $request) {

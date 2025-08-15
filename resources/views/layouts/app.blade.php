@@ -238,7 +238,9 @@
         {{-- DataTable --}}
         <script>
             $(document).ready(function() {
-                // Customer Index
+                /** 
+                 * Customer Index
+                 */
                 $('#customer-data-tables').DataTable({
                     processing: true,
                     serverSide: true,
@@ -254,7 +256,9 @@
                     ]
                 });
 
-                // Customer Activity
+                /** 
+                 * Customer Activity
+                 */
                 $('#customer-activity-data-tables').DataTable({
                     processing:true,
                     serverSide: true,
@@ -270,7 +274,9 @@
                     ]
                 });
 
-                // Service Item Activity
+                /** 
+                 * Service Item Activity 
+                 */
                 let tableServiceItemActivitys = $('#serviceItemTableActivity').DataTable({
                     processing: true,
                     serverSide: true,
@@ -300,7 +306,9 @@
                     tableServiceItemActivitys.ajax.reload(); // reload data sesuai filter
                 })
 
-                // Aktivitas RMA
+                /** 
+                 * Aktivitas RMA 
+                 * */
                 let tableActivityRma = $('#serviceProcessesTableActivity').DataTable({
                     processing: true,
                     serverSide: true,
@@ -348,7 +356,7 @@
                     e.preventDefault();
                     tableActivityRma.ajax.reload();
                 });
-
+                // Filtering Date Range Activity RMA
                 $(function() {
                     $('#dateRangeMulai, #dateRangeSelesai').daterangepicker({
                         autoUpdateInput: false,
@@ -370,6 +378,37 @@
                     $('#dateRangeSelesai').on('cancel.daterangepicker', function(ev, picker) {
                         $(this).val('');
                     });
+                });
+
+                /** 
+                 * Service Items Admin
+                */
+                let tableServiceItemAdmin = $('#serviceItemsTableAdmin').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('service_items.data') }}",
+                        data: function (d) {
+                            d.status_filter = $('.filter-btn.active').data('filter');
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'code', name: 'code' },
+                        { data: 'customer_name', name: 'customer_name' },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'serial_number', name: 'serial_number' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+                // Event klik filter process service
+                $('.filter-btn').on('click', function() {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                    tableServiceItemAdmin.ajax.reload(); // reload data sesuai filter
                 });
             });
         </script>
