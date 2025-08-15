@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
 
         // CRUD Customer
         Route::resource('customers', CustomerController::class);
+        Route::get('customers/{customer}/service-item-datas', [CustomerController::class, 'getDataServiceItemCustomer'])->name('customers.service-item-datas');
         
         // CRUD Service Item
         Route::resource('service_items', ServiceItemController::class);

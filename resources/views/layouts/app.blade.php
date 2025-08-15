@@ -381,7 +381,7 @@
                 });
 
                 /** 
-                 * Service Items Admin
+                 * Data Service Items (Admin)
                 */
                 let tableServiceItemAdmin = $('#serviceItemsTableAdmin').DataTable({
                     processing: true,
@@ -409,6 +409,37 @@
                     $('.filter-btn').removeClass('active');
                     $(this).addClass('active');
                     tableServiceItemAdmin.ajax.reload(); // reload data sesuai filter
+                });
+
+                /**
+                 * Data service item customer
+                 */
+                let customerId = $('#customer-table').data('id');
+                let tableServiceItemCustomerShow = $('#serviceItemsTableCustomerShow').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: `/customers/${customerId}/service-item-datas`,
+                        data: function (d) {
+                            d.status_filter = $('.filter-btn.active').data('filter');
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'code', name: 'code' },
+                        { data: 'serial_number', name: 'serial_number' },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+                // Event klik filter process service
+                $('.filter-btn').on('click', function() {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                    tableServiceItemCustomerShow.ajax.reload(); // reload data sesuai filter
                 });
             });
         </script>

@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\ServiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -64,31 +65,31 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $user = Auth::user(); // dapatkan user yang sedang login
+        return view('customers.show', compact('customer'));
 
-        // $customer->load([
-        //     'serviceItems' => function ($query) use ($user) {
-        //         // jika user adalah admin, maka tampilkan service item yang dibuat oleh user tersebut 
-        //         if ($user->isAdmin()) {
-        //             $query->where('created_by_user_id', $user->id);
-        //         }
-        //         // eager load relasi-relasi yang dibutuhkan di blade untuk serviceItem
-        //         $query->with(['serviceProcesses', 'creator']);
-        //     }
-        // ]);
+        // $user = Auth::user(); // dapatkan user yang sedang login
 
-        // Ambil serviceItems via query (bukan eiger load)
-        $serviceItemsQuery = $customer->serviceItems()->with(['serviceProcesses', 'creator']);
+        // // $customer->load([
+        // //     'serviceItems' => function ($query) use ($user) {
+        // //         // jika user adalah admin, maka tampilkan service item yang dibuat oleh user tersebut 
+        // //         if ($user->isAdmin()) {
+        // //             $query->where('created_by_user_id', $user->id);
+        // //         }
+        // //         // eager load relasi-relasi yang dibutuhkan di blade untuk serviceItem
+        // //         $query->with(['serviceProcesses', 'creator']);
+        // //     }
+        // // ]);
 
-        // Jika admin, filter berdasarkan user
-        if ($user->isAdmin()) {
-            $serviceItemsQuery->where('created_by_user_id', $user->id);
-        }
-
-        $perPage = 10;
-        $serviceItems = $serviceItemsQuery->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        // // Ambil serviceItems via query (bukan eiger load)
+        // $serviceItemsQuery = $customer->serviceItems()->with(['serviceProcesses', 'creator']);
         
-        return view('customers.show', compact('customer', 'serviceItems'));
+        // // Jika admin, filter berdasarkan user
+        // if ($user->isAdmin()) {
+        //     $serviceItemsQuery->where('created_by_user_id', $user->id);
+        // }
+        
+        // $perPage = 10;
+        // $serviceItems = $serviceItemsQuery->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
     }
 
     /**
@@ -173,6 +174,79 @@ class CustomerController extends Controller
                 ';
             })
             ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
+    }
+
+    public function getDataServiceItemCustomer(Customer $customer, Request $request)
+    {
+        // Cek user yang baru login
+        $user = Auth::user();
+
+        // Ambil serviceItems via query (bukan eiger load)
+        $query = $customer->serviceItems()
+            ->with([
+                'serviceProcesses',
+                'merk',
+                'itemType',
+            ])->where('created_by_user_id', $user->id);
+
+        return DataTables::of($query)
+            // ->addColumn('code', function ($row) {
+            //     return $row->code ?? '-';
+            // })
+            ->addColumn('type', function ($row) {
+                return $row->itemType ? $row->itemType->type_name : '-';
+            })
+            ->addColumn('merk', function ($row) {
+                return $row->merk ? $row->merk->merk_name : '-';
+            })
+            ->addColumn('status', function ($row) {
+                $latestProcess = $row->serviceProcesses->sortByDesc('created_at')->first();
+                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                $statusSlug = Str::slug($status);
+
+                return '<span class="status-badge status-' . $statusSlug . '">' .e($status) . '</span>';
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('service_items.show', $row->id) . '" class="view-button">Lihat</a>
+                        <a href="' . route('service_items.edit', $row->id) . '" class="edit-button">Edit</a>
+                    </div>
+                ';
+            })
+            ->filterColumn('type', function ($query, $keyword) {
+                $query->whereHas('itemType', function ($q) use ($keyword) {
+                    $q->where('type_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('merk', function ($query, $keyword) {
+                $query->whereHas('merk', function ($q) use ($keyword) {
+                    $q->where('merk_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filter(function ($query) use ($request) {
+                if ($request->status_filter) {
+                    if ($request->status_filter === 'selesai') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->where('process_status', 'Selesai');
+                        });
+                    } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->whereIn('process_status', ['Batal', 'Tidak bisa diperbaiki']);
+                        });
+                    } elseif ($request->status_filter === 'proses-pengerjaan') {
+                        $query->where(function ($q) {
+                            $q->whereDoesntHave('serviceProcesses') // belum ada proses sama seklai
+                              ->orWhereHas('serviceProcesses', function ($sq) {
+                                $sq->whereNotIn('process_status', ['Selesai', 'Batal', "Tidak bisa diperbaiki"]);
+                              });
+                        });
+                    }
+                }
+            }, true)
+            ->rawColumns(['action', 'status'])
             ->addIndexColumn()
             ->make(true);
     }
