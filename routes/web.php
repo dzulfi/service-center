@@ -49,10 +49,10 @@ Route::middleware('auth')->group(function () {
 
     // Hanya Admin
     Route::middleware(['auth', 'role:admin'])->group(function () {
-        // CRUD Customer
-        Route::resource('customers', CustomerController::class);
         // Server Side Customer DataTable
         Route::get('customers/data', [CustomerController::class, 'getDataCustomer'])->name('customers.data');
+        // CRUD Customer
+        Route::resource('customers', CustomerController::class);
         // Data Service Item Customer Detail
         Route::get('customers/{customer}/service-item-datas', [CustomerController::class, 'getDataServiceItemCustomer'])->name('customers.service-item-datas');
         
