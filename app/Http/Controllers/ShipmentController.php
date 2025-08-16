@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\ServiceItem;
 use App\Models\Shipment;
+use App\Models\ShipmentItem;
 use App\Models\User;
 use App\Enums\LocationStatusEnum;
 use App\Enums\ShipmentStatusEnum;
 use App\Enums\ShipmentTypeEnum;
 use App\Http\Controllers\Controller;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use PDF;
 
 class ShipmentController extends Controller
 {
@@ -33,268 +37,567 @@ class ShipmentController extends Controller
         $serviceItems = ServiceItem::with(['customer', 'creator', 'serviceProcesses'])
             ->where('location_status', LocationStatusEnum::AtBranch)
             ->where('created_by_user_id', $loggedInUserId)
+            // ->where('location_status', LocationStatusEnum::AtBranch)
             ->get();
         
         return view('shipments.admin.outbound_to_rma_index', compact('serviceItems'));
     }
 
-    /**
-     * Menampilkan form untuk membuat pengiriman (resi) dari admin ke RMA
-     */
-    public function createOutboundToRma(ServiceItem $serviceItem)
+    public function createOutboundMultiple(Request $request)
     {
-        // hanya admin yang bisa melihat
         if (!Auth::user()->isAdmin()) {
-            abort(403, 'Akses Ditolak');
+            abort(403);
         }
 
-        if ($serviceItem->location_status !== LocationStatusEnum::AtBranch) {
-            return redirect()->back()->with('error','Barang tidak berada di cabang atau sudah dalam proses pengiriman');;
+        $ids = $request->service_item_ids;
+        if (!$ids) {
+            return redirect()->back()->with('error', 'Pilih setidaknya satu barang terlebih dahulu.');
         }
 
-        return view('shipments.admin.outbound_to_rma_create', compact('serviceItem'));
+        $serviceItems = ServiceItem::with('customer')
+            ->whereIn('id', $ids)
+            ->get();
+
+        return view('shipments.admin.outbound_to_rma_bulk_create', compact('serviceItems'));
     }
 
-    /**
-     * Menyimpan pengiriman (resi) dari Admin ke RMA
-     * Membuat record Shipment dan update ServiceItem.location_status
-     */
-    public function storeOutboundToRma(Request $request, ServiceItem $serviceItem)
+    public function storeOutboundMultiple(Request $request)
     {
-        // hanya admin yang bisa melakukan ini
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Akses Ditolak');
-        }
-
-        $request->validate([
-            'resi_number' => 'required|string|max:255|unique:shipments,resi_number', // Resi harus unik
-            'resi_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // max 2MB
+        // Validasi input
+        $validated = $request->validate([
+            'resi_number' => 'required|string',
+            'resi_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'notes' => 'nullable|string',
+            'service_item_ids' => 'required|array',
+            'service_item_ids.*' => 'exists:service_items,id',
         ]);
 
-        if ($serviceItem->location_status !== LocationStatusEnum::AtBranch) {
-            return redirect()->back()->with('error', 'Barang ini tidak berada di cabang atau sudah dalam proses pengiriman');
-        }
-
-        $imagePath = null;
-        if ($request->hasFile('resi_image')) {
-            $imagePath = $request->file('resi_image')->store('resi_images/to_rma', 'public'); // simpan di storage/app/public/resi_image/to_rma
-        }
-
-        // 1. buat record shipments
-        Shipment::create([
-            'service_item_id' => $serviceItem->id,
+        // Simpan data shipment
+        $shipment = Shipment::create([
             'shipment_type' => ShipmentTypeEnum::ToRMA,
-            'resi_number' => $request->resi_number,
-            'responsible_user_id' => Auth::id(), // Admin yang mengirim
-            'resi_image_path' => $imagePath,
-            'status' => ShipmentStatusEnum::Kirim, // Otomatis status Kirim
-            'notes' => $request->notes,
+            'resi_number' => $validated['resi_number'],
+            'responsible_user_id' => Auth::id(),
+            'notes' => $validated['notes'] ?? null,
         ]);
 
-        // 2. Update ServiceItem.location_status
-        $serviceItem->update(['location_status' => LocationStatusEnum::InTransitToRMA]);
+        // Upload file jika ada
+        if ($request->hasFile('resi_image')) {
+            $path = $request->file('resi_image')->store('resi_images/to_rma', 'public');
+            $shipment->resi_image_path = $path;
+            $shipment->save();
+        }
 
-        return redirect()->route('shipments.admin.outbound_to_rma.index')->with('success', 'Barang berhasil dikirim ke RMA dengan resi: ' .$request->resi_number);
+        foreach ($validated['service_item_ids'] as $itemId) { // perulangan untuk ID yang terpilih 
+            // Pivot Relasi service item dengan shipment
+            ShipmentItem::create([
+                'shipment_id' => $shipment->id,
+                'service_item_id' => $itemId,
+            ]);
+
+            // update status lokasi pada service item menjadi InTransitToRMA
+            ServiceItem::where('id', $itemId)->update([
+                'location_status' => LocationStatusEnum::InTransitToRMA
+            ]);
+        }
+
+        return redirect()->route('shipments.admin.outbound_to_rma.index')
+            ->with('success', 'Pengiriman berhasil disimpan.');
     }
 
-    // RMA Admin side: menerima Barang dari admin
-    /**
-     * Menampilkan daftar pengiriman yang sedang menuju RMA Admin ('status: kirim')
-     */
-    public function indexInboundFromAdmin()
+    public function indexResiOutboundToRma()
     {
-        // Hanya RMA Admin yang bisa melihat ini
-        if (!Auth::user()->isRmaAdmin()) {
-            abort(403, 'Akses Ditolak');
-        }
+        if (!Auth::user()->isAdmin()) (abort(403, 'Akses Ditolah Hanya Admin Cabang'));
 
-        // Ambil pengiriman yang tipenya To_RMA dan status Kirim
-        $shipments = Shipment::with(['serviceItem.customer', 'responsibleUser'])
+        // Ambil ID user yang login dimana hanya user tersebut yang dapat melihat datanya saja tidak dapat melihat data user lain
+        $loggedInUserId = Auth::id();
+        
+        // Ambil Semua Service Item yang terkait dengan shipment ini
+        $shipments = Shipment::where('responsible_user_id', $loggedInUserId)
             ->where('shipment_type', ShipmentTypeEnum::ToRMA)
             ->where('status', ShipmentStatusEnum::Kirim)
             ->get();
 
-        return view('shipments.rma.inbound_from_admin_index', compact('shipments'));
+        return view('shipments.admin.resi_outbound_to_rma_index', compact('shipments'));
     }
-
-    /**
-     * mengubah status pengiriman menjadi 'Diterima' oleh RMA Admin
-     * @param \App\Models\Shipment $shipment
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function receiveInboundFromAdmin(Shipment $shipment) 
+    
+    public function editResiOutboundToRma(Shipment $shipment)
     {
-        // Hanya RMA Admin yang bisa melakukan ini
-        if (!Auth::user()->isRmaAdmin()) {
-            abort(403, 'Akses Ditolak');
-        }
-
-        // Pastikan ini pengiriman ke RMA dan statusnya masih kirim
-        if ($shipment->shipment_type !== ShipmentTypeEnum::ToRMA || $shipment->status !== ShipmentStatusEnum::Kirim) {
-            return redirect()->back()->with('error','Pengiriman ini tidak valid untuk diterima RMA');
-        }
-
-        // 1. Update status Shipment
-        $shipment->update([
-            'status' => ShipmentStatusEnum::Diterima,
-            'responsible_user_id' => Auth::id(), // RMA yang menerima
-        ]);
-
-        // 2. Update ServiceItem.location_status
-        $shipment->serviceItem->update(['location_status' => LocationStatusEnum::AtRMA]);
-
-        return redirect()->route('shipments.rma.inbound_from_admin.index')->with('success', 'Barang "' . $shipment->serviceItem->name . '" berhasil diterima.');
-    }
-
-    // RMA Admin side: Mengirim barang kembali ke admin
-    /**
-     * Menampilkan daftar barang service di RMA yang sudah selesai dan siap dikirim
-     */
-    public function indexOutboundFromRma()
-    {
-        // hanya RMA Admin yang bisa melihat ini
-        if (!Auth::user()->isRmaAdmin()) {
-            abort(403, 'Akses Ditolak');
-        }
-
-        // Ambil service Items yang sudah Selesai (proses terakhirnya) Dan lokasinya masih di RMA
-        $serviceItems = ServiceItem::with(['customer', 'serviceProcesses', 'creator'])
-            ->where('location_status', LocationStatusEnum::AtRMA)
-            ->get()
-            ->filter(function ($item) {
-                return $item->latestServiceProcess && $item->latestServiceProcess->process_status  === 'Selesai';
-            });
+        $loggedInUserId = Auth::id();
         
-        return view('shipments.rma.outbound_from_rma_index', compact('serviceItems'));
+        // Ambil semua service item yang belum dipilih oleh shipment lain
+        $availableItems = ServiceItem::where('created_by_user_id', $loggedInUserId)
+        ->whereDoesntHave('shipments', function ($q) {
+            $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
+        })->orWhereHas('shipments', function ($q) use ($shipment) {
+            $q->where('shipments.id', $shipment->id);
+        })->get();
+
+        return view('shipments.admin.resi_outbound_to_rma_edit', compact('shipment', 'availableItems'));
     }
 
-    /**
-     * Menampilkan form untuk membuat (resi) dari RMA Admin ke Admin
-     */
-    public function createOutboundFromRma(ServiceItem $serviceItem)
+    // Update Resi Admin Cabang ke RMA
+    public function updateResiOutboundToRma(Request $request, Shipment $shipment)
     {
-        // Hanya RMA yang bisa melihat ini
-        if (!Auth::user()->isRmaAdmin()) {
-            abort(403, 'Akses Ditolak');
-        }
-
-        // pastikan service item memang di At_RMA dan sudah selesai
-        if ($serviceItem->location_status !== LocationStatusEnum::AtRMA || !$serviceItem->latestServiceProcess || $serviceItem->latestServiceProcess->process_status !== 'Selesai') {
-            return redirect()->back()->with('error', 'Barang ini tidak siap untuk dikirim kembali');
-        }
-
-        return view('shipments.rma.outbound_from_rma_create', compact('serviceItem'));
-    }
-
-    /**
-     * Menyimpan pengiriman (resi) dari RMA ke Admin
-     * membuat record Shipment dan update ServiceItem.location_status.
-     */
-    public function storeOutboundFromRma(Request $request, ServiceItem $serviceItem)
-    {
-        // Hanya RMA yang bisa melakukan ini
-        if (!Auth::user()->isRmaAdmin()) {
-            abort(403, 'Akses Ditolak.');
-        }
-
-        $request->validate([
-            'resi_number' => 'required|string|max:255|unique:shipments,resi_number',
-            'resi_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        $validated = $request->validate([
+            'resi_number' => 'required|string',
             'notes' => 'nullable|string',
+            'resi_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'service_item_ids'=> 'required|array',
+            'service_item_ids.*'=> 'exists:service_items,id',
         ]);
 
-        if ($serviceItem->location_status !== LocationStatusEnum::AtRMA || !$serviceItem->latestServiceProcess || $serviceItem->latestServiceProcess->process_status !== 'Selesai'
-            ) {
-            return redirect()->back()->with('error', 'Barang ini tidak siap untuk dikirim kembali kantor cabang');
-        }
+        $shipment->update([
+            'resi_number' => $validated['resi_number'],
+            'notes' => $validated['notes'],
+        ]);
 
-        $imagePath = null;
+        // Update ulang gambar resi jika ada
+        $imagePath = $shipment->resi_image_path; // Pertahankan gambar lama jika tidak ada perubahan
         if ($request->hasFile('resi_image')) {
-            $imagePath = $request->file('resi_image')->store('resi_images/from_rma', 'public');
+            if($shipment->resi_image_path) {
+                Storage::disk('public')->delete($shipment->resi_image_path);
+            }
+            $path = $request->file('resi_image')->store('resi_images/to_rma', 'public');
+            $shipment->resi_image_path = $path;
+            $shipment->save();
         }
 
-        Shipment::create([
-            'service_item_id' => $serviceItem->id,
-            'shipment_type' => ShipmentTypeEnum::FromRMA,
-            'resi_number' => $request->resi_number,
-            'responsible_user_id' => Auth::id(), // RMA yang mengirim
-            'resi_image_path' => $imagePath,
-            'status' => ShipmentStatusEnum::KirimKembali, // Otomatis status Kirim Kembali
-            'notes' => $request->notes,
-        ]);
+        // Ambil semua service item id lama
+        $oldItemIds = $shipment->serviceItems->pluck('id')->toArray();
 
-        $serviceItem->update(['location_status' => LocationStatusEnum::InTransitFromRMA]);
+        // yang dibatalkan
+        $removed = array_diff($oldItemIds, $validated['service_item_ids']);
+        foreach ($removed as $itemId) {
+            ShipmentItem::where('shipment_id', $shipment->id)
+                ->where('service_item_id', $itemId)
+                ->delete();
 
-        return redirect()->route('shipments.rma.outbound_from_rma.index')->with('success', 'Barang berhasil dikirim kembali ke cabang dengan resi: ' . $request->resi_number);
+            // Kembalikan lokasi status pada service item
+            ServiceItem::find($itemId)->update(['location_status' => LocationStatusEnum::AtBranch]);
+        }
+
+        // Service Item yang ditambahkan 
+        $added = array_diff($validated['service_item_ids'], $oldItemIds);
+        foreach ($added as $itemId) {
+            ShipmentItem::create([
+                'shipment_id' => $shipment->id,
+                'service_item_id' => $itemId,
+            ]);
+
+            // Ubah lokasi status pada service item yang ditambahkan menjadi InTransitToRMA
+            ServiceItem::find($itemId)->update(['location_status' => LocationStatusEnum::InTransitToRMA]);
+        }
+
+        return redirect()->route('shipments.admin.resi_outbound_to_rma.index')->with('success', 'Data resi berhasil diperbarui.');
     }
 
-    // Admin Side: Menerima Barang dari RMA
-    /**
-     * Menampilkan daftar pengiriman yang sedang menuju Admin (status 'Kirim Kembali').
-     */
+    // Cetak Resi Admin Cabang ke RMA
+    public function pdfResiOutboundToRma(Shipment $shipment)
+    {
+        $shipment->load('serviceItems', 'responsibleUser'); // eager load user & items
+
+        $pdf = PDF::loadView('shipments.admin.resi_outstanding_to_rma_pdf', [
+            'shipment' => $shipment
+        ])->setPaper('a4','landscape');
+
+        return $pdf->stream('resi_shipment_to_rma_' . $shipment->id . '.pdf');
+    }
+
+    // Hapus Resi Admin Cabang ke RMA
+    public function destroyResiOutstandingToRma($id)
+    {
+        $shipment = Shipment::with('serviceItems')->findOrFail($id);
+
+        // cek apakah resi sudah diterima
+        if ($shipment->status === ShipmentStatusEnum::Diterima) {
+            return redirect()->route('shipments.admin.resi_outbound_to_rma.index')
+                ->with('error', 'Resi Tidak dapat dihapus karena sudah diterima Admin RMA');
+        }
+
+        // Kembalikan status lokasi semua service item ke AtBranch
+        foreach ($shipment->serviceItems as $item) {
+            $item->location_status = LocationStatusEnum::AtBranch;
+            $item->save();
+        }
+
+        // Hapus relasi di pivot 
+        $shipment->serviceItems()->detach();
+
+        // Hapus resi 
+        if ($shipment->resi_image_path) {
+            Storage::disk('public')->delete($shipment->resi_image_path);
+        }
+        $shipment->delete();
+
+        return redirect()->route('shipments.admin.resi_outbound_to_rma.index')->with('success','Resi berhasil dihapus dan semua service item dikembalikan ke kantor cabang');
+    }
+
     public function indexInboundFromRma()
     {
-        // hanya admin yang bisa melihat ini
-        if (!Auth::user()->isAdmin()) {
-            abort(403,'Akses Ditolak');
-        }
+        if (Auth::user()->isRmaAdmin()) abort(403, 'Aksi Ditolak Hanya RMA Admin');
 
-        // mengambil ID user yang sedang login beserta branch_id nya
-        $loggedInUserId = Auth::user();
-        // dd($loggedInUserId);
-        $loggedInUserBranchOfficeId = $loggedInUserId->branch_office_id; // ID cabang user yang login
+        $userBranchId = Auth::user()->branch_office_id;
 
-        // Ambil pengiriman yang tipenya from_rma dan statusnya 'Kirim Kembali'
-        // dan service item terkaitnya dibuat oleh user dari cabang yang sama dengan admin yang login
-        $shipments = Shipment::with([
-                'serviceItem.customer', 
-                'responsibleUser', 
-                'serviceItem.serviceProcesses',
-                'serviceItem.creator.branchOffice' // Eager load branch office dari creator untuk filter
-            ])
+        $shipments = Shipment::with('responsibleUser', 'serviceItems')
             ->where('shipment_type', ShipmentTypeEnum::FromRMA)
             ->where('status', ShipmentStatusEnum::KirimKembali)
-            ->whereHas('serviceItem.creator', function ($query) use ($loggedInUserBranchOfficeId) {
-                // filter shipments dimana creator (pembuat service item), memiliki branch_office_id yang sama dengan cabang user yang login.
-                $query->where('branch_office_id', $loggedInUserBranchOfficeId);
-            })
-            ->get();
+            ->get()
+            // Filter hanya shipment yang punya service item untuk cabang yang sama dengan user
+            ->filter (function ($shipment) use ($userBranchId) {
+                return $shipment->serviceItems->contains(function ($item) use ($userBranchId) {
+                    return $item->creator && $item->creator->branch_office_id == $userBranchId;
+                });
+            });
 
         return view('shipments.admin.inbound_from_rma_index', compact('shipments'));
     }
 
-    /**
-     * mengubah status pengiriman menjadi 'Diterima Cabang' oleh admin
-     */
+    public function showInboundFromRma(Shipment $shipment)
+    {
+        // $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
+        //     $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
+        // })->where(function ($q) use ($shipment) {
+        //     $q->whereDoesntHave('shipments', function ($q2) use ($shipment) {
+        //         $q2->where('shipment_type', ShipmentTypeEnum::FromRMA)
+        //             ->where('stattus', ShipmentStatusEnum::KirimKembali)
+        //             ->where('shipments.id', '!=', $shipment->id);
+        //     });
+        // })->get();
+
+        $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
+            $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
+        })
+        ->whereHas('shipments', function ($q) use ($shipment) {
+            $q->where('shipments.id', $shipment->id);
+        })
+        ->get();
+
+        return view('shipments.admin.inbound_from_rma_show', compact('shipment', 'availableItems'));
+    }
+
     public function receiveInboundFromRma(Shipment $shipment)
     {
-        // hanya admin yang bisa melakukan ini
-        if (!Auth::user()->isAdmin()) {
-            abort(403,'Akses Ditolak');
+        if (Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+        if ($shipment->status === ShipmentStatusEnum::DiterimaCabang) {
+            return redirect()->back()->with('error', 'Resi sudah diterima sebelumnya');
         }
 
-        // pastikan ini dari RMA dan statusnya masih Kirim Kembali
-        if ($shipment->shipment_type !== ShipmentTypeEnum::FromRMA || $shipment->status !== ShipmentStatusEnum::KirimKembali) {
-            return redirect()->back()->with('error','Pengiriman ini tidak valid untuk diterima Cabang.');
+        // Update status shipment menjadi diterima
+        $shipment->status = ShipmentStatusEnum::DiterimaCabang;
+        $shipment->save();
+
+        // ubah status lokasi setiap service item
+        foreach ($shipment->serviceItems as $item) {
+            $item->location_status = LocationStatusEnum::ReadyForPickup;
+            $item->save();
         }
 
-        // 1. Admin mengupdate status 
-        $shipment->update([
-            'status' => ShipmentStatusEnum::DiterimaCabang,
-            'responsible_user' => Auth::id(), // Admin yang menerima
-        ]);
-
-        // 2. update serviceItem.location_status
-        $shipment->serviceItem->update(['location_status' => LocationStatusEnum::AtBranch]); // Atau ReadyForPickup jika ada langkah pengambilan pelanggan
-
-        return redirect()->route('shipments.admin.inbound_from_rma.index')->with('success', 'Barang "' . $shipment->serviceItem->name . '" berhasil diterima cabang');
+        return redirect()->back()->with('success','Pengiriman berhasu diterima dan semua barang kembali ke admin cabang');
     }
 
-    // Metode show (untuk melihat detail shipment)
-    public function show(Shipment $shipment)
+    public function historyResiOutboundToRma()
     {
-        $shipment->load(['serviceItem.customer', 'responsibleUser']);
-        return view('shipments.show', compact('shipment'));
+        if (!Auth::user()->isAdmin()) (abort(403, 'Akses Ditolah Hanya Admin Cabang'));
+
+        // Ambil ID user yang login dimana hanya user tersebut yang dapat melihat datanya saja tidak dapat melihat data user lain
+        $loggedInUserId = Auth::id();
+        
+        // Ambil Semua Service Item yang terkait dengan shipment ini
+        $shipments = Shipment::where('responsible_user_id', $loggedInUserId)
+            ->where('shipment_type', ShipmentTypeEnum::ToRMA)
+            ->where('status', ShipmentStatusEnum::Diterima)
+            ->get();
+
+        return view('shipments.admin.resi_outbound_to_rma_history', compact('shipments'));
     }
+
+    public function historyShowResiOutboundToRma(Shipment $shipment)
+    {
+        // $availableItems = ServiceItem::whereDoesntHave('shipments', function ($q) {
+        //     $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
+        // })->orWhereHas('shipments', function ($q) use ($shipment) {
+        //     $q->where('shipments.id', $shipment->id);
+        // })->get();
+
+        $availableItems = $shipment->serviceItems()->get();
+
+        return view('shipments.admin.resi_outbound_to_rma_history_show', compact('shipment', 'availableItems'));
+    }
+
+    /**
+     * Side: RMA Admin
+     */
+    // Menampilkan daftar resi pengiriman dari admin cabang
+    
+    // public function indexInboundFromAdmin()
+    // {
+    //     if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+    //     $shipments = Shipment::with('responsibleUser', 'serviceItems')
+    //         ->where('shipment_type', ShipmentTypeEnum::ToRMA)
+    //         ->where('status', ShipmentStatusEnum::Kirim)
+    //         ->get();
+
+    //     return view('shipments.rma.inbound_from_admin_index', compact('shipments'));
+    // }
+    
+    // public function showInboundFromAdmin(Shipment $shipment)
+    // {
+    //     // $availableItems = ServiceItem::whereDoesntHave('shipments', function ($q) {
+    //     //     $q->where('shipment_type', ShipmentTypeEnum::ToRMA);
+    //     // })->orWhereHas('shipments', function ($q) use ($shipment) {
+    //     //     $q->where('shipments.id', $shipment->id);
+    //     // })->get();
+
+    //     $availableItems = $shipment->serviceItems()->get();
+    //     // dd($availableItems);
+
+    //     return view('shipments.rma.inbound_from_admin_show', compact('shipment', 'availableItems'));
+    // }
+
+    // public function receiveInboundFromAdmin(Shipment $shipment)
+    // {
+    //     if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+    //     if ($shipment->status === ShipmentStatusEnum::Diterima) {
+    //         return redirect()->back()->with('error', 'Resi sudah diterima sebelumnya');
+    //     }
+
+    //     // update status shipment menjadi diterima
+    //     $shipment->status = ShipmentStatusEnum::Diterima;
+    //     $shipment->save();
+
+    //     // Ubah status lokasi setiap barang service
+    //     foreach ($shipment->serviceItems as $item) {
+    //         $item->location_status = LocationStatusEnum::AtRMA;
+    //         $item->save();
+    //     }
+
+    //     return redirect()->back()->with('success', 'Pengiriman berhasil diterima dan semua barang berada di RMA');
+    // }
+
+    // public function receiveInboundFromAdminDetail(Shipment $shipment)
+    // {
+    //     if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+    //     if ($shipment->status === ShipmentStatusEnum::Diterima) {
+    //         return redirect()->back()->with('error', 'Resi sudah diterima sebelumnya');
+    //     }
+
+    //     // update status shipment menjadi diterima
+    //     $shipment->status = ShipmentStatusEnum::Diterima;
+    //     $shipment->save();
+
+    //     // Ubah status lokasi setiap barang service
+    //     foreach ($shipment->serviceItems as $item) {
+    //         $item->location_status = LocationStatusEnum::AtRMA;
+    //         $item->save();
+    //     }
+
+    //     return redirect()->route('shipments.rma.inbound_from_admin.index')->with('success', 'Pengiriman berhasil diterima dan semua barang berada di RMA');
+    // }
+
+    // public function indexOutboundFromRma()
+    // {
+    //     if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+    //     $serviceItems = ServiceItem::with(['customer', 'creator', 'serviceProcesses'])
+    //         ->where('location_status', LocationStatusEnum::AtRMA)
+    //         ->get()
+    //         ->filter(function ($item) {
+    //             $process = $item->latestServiceProcess;
+    //             return $process && in_array($process->process_status, ['Selesai', 'Tidak bisa diperbaiki']);
+    //             // return $item->latestServiceProcess && $item->latestServiceProcess->process_status  === 'Selesai';
+    //         });
+
+    //         return view('shipments.rma.outbound_from_rma_index', compact('serviceItems')); 
+    // }
+
+    // public function createOutboundMultipleFromRma(Request $request)
+    // {
+    //     if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+    //     $ids = $request->service_item_ids;
+    //     if (!$ids) {
+    //         return redirect()->back()->with('error', 'Pilih setidaknya satu barang terlebih dahulu');
+    //     }
+
+    //     $serviceItems = ServiceItem::with('customer')
+    //         ->whereIn('id', $ids)
+    //         ->get();
+        
+    //     return view('shipments.rma.outbound_from_rma_buld_create', compact('serviceItems'));
+    // }
+
+    // public function storeOutboundMultipleFromRma(Request $request)
+    // {
+    //     // Validasi Input
+    //     $validated = $request->validate([
+    //         'resi_number' => 'required|string',
+    //         'resi_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         'notes' => 'nullable|string',
+    //         'service_item_ids' => 'required|array',
+    //         'service_item_ids.*' => 'exists:service_items,id',
+    //     ]);
+
+    //     // Simpan data shipment
+    //     $shipment = Shipment::create([
+    //         'shipment_type' => ShipmentTypeEnum::FromRMA,
+    //         'resi_number' => $validated['resi_number'],
+    //         'responsible_user_id' => Auth::id(),
+    //         'notes' => $validated['notes'] ?? null,
+    //         'status' => ShipmentStatusEnum::KirimKembali,
+    //     ]);
+
+    //     // Upload file jika ada 
+    //     if ($request->hasFile('resi_image')) {
+    //         $path = $request->file('resi_image')->store('resi_images/from_rma', 'public');
+    //         $shipment->resi_image_path = $path;
+    //         $shipment->save();
+    //     }
+
+    //     foreach ($validated['service_item_ids'] as $itemId) {
+    //         ShipmentItem::create([
+    //             'shipment_id' => $shipment->id,
+    //             'service_item_id' => $itemId,
+    //         ]);
+
+    //         // update status lokasi pada service item menjadi 
+    //         ServiceItem::where('id', $itemId)->update([
+    //             'location_status' => LocationStatusEnum::InTransitFromRMA,
+    //         ]);
+    //     }
+
+    //     return redirect()->route('shipments.rma.outbound_from_rma.index')
+    //         ->with('success','Pengiriman berhasil disimpan.');
+    // }
+
+    // public function indexResiOutboundFromRma(Request $request)
+    // {
+    //     if (!Auth::user()->isRmaAdmin()) abort(403, 'Akses Ditolak Hanya RMA Admin');
+
+    //     $shipments = Shipment::where('shipment_type', ShipmentTypeEnum::FromRMA)
+    //         ->where('status', ShipmentStatusEnum::KirimKembali)
+    //         ->get();
+
+    //     return view('shipments.rma.resi_outbound_from_rma_index', compact('shipments'));
+    // }
+
+    // public function editResiOutboundFromRma(Shipment $shipment)
+    // {
+    //     $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
+    //         $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
+    //     })->where(function ($q) use ($shipment) {
+    //         $q->whereDoesntHave('shipments', function ($q2) use ($shipment) {
+    //             $q2->where('shipment_type', ShipmentTypeEnum::FromRMA)
+    //                 ->where('shipments.id', '!=', $shipment->id);
+    //         });
+    //     })->get();
+
+    //     return view('shipments.rma.resi_outbound_from_rma_edit', compact('shipment', 'availableItems'));
+    // }
+
+    // public function updateResiOutboundFromRma(Request $request, Shipment $shipment)
+    // {
+    //     $validated = $request->validate([
+    //         'resi_number' => 'required|string',
+    //         'notes'=> 'nullable|string',
+    //         'resi_image'=> 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         'service_item_ids'=> 'required|array',
+    //         'service_item_ids.*'=> 'exists:service_items,id',
+    //     ]);
+
+    //     $branchIds = ServiceItem::whereIn('id', $validated['service_item_ids'])
+    //         ->with('creator.branchOffice')
+    //         ->get()
+    //         ->pluck('creator.branch_office_id')
+    //         ->unique();
+
+    //     if ($branchIds->count() > 1) {
+    //         return redirect()->back()->with('error', 'Semua service item harus berasal dari cabang yang sama.');
+    //     }
+
+    //     $shipment->update([
+    //         'resi_number' => $validated['resi_number'],
+    //         'notes'=> $validated['notes'],
+    //     ]);
+
+    //     // Update ulang gambar resi jika ada
+    //     $imagePath = $shipment->resi_image_path;
+    //     if ($request->hasFile('resi_image')) {
+    //         if ($shipment->resi_image_path) {
+    //             Storage::disk('public')->delete($shipment->resi_image_path);
+    //         }
+    //         $path = $request->file('resi_image')->store('resi_images/from_rma', 'public');
+    //         $shipment->resi_image_path = $path;
+    //         $shipment->save();
+    //     }
+
+    //     // Ambil semua service item id lama
+    //     $oldItemIds = $shipment->serviceItems->pluck('id')->toArray();
+
+    //     // yang dibatalkan
+    //     $remove = array_diff($oldItemIds, $validated['service_item_ids']);
+    //     foreach ($remove as $itemId) {
+    //         ShipmentItem::where('shipment_id', $shipment->id)
+    //             ->where('service_item_id', $itemId)
+    //             ->delete();
+
+    //         // kembalikan lokasi pada service item
+    //         ServiceItem::find($itemId)->update(['location_status' => LocationStatusEnum::AtRMA]);
+    //     }
+
+    //     // service item yang ditambahkan
+    //     $added = array_diff($validated['service_item_ids'], $oldItemIds);
+    //     foreach ($added as $itemId) {
+    //         ShipmentItem::create([
+    //             'shipment_id' => $shipment->id,
+    //             'service_item_id'=> $itemId,
+    //         ]);
+
+    //         // ubah location status pada service item yang baru ditambahkan menjadi InTransitFromRMA
+    //         ServiceItem::find($itemId)->update(['location_status' => LocationStatusEnum::InTransitFromRMA]);
+    //     }
+
+    //     return redirect()->route('shipments.rma.resi_outbound_from_rma.index')->with('success','Data resi berhasil diperbarui');
+    // }
+
+    // public function pdfResiOutboundFromRma(Shipment $shipment)
+    // {
+    //     $shipment->load('serviceItems', 'responsibleUser');
+
+    //     $pdf = PDF::loadView('shipments.rma.resi_outbound_from_rma_pdf', [
+    //         'shipment'=> $shipment
+    //     ])->setPaper('a4','landscape');
+
+    //     return $pdf->stream('resi_shipment_from_rma_' . $shipment->id .'.pdf');
+    // }
+
+    // public function destroyResiOutboundFromRma($id)
+    // {
+    //     $shipment = Shipment::with('serviceItems')->findOrFail($id);
+
+    //     // cek apakah resi sudah diterima
+    //     if ($shipment->status === ShipmentStatusEnum::DiterimaCabang) {
+    //         return redirect()->route('shipments.rma.resi_outbound_from_rma.index')->with('error','Resi tidak dapat dihapus karena sudah diterima Admin Cabang');
+    //     }
+
+    //     // Kembalikan status lokasi semua service item ke AtRMA
+    //     foreach ($shipment->serviceItems as $item) {
+    //         $item->location_status = LocationStatusEnum::AtRMA;
+    //         $item->save();
+    //     }
+
+    //     // Hapus relasi di pivot
+    //     $shipment->serviceItems()->detach();
+
+    //     // Hapus resi
+    //     if ($shipment->resi_image_path) {
+    //         Storage::disk('public')->delete($shipment->resi_image_path);
+    //     }
+    //     $shipment->delete();
+
+    //     return redirect()->route('shipments.rma.resi_outbound_from_rma.index')->with('success','Resi berhasil dihapus dan semua service item dikembalikan ke RMA');
+    // }
 }

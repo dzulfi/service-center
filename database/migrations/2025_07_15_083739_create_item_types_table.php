@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('item_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('merk_id')->constrained()->cascadeOnDelete();
-            $table->string('type_name');
+            // $table->foreignId('merk_id')->constrained()->cascadeOnDelete();
+            $table->string('type_name')->unique();
             $table->timestamps();
         });
     }

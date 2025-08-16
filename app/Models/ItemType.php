@@ -10,14 +10,8 @@ class ItemType extends Model
     use HasFactory;
 
     protected $fillable = [
-        'merk_id',
         'type_name',
     ];
-
-    public function merk()
-    {
-        return $this->belongsTo(Merk::class, 'merk_id');
-    }
 
     public function serviceItems()
     {

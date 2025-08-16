@@ -28,7 +28,7 @@ h1 {
 
 h2 {
     color: #2c3e50;
-    margin-top: 40px;
+    margin-top: 50px;
     margin-bottom: 20px;
     border-bottom: 2px solid #eee;
     padding-bottom: 10px;
@@ -134,6 +134,11 @@ button:hover {
     border: 1px solid #f5c6cb;
 }
 
+.no-rma {
+    color: rgb(255, 74, 74); 
+    font-weight: bold;
+}
+
 /* Add Button (for list pages) */
 .add-button {
     display: inline-block;
@@ -151,9 +156,16 @@ button:hover {
     background-color: #2980b9;
 }
 
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* smooth scroll di mobile */
+}
+
 /* Table Styles */
 table {
     width: 100%;
+    /* white-space: nowrap; */
     border-collapse: collapse;
     margin-bottom: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -252,6 +264,51 @@ tr:hover {
     background-color: #ff8400;
 }
 
+.actions a.download-button {
+    background-color: #ff7b00;
+    color: #ffffff;
+}
+
+.actions a.download-button:hover {
+    background-color: #ce6400;
+}
+
+.actions a.stock-out {
+    background-color: #006eff;
+    color: #ffffff;
+}
+
+.actions a.stock-out:hover {
+    background-color: #000f98;
+}
+
+.actions a.stock-return {
+    background-color: #ffe600;
+    color: #000000;
+}
+
+.actions a.stock-return:hover {
+    background-color: #c1ae00;
+}
+
+.kirim-button {
+    background-color: #0033ff;
+    color: #ffffff;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.kirim-button:hover {
+    background-color: rgb(7, 14, 138);
+}
+
+.batal {
+    background-color: red; 
+    padding: 8px; 
+    color: white; 
+    border-radius: 5px;
+}
+
 .no-data {
     text-align: center;
     padding: 20px;
@@ -267,7 +324,7 @@ tr:hover {
 }
 
 .detail-group strong {
-    flex: 0 0 150px; /* Fixed width for labels */
+    flex: 0 0 180px; /* Fixed width for labels */
     color: #555;
     font-weight: 600;
 }
@@ -275,6 +332,10 @@ tr:hover {
 .detail-group span {
     flex: 1;
     color: #333;
+}
+
+.detail-group .space {
+    flex: 0 0 10px;
 }
 
 /* Actions in Detail View */
@@ -331,7 +392,7 @@ tr:hover {
 
 /* Filter menu styles */
 .filter-menu {
-    margin-bottom: 20px;
+    margin: 20px 0px;
     text-align: center;
 }
 
@@ -349,4 +410,18 @@ tr:hover {
 
 .filter-menu button:hover, .filter-menu button.active {
     background-color: #31b0d5;
+}
+
+.daterangepicker {
+    z-index: 99999 !important; /* Supaya popup muncul di atas DataTables */
+    font-family: inherit; /* Supaya font konsisten */
+}
+
+.daterangepicker td, .daterangepicker th {
+    padding: 8px !important;
+}
+
+.daterangepicker .calendar-table {
+    background-color: white;
+    border: 1px solid #ddd;
 }

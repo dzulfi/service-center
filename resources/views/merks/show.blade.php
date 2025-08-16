@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Detail Merk: ' . $merk->merk_name) @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Detail Merk</h1>
         <div class="detail-group">
             <strong>Nama Merk:</strong>

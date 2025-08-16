@@ -32,7 +32,7 @@
                 @if ($shipment->serviceItem && $shipment->serviceItem->customer)
                     <span>{{ $shipment->serviceItem->customer->name }}</span>
                 @else
-                    <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                    <span style="color: #999;">(Mitra Bisnis Tidak Ditemukan)</span>
                 @endif
             </span>
         </div>

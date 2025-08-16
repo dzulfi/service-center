@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('stock_spareparts', function (Blueprint $table) {
-            DB::statement("ALTER TABLE stock_spareparts CHANGE service_process_id service_item_id BIGINT UNSIGNED");
+        Schema::table('service_items', function (Blueprint $table) {
+            $table->foreignId('merk_id')->constrained('merks')->cascadeOnDelete();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('stock_spareparts', function (Blueprint $table) {
-            DB::statement("ALTER TABLE stock_spareparts CHANGE service_item_id service_process_id BIGINT UNSIGNED");
+        Schema::table('service_items', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('merk_id');
         });
     }
 };

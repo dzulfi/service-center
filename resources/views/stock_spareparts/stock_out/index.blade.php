@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gunakan Sparepart</title>
-    <style>
+    {{-- <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -95,14 +95,30 @@
             color: #2980b9;
             text-decoration: underline;
         }
-    </style>
+    </style> --}}
 </head>
 <body>
-    @extends('layouts.app') 
-    @section('title', 'Gunakan Sparepart: ') 
-    @section('content')
+    @extends('layouts.app') @section('title', 'Gunakan Sparepart: ') @section('content')
         <div class="container">
             <h1>Sparepart</h1>
+
+            @if ($errors->any())
+                <ul class="error-message-list"> {{-- Tampilkan error validasi dengan styling --}}
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            @endif
+            @if (session('success'))
+                <div class="message success-message"> {{-- Tampilkan pesan sukses --}}
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="message error-message"> {{-- Tampilkan pesan error --}}
+                    {{ session('error') }}
+                </div>
+            @endif
 
             <form action="{{ route('stock_out.store', $serviceItem->id) }}" method="POST">
                 @csrf
@@ -125,7 +141,7 @@
                     @enderror
                 </div>
 
-                <button type="submit">Simpan</button>
+                <button type="submit" class="kirim-button">Simpan</button>
             </form>
         </div>
     @endsection

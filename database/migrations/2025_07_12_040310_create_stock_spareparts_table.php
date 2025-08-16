@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('stock_spareparts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sparepart_id')->constrained('spareparts')->onDelete('cascade');
-            $table->foreignId('service_process_id')->nullable()->constrained('service_processes')->onDelete('cascade');
+            $table->foreignId('service_item_id')->nullable()->constrained('service_items')->onDelete('cascade');
             $table->enum('stock_type', ['in','out']);
             $table->integer('quantity');
             $table->timestamps();

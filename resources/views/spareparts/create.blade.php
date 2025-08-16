@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Tambah Sparepart Baru') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Tambah Sparepart Baru</h1>
 
         @if ($errors->any())
@@ -32,7 +32,7 @@
                 <textarea name="description" id="description">{{ old('description') }}</textarea>
                 @error('description') <div class="error">{{ $message }}</div> @enderror
             </div>
-            <button type="submit">Simpan Sparepart</button>
+            <button type="submit" class="kirim-button">Simpan</button>
         </form>
     </div>
 @endsection

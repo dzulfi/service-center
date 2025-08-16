@@ -33,7 +33,7 @@ class BranchOfficeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:branch_offices',
-            'code' => 'required|string|max:10|unique:branch_offcices', // unik di tabel branch_offices
+            'code' => 'required|string|max:10|unique:branch_offices', // unik di tabel branch_offices
             'address' => 'required|string',
             'sub_district' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:255',

@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\BranchOffice;
 use App\Models\Role;
 use App\Models\User;
+use finfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
@@ -17,8 +19,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with(['role', 'branchOffice'])->get();
-        return view('users.index', compact('users'));
+        // dd($users);
+        return view('users.index');
     }
 
     /**
@@ -109,5 +111,43 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus');
+    }
+
+    public function getDataUser(Request $request)
+    {
+        $query = User::with(['role', 'branchOffice']);
+
+        return DataTables::of($query)
+            ->addColumn('branch_office', function ($row) {
+                return $row->branchOffice ? $row->branchOffice->name : '-';
+            })
+            ->addColumn('role', function ($row) {
+                return $row->role ? $row->role->name : '-';
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('users.show', $row->id) . '" class="view-button">Lihat</a>
+                        <a href="' .route('users.edit', $row->id) . '" class="edit-button">Edit</a>
+                        <form action="' . route('users.destroy', $row->id) . '" method="POST" style="display:inline;">
+                            ' . csrf_field() . method_field('DELETE') . '
+                            <button type="submit" class="delete-button" onclick="return confirm(\'Anda yakin ingin menghapus pengguna ini?\')">Hapus</button>
+                        </form>
+                    </div>
+                ';
+            })
+            ->filterColumn('branch_office', function ($query, $keyword) {
+                $query->whereHas('branchOffice', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('role', function ($query, $keyword) {
+                $query->whereHas('role', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
     }
 }

@@ -99,7 +99,7 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
         <div class="container">
             <h1>Edit Proses Servis: {{ $serviceProcess->serviceItem->name ?? 'N/A' }}</h1>
 
@@ -120,7 +120,7 @@
                         <option value="">-- Pilih Barang Servis --</option>
                         @foreach ($serviceItems as $item)
                             <option value="{{ $item->id }}" {{ old('service_item_id', $serviceProcess->service_item_id) == $item->id ? 'selected' : '' }}>
-                                {{ $item->name }} (SN: {{ $item->serial_number ?? 'N/A' }}) - Pelanggan: {{ $item->customer->name ?? 'N/A' }}
+                                {{ $item->name }} (SN: {{ $item->serial_number ?? 'N/A' }}) - Mitra Bisnis: {{ $item->customer->name ?? 'N/A' }}
                             </option>
                         @endforeach
                     </select>

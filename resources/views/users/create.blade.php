@@ -144,7 +144,7 @@
                 <div class="form-group">
                     <label for="branch_office_id">Kantor Cabang:</label>
                     <select name="branch_office_id" id="branch_office_id">
-                        <option value="">-- Pilih Cabang (Opsional) --</option>
+                        <option value="">-- Pilih Kantor Cabang --</option>
                         @foreach ($branchOffices as $branchOffice)
                             <option value="{{ $branchOffice->id }}" {{ old('branch_office_id') == $branchOffice->id ? 'selected' : '' }}>
                                 {{ $branchOffice->name }}
@@ -158,7 +158,7 @@
                     <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number') }}">
                     @error('phone_number') <div class="error">{{ $message }}</div> @enderror
                 </div>
-                <button type="submit">Simpan Pengguna</button>
+                <button type="submit" class="kirim-button">Simpan User</button>
             </form>
             <a href="{{ route('users.index') }}" class="back-link">Kembali ke Daftar Pengguna</a>
         </div>

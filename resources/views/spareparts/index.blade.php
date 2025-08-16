@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Daftar Sparepart') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Daftar Sparepart</h1>
 
         @if (session('success'))

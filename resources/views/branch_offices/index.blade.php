@@ -127,7 +127,7 @@
 </head>
 <body>
     @extends('layouts.app') @section('title', 'Daftar Kantor Cabang') @section('content')
-        <div class="container">
+        <div class="container full-width">
             <h1>Daftar Kantor Cabang</h1>
             
             @if (session('success'))
@@ -145,7 +145,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>No</th>
                                 <th>Nama Cabang</th>
                                 <th>Kode Cabang</th>
                                 <th>Alamat</th>
@@ -156,9 +156,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($branchOffices as $branchOffice)
+                            @foreach ($branchOffices as $cabang => $branchOffice)
                                 <tr>
-                                    <td>{{ $branchOffice->id }}</td>
+                                    <td>{{ $cabang + 1 }}</td>
                                     <td>{{ $branchOffice->name }}</td>
                                     <td>{{ $branchOffice->code }}</td>
                                     <td>{{ Str::limit($branchOffice->address, 40) }}</td>

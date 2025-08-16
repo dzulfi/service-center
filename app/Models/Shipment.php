@@ -24,13 +24,23 @@ class Shipment extends Model
         'status' => \App\Enums\ShipmentStatusEnum::class,
     ];
 
-    public function serviceItem()
+    // public function serviceItem()
+    // {
+    //     return $this->belongsTo(ServiceItem::class);
+    // }
+
+    public function serviceItems()
     {
-        return $this->belongsTo(ServiceItem::class);
+        return $this->belongsToMany(ServiceItem::class, 'shipment_items');
     }
 
     public function responsibleUser()
     {
         return $this->belongsTo(User::class, 'responsible_user_id');
+    }
+
+    public function shipmentItems()
+    {
+        return $this->hasMany(ShipmentItem::class);
     }
 }
