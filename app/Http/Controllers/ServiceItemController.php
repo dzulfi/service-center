@@ -87,7 +87,8 @@ class ServiceItemController extends Controller
         // Cari ServiceItem dengan kode TERTINGGI secara keseluruhan (global)
         // Ini akan digunakan untuk mengekstrak nomor urut tertinggi
         // Asumsi: Kode selalu dalam format fixed-length [BranchCode][YYMMDD][NomorUrut]
-        $latestServiceItem = ServiceItem::orderByDesc('code')->first();
+        // $latestServiceItem = ServiceItem::orderByDesc('code')->first();
+        $latestServiceItem = ServiceItem::orderByDesc('id')->first();
 
         $sequentialNumber = 1; // Nomor urut default jika belum ada item hari ini dari cabang ini
         if ($latestServiceItem) {
