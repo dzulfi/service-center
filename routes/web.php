@@ -186,12 +186,18 @@ Route::middleware('auth')->group(function () {
 
     // hanya Developer
     Route::middleware(['role:developer'])->group(function () {
+        // Get Data User (Datatables)
+        Route::get('users/datas', [UserController::class, 'getDataUser'])->name('users.datas');
         // CRUD User
         Route::resource('users', UserController::class);
         
+        // Data Merks
+        Route::get('merks/datas', [MerkController::class, 'getDataMerks'])->name('merks.data');
         // CRUD Merk
         Route::resource('merks', MerkController::class);
 
+        // Data Item Types
+        Route::get('item_types/datas', [ItemTypeController::class, 'getDataItemTypes'])->name('item_types.data');
         // CRUD Tipe Barang
         Route::resource('item_types', ItemTypeController::class);
     });

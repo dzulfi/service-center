@@ -79,7 +79,7 @@
                     {{-- CRUD Customer/Pelanggan (admin only) --}}
                     <li>
                         <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
-                            Daftar Customer
+                            Daftar Mitra Bisnis
                         </a>
                     </li>
                     {{-- CRUD Daftar Barang yang diservice (admin only) --}}

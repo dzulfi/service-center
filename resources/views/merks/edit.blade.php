@@ -20,7 +20,7 @@
                     <div class="error">{{ $message }}</div>
                 @enderror
             </div>
-            <button type="submit">Update</button>
+            <button type="submit" class="kirim-button">Update</button>
         </form>
     </div>
 @endsection

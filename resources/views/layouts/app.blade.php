@@ -473,6 +473,52 @@
                     $(this).addClass('active');
                     tableServiceItemActivityCustomerDetail.ajax.reload(); // reload data sesuai filter
                 });
+
+                /**
+                 * User
+                 */
+                $('#taleUsers').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('users.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'email', name: 'email' },
+                        { data: 'role', name: 'role' },
+                        { data: 'branch_office', name: 'branch_office' },
+                        { data: 'phone_number', name: 'phone_number' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                /**
+                 * Item Type
+                 */
+                $('#tableItemTypes').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('item_types.data') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'type_name', name: 'type_name' },
+                        { data: 'action', name: 'action' },
+                    ]
+                });
+
+                /**
+                 * Merk
+                 */
+                $('#tableMerks').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('merks.data') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'merk_name', name: 'merk_name' },
+                        { data: 'action', name: 'action' },
+                    ]
+                });
             });
         </script>
 
