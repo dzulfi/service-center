@@ -250,4 +250,106 @@ class CustomerController extends Controller
             ->addIndexColumn()
             ->make(true);
     }
+
+    public function getDataServiceItemActivityCustomerDetail(Customer $customer, Request $request)
+    {
+        $query = $customer->serviceItems()
+            ->with([
+                'serviceProcesses',
+                'merk',
+                'itemType',
+                'creator.branchOffice',
+                'rmaTechnicians',
+            ]);
+
+        return DataTables::of($query)
+            ->addColumn('type', function ($row) {
+                return $row->itemType ? $row->itemType->type_name : '-';
+            })
+            ->addColumn('merk', function ($row) {
+                return $row->merk ? $row->merk->merk_name : '-';
+            })
+            ->addColumn('admin', function ($row) {
+                if ($row->creator) {
+                    $adminName = $row->creator->name;
+                    $branchOffice = $row->creator->branchOffice ? $row->creator->branchOffice->name : '-';
+
+                    return $adminName .'(' . $branchOffice . ')';
+                }
+                return '-';
+            })
+            ->addColumn('technician', function ($row) {
+                if ($row->rmaTechnicians->isNotEmpty()) {
+                    return $row->rmaTechnicians->pluck('name')->join(', ');
+                }
+
+                return '
+                    <div class="no-rma">
+                        Belum ditangani
+                    </div>
+                ';
+            })
+            ->addColumn('status', function ($row) {
+                $latestProcess = $row->serviceProcesses->sortByDesc('created_at')->first();
+                $status = $latestProcess ? $latestProcess->process_status : 'Pending';
+                $statusSlug = Str::slug($status);
+
+                return '<span class="status-badge status-' . $statusSlug . '">' . e($status) . '</span>';
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('activity.service_items.detail_activity_service_item', $row->id) . '" class="view-button">Lihat Detail</a>
+                    </div>
+                ';
+            })
+            ->filterColumn('type', function ($query, $keyword) {
+                $query->whereHas('itemType', function ($q) use ($keyword) {
+                    $q->where('type_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('merk', function ($query, $keyword) {
+                $query->whereHas('merk', function ($q) use ($keyword) {
+                    $q->where('merk_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('technician', function ($query, $keyword) {
+                $query->whereHas('rmaTechnicians', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('admin', function($query, $keyword) {
+                $query->whereHas('creator', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%")
+                        ->orWhereHas('branchOffice', function ($bq) use ($keyword) {
+                            $bq->where('name', 'like', "%{$keyword}%");
+                        });
+                });
+            })
+            
+            // === FILTER STATUS ===
+            ->filter(function ($query) use ($request) {
+                if ($request->status_filter) {
+                    if ($request->status_filter === 'selesai') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->where('process_status', 'Selesai');
+                        });
+                    } elseif ($request->status_filter === 'tidak-bisa-diperbaiki') {
+                        $query->whereHas('serviceProcesses', function ($q) {
+                            $q->whereIn('process_status', ['Batal', 'Tidak bisa diperbaiki']);
+                        });
+                    } elseif ($request->status_filter === 'proses-perbaikan') {
+                        $query->where(function ($q) {
+                            $q->whereDoesntHave('serviceProcesses') // belum ada proses sama seklai
+                              ->orWhereHas('serviceProcesses', function ($sq) {
+                                $sq->whereNotIn('process_status', ['Selesai', 'Batal', "Tidak bisa diperbaiki"]);
+                              });
+                        });
+                    }
+                }
+            }, true)
+            ->rawColumns(['status', 'action', 'technician'])
+            ->addIndexColumn()
+            ->make(true);
+    }
 }

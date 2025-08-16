@@ -49,11 +49,11 @@ Route::middleware('auth')->group(function () {
 
     // Hanya Admin
     Route::middleware(['auth', 'role:admin'])->group(function () {
-        // Server Side Customer DataTable
-        Route::get('customers/data', [CustomerController::class, 'getDataCustomer'])->name('customers.data');
-
         // CRUD Customer
         Route::resource('customers', CustomerController::class);
+        // Server Side Customer DataTable
+        Route::get('customers/data', [CustomerController::class, 'getDataCustomer'])->name('customers.data');
+        // Data Service Item Customer Detail
         Route::get('customers/{customer}/service-item-datas', [CustomerController::class, 'getDataServiceItemCustomer'])->name('customers.service-item-datas');
         
         // CRUD Service Item
@@ -208,10 +208,12 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:developer,superadmin'])->group(function () {
         // Melihat List Customer All
         Route::get('activity/customers', [CustomerController::class, 'indexAll'])->name('activity.customers.index');
-        // Datatables Customer Activity
+        // Data Datatables Customer Activity
         Route::get('activity/data', [CustomerController::class, 'getDataCustomerActivity'])->name('activity-customers');
         // Show Detail Customer
         Route::get('activity/customers/{customer}', [CustomerController::class, 'showDetailAktivityCustomer'])->name('activity.customers.detail_activity_customer');
+        // Data Service Item for Detail Customer
+        Route::get('activity/customers/{customer}/service-item-datas', [CustomerController::class, 'getDataServiceItemActivityCustomerDetail'])->name('customers.service-item-datas');
         
         // melihat daftar & barang service
         Route::get('activity/service-items', [ServiceItemController::class, 'indexAllServiceItems'])->name('activity.service_items.index');
