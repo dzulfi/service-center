@@ -124,7 +124,16 @@ Route::middleware('auth')->group(function () {
 
         // History Pengiriman
         Route::get('resi-outbound-to-rma/history', [ShipmentController::class,'historyResiOutboundToRma'])->name('history_resi_outbound_to_rma.index');
+        // Data History Pengiriman
+        Route::get('resi-outbound-to-rma/history/datas', [ShipmentController::class, 'getDataHistoryResiOutboundToRma'])->name('history_resi_outbound_to_rma.datas');
         Route::get('resi-outbound-to-rma/history-show/{shipment}', [ShipmentController::class,'historyShowResiOutboundToRma'])->name('history_resi_outbound_to_rma.show');
+
+        // History Barang Dari RMA Diterima
+        Route::get('history/inbound-from-rma', [ShipmentController::class, 'historyInboundFromRma'])->name('history_inbound_from_rma.index');
+        // Data History Barang Dari RMA Diterima
+        Route::get('history/inbound-from-rma/datas', [ShipmentController::class, 'getDataHistoryInboundFromRma'])->name('history_inbound_from_rma.datas');
+        // Detail history barang diterima dari RMA
+        Route::get('history/inbound-from-rma/show/{shipment}', [ShipmentController::class, 'showHistoryInboundFromRma'])->name('history_inbound_from_rma.show');
     });
 
     /**

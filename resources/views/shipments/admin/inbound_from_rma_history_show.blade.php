@@ -27,7 +27,7 @@
         <div class="form-group">
             <label>Daftar Service Item</label>
             <div class="table-responsive">
-                <table class="table table-bordered">
+                <table>
                     <thead>
                         <tr>
                             <th>No</th>
@@ -36,8 +36,8 @@
                             <th>Name</th>
                             <th>Item Type</th>
                             <th>Merk</th>
-                            <th>Customer</th>
-                            <th>Admin</th>
+                            <th>Mitra Bisnis</th>
+                            <th>Penerima</th>
                             <th>Kantor Cabang</th>
                             <th>Status</th>
                         </tr>

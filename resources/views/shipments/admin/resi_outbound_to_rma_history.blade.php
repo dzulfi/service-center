@@ -2,11 +2,11 @@
     <div class="container full-width">
         <h1>History Resi Pengiriman Service Ke RMA</h1>
 
-        @if ($shipments->isEmpty())
+        {{-- @if ($shipments->isEmpty())
             <p class="no-data">Belum ada Resi Kirim yang terbuat</p>
-        @else
+        @else --}}
             <div class="table-responsive">
-                <table>
+                <table id="tableHostoryResiToRma">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -16,7 +16,7 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    {{-- <tbody>
                         @foreach ($shipments as $shipment => $item)
                             <tr>
                                 <td>{{ $shipment + 1 }}</td>
@@ -35,10 +35,10 @@
                                 </td>
                             </tr>
                         @endforeach
-                    </tbody>
+                    </tbody> --}}
                 </table>
             </div>
-        @endif
+        {{-- @endif --}}
 
     </div>
 @endsection

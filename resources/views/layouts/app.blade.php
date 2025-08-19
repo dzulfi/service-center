@@ -519,6 +519,42 @@
                         { data: 'action', name: 'action' },
                     ]
                 });
+
+                /**
+                 * History Pengiriman ke RMA (Admin Cabang)
+                 */
+                $('#tableHostoryResiToRma').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.admin.history_resi_outbound_to_rma.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+                
+                /**
+                 * History Penerimaan Barang dari RMA (Admin)
+                 */
+                $('#tableHistoryInboundFromRma').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.admin.history_inbound_from_rma.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'admin', name: 'admin' },
+                        { data: 'branch_office', name: 'branch_office' },
+                        { data: 'date_delivery', name: 'date_delivery' },
+                        { data: 'date_accepted', name: 'date_accepted' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                })
             });
         </script>
 

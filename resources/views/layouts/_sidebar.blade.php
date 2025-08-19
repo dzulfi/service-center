@@ -112,11 +112,11 @@
                             Histori Pengiriman
                         </a>
                     </li>
-                    {{-- <li>
-                        <a href="">
+                    <li>
+                        <a href="{{ route('shipments.admin.history_inbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.admin.history_inbound_from_rma.*') ? 'active' : '' }}">
                             Histori Penerimaan
                         </a>
-                    </li> --}}
+                    </li>
                 @endif
             @endauth
 
