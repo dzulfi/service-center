@@ -554,6 +554,38 @@
                         { data: 'date_accepted', name: 'date_accepted' },
                         { data: 'action', name: 'action', orderable: false, searchable: false },
                     ]
+                });
+
+                // History Penerimaan Barang dari Admin (RMA)
+                $('#tableHistoryInboundFromAdmin').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.rma.history_inbound_from_admin.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'sender', name: 'sender' },
+                        { data: 'branch_office', name: 'branch_office' },
+                        { data: 'date_delivery', name: 'date_delivery' },
+                        { data: 'date_accepted', name: 'date_accepted' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                // History Pengiriman Barang Service Kembali ke Admin
+                $('#tableHistoryResiOutboundFromRma').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.rma.history_resi_outbound_from_rma.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                    ]
                 })
             });
         </script>

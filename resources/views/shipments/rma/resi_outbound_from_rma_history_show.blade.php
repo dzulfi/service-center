@@ -1,7 +1,7 @@
 @extends('layouts.app') @section('content')
     <div class="container full-width">
-        <h1>Detail Resi Masuk</h1>
-        
+        <h1>Detail Pengiriman Barang Service</h1>
+
         <div class="detail-group">
             <strong>No Resi</strong>
             <div class="space">:</div>

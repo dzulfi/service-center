@@ -172,6 +172,20 @@ Route::middleware('auth')->group(function () {
 
         // Delete Resi
         Route::delete('resi-outbound-to-rma/{id}', [ShipmentRmaController::class,'destroyResiOutboundFromRma'])->name('resi_outbound_from_rma.destroy');
+
+        // History Penerimaan Barang dari Admin
+        Route::get('history/inbound-from-admin', [ShipmentRmaController::class, 'historyInboundFromAdmin'])->name('history_inbound_from_admin.index');
+        // Get Data History Penerimaan Barang dari Admin
+        Route::get('history/inbound-from-admin/datas', [ShipmentRmaController::class, 'getDataHistoryInboundFromRma'])->name('history_inbound_from_admin.datas');
+        // Detail History Penerimaan Barang dari Admin
+        Route::get('history/inbound-from-admin/{shipment}', [ShipmentRmaController::class, 'showHistoryInboundFromAdmin'])->name('history_inbound_from_admin.show');
+
+        // History Pengiriman Barang Kembali Ke Admin
+        Route::get('resi-outbound-from-rma/history', [ShipmentRmaController::class, 'historyResiOutboundFromRma'])->name('history_resi_outbound_from_rma.index');
+        // Datas History Pengiriman Barang Kembali Ke Admin
+        Route::get('resi-outbound-from-rma/history/datas', [ShipmentRmaController::class, 'getDataHistoryResiOutboundFromRma'])->name('history_resi_outbound_from_rma.datas');
+        // Detail History Pengiriman Barang Kembali Ke Admin
+        Route::get('resi-outbound-from-rma/history/{shipment}', [ShipmentRmaController::class, 'showHistoryResiOutboundFromRma'])->name('history_resi_outbound_from_rma.show');
     });
 
     // proses servis (RMA/Teknisi saja) akan menyimpan handle_by_user_id

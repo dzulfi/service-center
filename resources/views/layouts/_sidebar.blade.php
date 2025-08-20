@@ -90,7 +90,7 @@
                     </li>
                     {{-- Admin: Fitur pengiriman barang --}}
                     <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
-                        Logistik Admin
+                        Shipment
                     </li>
                     <li>
                         <a href="{{ route('shipments.admin.outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.outbound_to_rma.*') ? 'active' : '' }}">
@@ -106,6 +106,9 @@
                         <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.admin.inbound_from_rma.*') ? 'active' : '' }}">
                             Barang Masuk Dari RMA
                         </a>
+                    </li>
+                    <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
+                        History
                     </li>
                     <li>
                         <a href="{{ route('shipments.admin.history_resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.history_resi_outbound_to_rma.*') ? 'active' : '' }}">
@@ -129,6 +132,9 @@
                         </a>
                     </li>
 
+                    <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
+                        Shipment
+                    </li>
                     {{-- RMA: Fitur Shipment Service (RMA) --}}
                     <li>
                         <a href="{{ route('shipments.rma.inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.inbound_from_admin.*') ? 'active' : '' }}">
@@ -143,6 +149,19 @@
                     <li>
                         <a href="{{ route('shipments.rma.resi_outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.resi_outbound_from_rma.*') ? 'active' : '' }}">
                             Resi Kirim Balik Ke Admin
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
+                        History
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.history_inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.history_inbound_from_admin.*') ? 'active' : '' }}">
+                            Histori Barang Masuk
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.history_resi_outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.history_resi_outbound_from_rma.*') ? 'active' : '' }}">
+                            Histori Pengiriman
                         </a>
                     </li>
                 @endif

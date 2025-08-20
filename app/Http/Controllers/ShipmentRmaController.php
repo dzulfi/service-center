@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use PDF;
+use Yajra\DataTables\Facades\DataTables;
 
 class ShipmentRmaController extends Controller
 {
@@ -291,5 +292,101 @@ class ShipmentRmaController extends Controller
         $shipment->delete();
 
         return redirect()->route('shipments.rma.resi_outbound_from_rma.index')->with('success','Resi berhasil dihapus dan semua service item dikembalikan ke RMA');
+    }
+
+    public function historyInboundFromAdmin()
+    {
+        return view('shipments.rma.inbound_from_admin_history');
+    }
+
+    public function getDataHistoryInboundFromRma(Request $request)
+    {
+        $query = Shipment::with(['responsibleUser', 'serviceItems'])
+            ->where('shipment_type', ShipmentTypeEnum::ToRMA)
+            ->where('status', ShipmentStatusEnum::Diterima)
+            ->get();
+
+        return DataTables::of($query)
+            ->addColumn('image', function ($row) {
+                if ($row->resi_image_path) {
+                        return '<img src="' . Storage::url($row->resi_image_path) . '" alt="' . $row->resi_number . '" style="width: 50px; height: 50px; object-fit: cover;">';
+                    }
+
+                    return "Tidak ada foto";
+            })
+            ->addColumn('sender', function ($row) {
+                return $row->responsibleUser ? $row->responsibleUser->name : '-';
+            })
+            ->addColumn('branch_office', function ($row) {
+                return $row->responsibleUser->branchOffice ? $row->responsibleUser->branchOffice->name : '-';
+            })
+            ->addColumn('date_delivery', function ($row) {
+                return $row->created_at->format('d M Y H:i');
+            })
+            ->addColumn('date_accepted', function ($row) {
+                return $row->updated_at->format('d M Y H:i');
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('shipments.rma.history_inbound_from_admin.show', $row->id) . '" class="view-button">Lihat Detail</a>
+                    </div>
+                ';
+            })
+            ->rawColumns(['action', 'image'])
+            ->addIndexColumn()
+            ->make(true);
+    }
+
+    public function showHistoryInboundFromAdmin(Shipment $shipment)
+    {
+        $availableItems = $shipment->serviceItems()->get();
+
+        return view('shipments.rma.inbound_from_admin_history_show', compact('shipment', 'availableItems'));
+    }
+
+    public function historyResiOutboundFromRma()
+    {
+        return view('shipments.rma.resi_outbound_from_rma_history');
+    }
+
+    public function getDataHistoryResiOutboundFromRma(Request $request) 
+    {
+        $query = Shipment::where('shipment_type', ShipmentTypeEnum::FromRMA)
+            ->where('status', ShipmentStatusEnum::DiterimaCabang)
+            ->get();
+
+        return DataTables::of($query)
+            ->addColumn('image', function ($row) {
+                if ($row->resi_image_path) {
+                    return '<img src="' . Storage::url($row->resi_image_path) . '" alt="' . $row->resi_number . '" style="width: 50px; height: 50px; object-fit: cover;">';
+                }
+
+                return 'Tidak ada gambar';
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('shipments.rma.history_resi_outbound_from_rma.show', $row->id) . '" class="view-button">Lihat</a>
+                        <a href="' . route('shipments.rma.resi_outbound_from_rma.pdf', $row->id) . '" target="_blank" class="download-button">Cetak</a>
+                    </div>
+                ';
+            })
+            ->rawColumns(['image','action'])
+            ->addIndexColumn()
+            ->make(true);
+    }
+
+    public function showHistoryResiOutboundFromRma(Shipment $shipment)
+    {
+        $availableItems = ServiceItem::whereHas('serviceProcesses', function ($q) {
+            $q->whereIn('process_status', ['Selesai', 'Tidak bisa diperbaiki']);
+        })
+        ->whereHas('shipments', function ($q) use ($shipment) {
+            $q->where('shipments.id', $shipment->id);
+        })
+        ->get();
+
+        return view('shipments.rma.resi_outbound_from_rma_history_show', compact('shipment', 'availableItems'));
     }
 }
