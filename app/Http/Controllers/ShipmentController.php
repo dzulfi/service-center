@@ -308,6 +308,7 @@ class ShipmentController extends Controller
         $shipments = Shipment::where('responsible_user_id', $loggedInUserId)
             ->where('shipment_type', ShipmentTypeEnum::ToRMA)
             ->where('status', ShipmentStatusEnum::Diterima)
+            ->latest()
             ->get();
 
         return view('shipments.admin.resi_outbound_to_rma_history', compact('shipments'));
@@ -320,6 +321,7 @@ class ShipmentController extends Controller
         $query = Shipment::where('responsible_user_id', $loggedInUserId)
             ->where('shipment_type', ShipmentTypeEnum::ToRMA)
             ->where('status', ShipmentStatusEnum::Diterima)
+            ->latest()
             ->get();
 
         return DataTables::of($query)
@@ -369,6 +371,7 @@ class ShipmentController extends Controller
         $query = Shipment::with(['responsibleUser', 'serviceItems'])
             ->where('shipment_type', ShipmentTypeEnum::FromRMA)
             ->where('status', ShipmentStatusEnum::DiterimaCabang)
+            ->latest()
             ->get()
             // Filter hanya shipment yang punya service item untuk cabang yang sama dengan user
             ->filter(function ($shipment) use ($userBranchId) {

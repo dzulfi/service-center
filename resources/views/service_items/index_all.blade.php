@@ -1,5 +1,5 @@
 @extends('layouts.app') @section('title', 'Aktivitas: Semua Barang Servis') @section('content')
-    <div class="container">
+    <div class="container full-width">
         <h1>Aktivitas: Daftar Semua Barang Servis</h1>
 
         <div class="filter-menu">

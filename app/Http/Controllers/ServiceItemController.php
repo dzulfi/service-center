@@ -33,10 +33,7 @@ class ServiceItemController extends Controller
      */
     public function indexAllServiceItems()
     {
-        // $serviceItems = ServiceItem::all();
-        return view('service_items.index_all'
-        // , compact('serviceItems')
-    );
+        return view('service_items.index_all');
     }
 
     /**
@@ -281,7 +278,7 @@ class ServiceItemController extends Controller
             'merk',
             'creator.branchOffice',
             'serviceProcesses'
-        ]);
+        ])->latest();
 
         return DataTables::of($query)
             ->addColumn('customer_name', function ($row) {
@@ -402,7 +399,8 @@ class ServiceItemController extends Controller
             'merk',
             'itemType',
             'creator',
-        ])->where('created_by_user_id', $loggedInUserId);
+        ])->where('created_by_user_id', $loggedInUserId)
+        ->latest();
 
         return DataTables::of($query)
             ->addColumn('customer_name', function ($row) {

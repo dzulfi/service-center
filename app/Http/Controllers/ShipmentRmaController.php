@@ -304,6 +304,7 @@ class ShipmentRmaController extends Controller
         $query = Shipment::with(['responsibleUser', 'serviceItems'])
             ->where('shipment_type', ShipmentTypeEnum::ToRMA)
             ->where('status', ShipmentStatusEnum::Diterima)
+            ->latest()
             ->get();
 
         return DataTables::of($query)
@@ -354,6 +355,7 @@ class ShipmentRmaController extends Controller
     {
         $query = Shipment::where('shipment_type', ShipmentTypeEnum::FromRMA)
             ->where('status', ShipmentStatusEnum::DiterimaCabang)
+            ->latest()
             ->get();
 
         return DataTables::of($query)

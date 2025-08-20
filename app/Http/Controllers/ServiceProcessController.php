@@ -309,7 +309,7 @@ class ServiceProcessController extends Controller
             'serviceProcesses',
             'stockSpareparts',
             'rmaTechnicians',
-        ]);
+        ])->latest();
 
         return DataTables::of($query)
             ->addColumn('start_process', function ($row) {
