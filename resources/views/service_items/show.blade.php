@@ -1,171 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Barang Servis: {{ $serviceItem->item_name }}</title>
-    {{-- <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        .detail-group {
-            display: flex;
-            margin-bottom: 15px;
-            align-items: flex-start;
-        }
-        .detail-group strong {
-            flex: 0 0 180px; /* Lebar tetap untuk label */
-            color: #555;
-            font-weight: 600;
-        }
-        .detail-group span, .detail-group a {
-            flex: 1;
-            color: #333;
-        }
-        .detail-group a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        .detail-group a:hover {
-            text-decoration: underline;
-        }
-        .actions {
-            margin-top: 30px;
-            text-align: center;
-        }
-        .actions a, .actions button {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 0 10px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .actions a.edit-button {
-            background-color: #ffc107;
-            color: #333;
-        }
-        .actions a.edit-button:hover {
-            background-color: #e0a800;
-        }
-        .actions button.delete-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .actions button.delete-button:hover {
-            background-color: #c82333;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #3498db;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-        .back-link:hover {
-            color: #2980b9;
-            text-decoration: underline;
-        }
-    </style> --}}
-</head>
-<body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
-        <div class="container">
-            <h1>Detail Barang Servis</h1>
+@extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
+    <div class="container full-width">
+        <h1>Detail Barang Servis</h1>
 
-            <div class="detail-group">
-                <strong>Pelanggan:</strong>
-                <span>
-                    @if ($serviceItem->customer)
-                        <a href="{{ route('customers.show', $serviceItem->customer->id) }}">{{ $serviceItem->customer->name }}</a>
+        <div class="detail-group">
+            <strong>Kode Service</strong> 
+            <span>{{ $serviceItem->code ?? '-' }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Serial Number:</strong> 
+            <span>{{ $serviceItem->serial_number ?? '-' }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Nama Barang:</strong> 
+            <span>{{ $serviceItem->name }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Mitra Bisnis:</strong>
+            <span>
+                @if ($serviceItem->customer)
+                    <a href="{{ route('customers.show', $serviceItem->customer->id) }}" style="background-color: rgb(49, 49, 255); padding: 5px; color: white; border-radius: 8px;">{{ $serviceItem->customer->name }}</a>
+                @else
+                    <span style="color: #999;">(Tidak Ditemukan)</span>
+                @endif
+            </span>
+        </div>
+        <div class="detail-group">
+            <strong>Merk:</strong> 
+            <span>{{ $serviceItem->merk->merk_name }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Tipe Barang:</strong> 
+            <span>{{ $serviceItem->itemType->type_name ?? '-' }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Analisa Kerusakan:</strong> 
+            <span>{{ $serviceItem->analisa_kerusakan ?? '-' }}</span>
+        </div>
+        <div class="detail-group">
+            <strong>Service Masuk:</strong> 
+            <span>{{ $serviceItem->created_at->format('d M Y H:i') }}</span>
+        </div>
+
+        <h2>Timeline Barang Service</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Service Masuk</th>
+                    <th>Kirim ke RMA</th>
+                    <th>Diterima RMA</th>
+                    <th>Mulai Dikerjakan</th>
+                    <th>Selesai Dikerjakan</th>
+                    <th>Kirim ke Admin</th>
+                    <th>Diterima Admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ $serviceItem->created_at->format('d M Y H:i') }}</td>
+                    <td>{{ $serviceItem->kirim_ke_rma?->format('d M Y H:i') ?? '-' }}</td>
+                    <td>{{ $serviceItem->diterima_rma?->format('d M Y H:i') ?? '-' }}</td>
+                    <td>{{ $serviceItem->mulai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
+                    <td>{{ $serviceItem->selesai_dikerjakan?->format('d M Y H:i') ?? '-' }}</td>
+                    <td>{{ $serviceItem->dikirim_kembali?->format('d M Y H:i') ?? '-' }}</td>
+                    <td>{{ $serviceItem->diterima_cabang?->format('d M Y H:i') ?? '-' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Informasi Pengerjaan RMA</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ditangani Oleh</th>
+                    <th>Kerusakan</th>
+                    <th>Solusi</th>
+                    <th>Keterangan</th>
+                    <th>Sparepart</th>
+                    <th>Status Pengerjaan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <td>
+                    @if ($serviceItem->rmaTechnicians->isNotEmpty())
+                        {{ $serviceItem->rmaTechnicians->pluck('name')->join(', ') }}
                     @else
-                        <span style="color: #999;">(Tidak Ditemukan)</span>
+                        -
                     @endif
-                </span>
-            </div>
-            <div class="detail-group">
-                <strong>Nama Barang:</strong> 
-                <span>{{ $serviceItem->name }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Tipe Barang:</strong> 
-                <span>{{ $item->itemType->type_name ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Serial Number:</strong> 
-                <span>{{ $serviceItem->serial_number ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Kode Service</strong> 
-                <span>{{ $serviceItem->code ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Analisa Kerusakan:</strong> 
-                <span>{{ $serviceItem->analisis_kerusakan ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Merk:</strong> 
-                <span>{{ $serviceItem->itemType->merk->merk_name }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Service Masuk:</strong> 
-                <span>{{ $serviceItem->created_at->format('d M Y H:i') }}</span>
-            </div>
+                </td>
+                @foreach ($serviceItem->serviceProcesses->sortBy('created_at') as $process)
+                    {{-- <td>{{ $process->handler->name }}</td> --}}
+                    <td>{{ Str::limit($process->damage_analysis_detail ?? '-', 50) }}</td>
+                    <td>{{ Str::limit($process->solution ?? '-', 50) }}</td>
+                    <td>{{ Str::limit($process->keterangan ?? '-', 50) }}</td>
+                    <td>
+                        @if ($serviceItem->stockSpareparts->isEmpty())
+                            <div style="color: rgb(255, 93, 93); font-weight: bold;">
+                                Tidak memakai sparepart
+                            </div>
+                        @else
+                            <ul class="list-disc">
+                                @foreach ($serviceItem->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
+                                    @php
+                                        $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
+                                        $currentStock = $serviceItem->getCurrentStockForSparepart($sparepartId);
+                                    @endphp
+                                    @if ($currentStock != 0)
+                                        <li>{{ $sparepartName }} (stock: {{ $serviceItem->getCurrentStockForSparepart($sparepartId) }})</li>
+                                    @endif
+                                @endforeach
+                            </ul>
+                        @endif
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ Str::slug($process->process_status) }}">
+                            {{ $process->process_status }}
+                        </span>
+                    </td>
+                @endforeach
+            </tbody>
+        </table>
 
-
-            <div class="detail-group">
-                <strong>Kirim ke RMA:</strong>
-                {{-- <span>{{ $kirimKeRma ? $kirimKeRma->format('d M Y H:i') : '-' }}</span> --}}
-                <span>{{ $serviceItem->kirim_ke_rma?->format('d M Y H:i') ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Diterima RMA</strong>
-                {{-- <span>{{ $diterimaRma ? $diterimaRma->format('d M Y H:i') : '-' }}</span> --}}
-                <span>{{ $serviceItem->diterima_rma?->format('d M Y H:i') ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <Strong>Mulai Dikerjakan:</Strong>
-                {{-- <span>{{ $mulaiDikerjakan ? $mulaiDikerjakan->format('d M Y H:i') : '-' }}</span> --}}
-                <span>{{ $serviceItem->mulai_dikerjakan?->format('d M Y H:i') ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Selesai Dikerjakan:</strong>
-                {{-- <span>{{ $selesaiDikerjakan ? $selesaiDikerjakan->format('d M Y H:i') : '-' }}</span> --}}
-                <span>{{ $serviceItem->selesai_dikerjakan?->format('d M Y H:i') ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Kirim Ke Admin:</strong>
-                {{-- <span>{{ $dikirimKembali ? $dikirimKembali->format('d M Y H:i') : '-' }}</span> --}}
-                <span>{{ $serviceItem->dikirim_kembali?->format('d M Y H:i') ?? '-' }}</span>
-            </div>
-            <div class="detail-group">
-                <strong>Diterima Admin:</strong>
-                {{-- <span>{{ $diterimaCabang ? $diterimaCabang->format('d M Y H:i') : '-' }}</span> --}}
-                <span>{{ $serviceItem->diterima_cabang?->format('d M Y H:i') ?? '-' }}</span>
-            </div>
-
+        {{-- Hanya ditampilkan jika user adalah admin cabang saja --}}
+        @if (Auth::user() && Auth::user()->isAdmin())
             <div class="actions">
                 <a href="{{ route('service_items.edit', $serviceItem->id) }}" class="edit-button">Edit Barang Servis</a>
                 <form action="{{ route('service_items.destroy', $serviceItem->id) }}" method="POST" style="display:inline;">
@@ -174,9 +130,8 @@
                     <button type="submit" class="delete-button" onclick="return confirm('Anda yakin ingin menghapus barang servis ini?')">Hapus Barang Servis</button>
                 </form>
             </div>
-
             <a href="{{ route('service_items.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>
-        </div>
-    @endsection
-</body>
-</html>
+        @endif
+
+    </div>
+@endsection

@@ -15,15 +15,14 @@ class ServiceItem extends Model
     protected $fillable = [
         'customer_id',
         'name',
-        // 'type',
         'serial_number',
         'code',
-        // 'merk',
         'analisa_kerusakan',
         'jumlah_item',
         'created_by_user_id',
         'location_status', // untuk deteksi barang saat ini berada dimana
-        'item_type_id'
+        'item_type_id',
+        'merk_id',
     ];
 
     protected $casts = [
@@ -62,17 +61,48 @@ class ServiceItem extends Model
 
     public function shipments()
     {
-        return $this->hasMany(Shipment::class);
+        return $this->belongsToMany(Shipment::class, 'shipment_items');
     }
+
+    // public function shipments()
+    // {
+    //     return $this->hasMany(Shipment::class);
+    // }
 
     public function stockSpareparts()
     {
         return $this->hasMany(StockSparepart::class, 'service_item_id');
     }
 
+    public function rmaTechnicians()
+    {
+        return $this->belongsToMany(RmaTechnician::class, 'pivot_rma_technicians');
+    }
+
+    // Hitung stock sparepart yang digunakan dan hitung stock sparepart jika ada pengembalian
+    public function getCurrentStockForSparepart($sparepartId)
+    {
+        $stockOut = $this->stockSpareparts()
+            ->where('sparepart_id', $sparepartId)
+            ->where('stock_type', 'out')
+            ->sum('quantity');
+
+        $stockIn = $this->stockSpareparts()
+            ->where('sparepart_id', $sparepartId)
+            ->where('stock_type', 'in')
+            ->sum('quantity');
+
+        return $stockOut - $stockIn;
+    }
+
     public function itemType()
     {
         return $this->belongsTo(ItemType::class, 'item_type_id');
+    }
+
+    public function merk()
+    {
+        return $this->belongsTo(Merk::class, 'merk_id');
     }
 
     // barang dikirim dari Admin cabang ke RMA

@@ -5,11 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        {{-- <title>{{ config('app.name', 'Laravel') }}</title> --}}
+        <title>Service Center</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
+        {{-- Select2 --}}
+        <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
+
+        {{-- DataTable Laravel --}}
+        <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
+
+        {{-- Date Range Picker --}}
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -104,7 +114,559 @@
             @endif
 
             <main>
-                @yield('content') </main>
+                @yield('content') 
+            </main>
         </div>
+
+        {{-- Select2 --}}
+        {{-- <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script> --}}
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="{{ asset('js/select2.min.js') }}"></script>
+
+        {{-- DataTable Laravel --}}
+        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+        
+        {{-- Date Range Picker --}}
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+        {{-- select2 --}}
+        <script>
+            jQuery(document).ready(function($) {
+                // Customer
+                $('#customer_id').select2({
+                    placeholder: "-- Pilih Mitra Bisnis --",
+                    language: "id"
+                });
+
+                // Customer
+                $('#rma_technician_id').select2({
+                    placeholder: "-- Teknisi RMA --",
+                    language: "id"
+                });
+
+                // Dynamic Options Item Type
+                $('#item_type_id').select2({
+                    tags: true,
+                    placeholder: 'Pilih atau buat Tipe Barang',
+                    ajax: {
+                        url: '/api/item-types',
+                        dataType: 'json',
+                        delay: 250,
+                        processResults: function (data) {
+                            return {
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.type_name
+                                }))
+                            };
+                        },
+                        cache: true
+                    },
+                    createTag: function (params) {
+                        return {
+                            id: params.term,
+                            text: params.term,
+                            newOption: true
+                        };
+                    },
+                    templateResult: function (data) {
+                        var $result = $("<span></span>");
+                        $result.text(data.text);
+                        if (data.newOption) {
+                            $result.append(" <em>(buat baru)</em>");
+                        }
+                        return $result;
+                    }
+                });
+
+                // Dynamic Options merk
+                $('#merk_id').select2({
+                    tags: true,
+                    placeholder: 'Pilih atau buat Merk Barang',
+                    ajax: {
+                        url: '/api/merks',
+                        dataType: 'json',
+                        delay: 250,
+                        processResults: function (data) {
+                            return {
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.merk_name
+                                }))
+                            };
+                        },
+                        cache: true
+                    },
+                    createTag: function (params) {
+                        return {
+                            id: params.term,
+                            text: params.term,
+                            newOption: true
+                        };
+                    },
+                    templateResult: function (data) {
+                        var $result = $("<span></span>");
+                        $result.text(data.text);
+                        if (data.newOption) {
+                            $result.append(" <em>(buat baru)</em>");
+                        }
+                        return $result;
+                    }
+                });
+
+                // sparepart (out RMA)
+                $('#sparepart_id').select2({
+                    placeholder: "-- Pilih Sparepart --",
+                    language: "id"
+                });
+
+                // Role user
+                $('#role_id').select2({
+                    placeholder: "-- Pilih Role --",
+                    language: "id"
+                });
+
+                // Branch Office
+                $('#branch_office_id').select2({
+                    placeholder: "-- Pilih Kantor Cabang --",
+                    language: "id"
+                });
+            });
+        </script>
+
+        {{-- DataTable --}}
+        <script>
+            $(document).ready(function() {
+                /** 
+                 * Customer Index
+                 */
+                $('#customer-data-tables').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('customers.data') }}", // pastikan route ini benar
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'code', name: 'code' },
+                        { data: 'phone_number', name: 'phone_number' },
+                        { data: 'company', name: 'company' },
+                        { data: 'kota', name: 'kota' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                /** 
+                 * Customer Activity
+                 */
+                $('#customer-activity-data-tables').DataTable({
+                    processing:true,
+                    serverSide: true,
+                    ajax: "{{ route('activity-customers') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'code', name: 'code' },
+                        { data: 'phone_number', name: 'phone_number' },
+                        { data: 'company', name: 'company' },
+                        { data: 'kota', name: 'kota' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                /** 
+                 * Service Item Activity 
+                 */
+                let tableServiceItemActivitys = $('#serviceItemTableActivity').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('activity.service_items_data') }}",
+                        data: function (d) {
+                            d.status_filter = $('.filter-btn.active').data('filter'); // kirim nilai filter ke server
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'code', name: 'code' },
+                        { data: 'serial_number', name: 'serial_number' },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'customer_name', name: 'customer_name'},
+                        { data: 'admin', name: 'admin' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                    ]
+                })
+                // event klik filter process service
+                $('.filter-btn').on('click', function() {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                    tableServiceItemActivitys.ajax.reload(); // reload data sesuai filter
+                })
+
+                /** 
+                 * Aktivitas RMA 
+                 * */
+                let tableActivityRma = $('#serviceProcessesTableActivity').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('activity.service_process.data') }}",
+                        data: function (d) {
+                            let mulaiRange = $('#dateRangeMulai').val().split(' - ');
+                            let selesaiRange = $('#dateRangeSelesai').val().split(' - ');
+
+                            d.start_mulai   = mulaiRange[0] || '';
+                            d.end_mulai     = mulaiRange[1] || '';
+                            d.start_selesai = selesaiRange[0] || '';
+                            d.end_selesai   = selesaiRange[1] || '';
+
+                            d.handler = $('#handler').val();
+                            d.status_filter = $('#status').val();
+
+                            // // tanggal mulai
+                            // d.start_mulai = $('#startMulai').val();
+                            // d.end_mulai = $('#endMulai').val();
+
+                            // // tanggal selesai
+                            // d.start_selesai = $('#startSelesai').val();
+                            // d.end_selesai = $('#endSelesai').val();
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'start_process', name: 'start_process', orderable: false, searchable: false },
+                        { data: 'finish_process', name: 'finish_process', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'damage_analysis_detail', name: 'damage_analysis_detail' },
+                        { data: 'solution', name: 'solution' },
+                        { data: 'sparepart', name: 'sparepart' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'technician', name: 'technician' },
+                        { data: 'action_process', name: 'action_process', orderable: false, searchable: false },
+                        { data: 'action_sparepart', name: 'action_sparepart', orderable: false, searchable: false }
+                    ]
+                });
+                // Filtering Aktivitas RMA
+                $('#filterFormRmaActivity').on('submit', function (e) {
+                    e.preventDefault();
+                    tableActivityRma.ajax.reload();
+                });
+                // Filtering Date Range Activity RMA
+                $(function() {
+                    $('#dateRangeMulai, #dateRangeSelesai').daterangepicker({
+                        autoUpdateInput: false,
+                        locale: { cancelLabel: 'Clear' }
+                    });
+
+                    $('#dateRangeMulai').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                    });
+
+                    $('#dateRangeMulai').on('cancel.daterangepicker', function(ev, picker) {
+                        $(this).val('');
+                    });
+
+                    $('#dateRangeSelesai').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                    });
+
+                    $('#dateRangeSelesai').on('cancel.daterangepicker', function(ev, picker) {
+                        $(this).val('');
+                    });
+                });
+
+                /** 
+                 * Data Service Items (Admin)
+                */
+                let tableServiceItemAdmin = $('#serviceItemsTableAdmin').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('service_items.data') }}",
+                        data: function (d) {
+                            d.status_filter = $('.filter-btn.active').data('filter');
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'code', name: 'code' },
+                        { data: 'customer_name', name: 'customer_name' },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'serial_number', name: 'serial_number' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+                // Event klik filter process service
+                $('.filter-btn').on('click', function() {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                    tableServiceItemAdmin.ajax.reload(); // reload data sesuai filter
+                });
+
+                /**
+                 * Data service item customer
+                 */
+                let customerId = $('#customer-table').data('id'); // Global bisa dipakai di fitur lain khusus variabel customerId (untuk mendapatkan id customer)
+                let tableServiceItemCustomerShow = $('#serviceItemsTableCustomerShow').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: `/customers/${customerId}/service-item-datas`,
+                        data: function (d) {
+                            d.status_filter = $('.filter-btn.active').data('filter');
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'code', name: 'code' },
+                        { data: 'serial_number', name: 'serial_number' },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+                // Event klik filter process service
+                $('.filter-btn').on('click', function() {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                    tableServiceItemCustomerShow.ajax.reload(); // reload data sesuai filter
+                });
+
+                /**
+                 * Data Service Item Activity Customer Detail
+                 */
+                let tableServiceItemActivityCustomerDetail = $('#serviceItemsTableActivityCustomerDetail').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: `/activity/customers/${customerId}/service-item-datas`,
+                        data: function (d) {
+                            d.status_filter = $('.filter-btn.active').data('filter');
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'code', name: 'code' },
+                        { data: 'serial_number', name: 'serial_number' },
+                        { data: 'name', name: 'name' },
+                        { data: 'type', name: 'type' },
+                        { data: 'merk', name: 'merk' },
+                        { data: 'admin', name: 'admin' },
+                        { data: 'technician', name: 'technician' },
+                        { data: 'status', name: 'status', orderable: false, searchable: false },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+                // Event klik filter process service
+                $('.filter-btn').on('click', function() {
+                    $('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                    tableServiceItemActivityCustomerDetail.ajax.reload(); // reload data sesuai filter
+                });
+
+                /**
+                 * User
+                 */
+                $('#taleUsers').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('users.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'email', name: 'email' },
+                        { data: 'role', name: 'role' },
+                        { data: 'branch_office', name: 'branch_office' },
+                        { data: 'phone_number', name: 'phone_number' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                /**
+                 * Item Type
+                 */
+                $('#tableItemTypes').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('item_types.data') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'type_name', name: 'type_name' },
+                        { data: 'action', name: 'action' },
+                    ]
+                });
+
+                /**
+                 * Merk
+                 */
+                $('#tableMerks').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('merks.data') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'merk_name', name: 'merk_name' },
+                        { data: 'action', name: 'action' },
+                    ]
+                });
+
+                /**
+                 * History Pengiriman ke RMA (Admin Cabang)
+                 */
+                $('#tableHostoryResiToRma').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.admin.history_resi_outbound_to_rma.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+                
+                /**
+                 * History Penerimaan Barang dari RMA (Admin)
+                 */
+                $('#tableHistoryInboundFromRma').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.admin.history_inbound_from_rma.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'admin', name: 'admin' },
+                        { data: 'branch_office', name: 'branch_office' },
+                        { data: 'date_delivery', name: 'date_delivery' },
+                        { data: 'date_accepted', name: 'date_accepted' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                // History Penerimaan Barang dari Admin (RMA)
+                $('#tableHistoryInboundFromAdmin').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.rma.history_inbound_from_admin.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'sender', name: 'sender' },
+                        { data: 'branch_office', name: 'branch_office' },
+                        { data: 'date_delivery', name: 'date_delivery' },
+                        { data: 'date_accepted', name: 'date_accepted' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false },
+                    ]
+                });
+
+                // History Pengiriman Barang Service Kembali ke Admin
+                $('#tableHistoryResiOutboundFromRma').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('shipments.rma.history_resi_outbound_from_rma.datas') }}",
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'resi_number', name: 'resi_number' },
+                        { data: 'image', name: 'image', orderable: false, searchable: false },
+                        { data: 'notes', name: 'notes' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                    ]
+                })
+            });
+        </script>
+
+        {{-- Multiple choice shipment Admin Branch to RMA--}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectAll = document.getElementById('select_all');
+                if (selectAll) {
+                    selectAll.addEventListener('click', function (e) {
+                        const checkboxes = document.querySelectorAll('input[name="service_item_ids[]"]');
+                        checkboxes.forEach(cb => cb.checked = e.target.checked);
+                    });
+                }
+            });
+        </script>
+
+        {{-- Multiple choice shipment RMA to Admin Branch --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectAll = document.getElementById('shipment-from-rma');
+                const checkboxes = document.querySelectorAll('input[name="service_item_ids[]"]');
+                const form = document.querySelector('form');
+
+                let selectedBranchId = null;
+
+                checkboxes.forEach(cb => {
+                    cb.addEventListener('change', function () {
+                        const branchId = this.dataset.branchId;
+
+                        if (this.checked) {
+                            if (!selectedBranchId) {
+                                selectedBranchId = branchId; // set awal
+                            } else if (branchId !== selectedBranchId) {
+                                this.checked = false;
+                                alert('Kantor cabang harus sama untuk semua barang service yang dikirim.');
+                            }
+                        } else {
+                            // Jika semua tidak dicentang, reset branch ID
+                            const anyChecked = Array.from(checkboxes).some(box => box.checked);
+                            if (!anyChecked) {
+                                selectedBranchId = null;
+                            }
+                        }
+                    });
+                });
+
+                if (selectAll) {
+                    selectAll.addEventListener('click', function (e) {
+                        selectedBranchId = null;
+                        const branchMap = new Map();
+
+                        checkboxes.forEach(cb => {
+                            const branchId = cb.dataset.branchId;
+                            if (!branchMap.has(branchId)) {
+                                branchMap.set(branchId, []);
+                            }
+                            branchMap.get(branchId).push(cb);
+                        });
+
+                        if (branchMap.size > 1) {
+                            alert('Terdapat lebih dari satu kantor cabang. Harap Pilih manual untuk satu cabang saja.')
+                            e.preventDefault();
+                            return;
+                        }
+
+                        checkboxes.forEach(cb => cb.checked = e.target.checked);
+                        selectedBranchId = checkboxes[0]?.dataset.branchId || null;
+                    });
+                }
+
+                // Validasi submit (jika mau tambahan proteksi)
+                form.addEventListener('submit', function (e) {
+                    const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                    const branches = [...new Set(checked.map(cb => cb.dataset.branchId))];
+                    if (branches.length > 1) {
+                        alert('Kantor cabang harus sama untuk semua barang yang dikirim.');
+                        e.preventDefault();
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Merk;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class MerkController extends Controller
 {
@@ -59,5 +60,26 @@ class MerkController extends Controller
     {
         $merk->delete();
         return redirect()->route('merks.index')->with('success','Merk berhasil dihapus');
+    }
+
+    public function getDataMerks(Request $request)
+    {
+        $query = Merk::query();
+
+        return DataTables::of($query)
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="actions">
+                        <a href="' . route('merks.edit', $row->id) . '" class="edit-button">Edit</a>
+                        <form action="' . route('merks.destroy', $row->id) . '" method="POST" style="display: inline;">
+                            ' . csrf_field() . method_field('DELETE') . '
+                            <button type="submit" class="delete-button" onclick="return confirm(\'Anda yakin menghapus tipe barang ini?\')">Hapus</button>
+                        </form>
+                    </div>
+                ';
+            })
+            ->rawColumns(['action']) // agar kolom action tidak di-escape
+            ->addIndexColumn()
+            ->make(true);
     }
 }

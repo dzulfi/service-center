@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('shipments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_item_id')->constrained('service_items')->onDelete('cascade');
             $table->enum('shipment_type', ['To_RMA', 'From_RMA']); // tipe pengiriman: ke rma atau dari rma
             $table->string('resi_number')->nullable(); // nomor resi, bisa kosong diawal saat barang dibuat
             $table->foreignId('responsible_user_id')->nullable()->constrained('users')->onDelete('set null'); // user yang melakukan aksi record ini (terima/kirim)

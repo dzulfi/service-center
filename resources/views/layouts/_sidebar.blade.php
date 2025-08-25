@@ -60,7 +60,8 @@
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <h2>Service Center</h2>
+        {{-- <h2>JMEDIA TECHNOLOGY</h2> --}}
+        <img src="{{ asset('logos/logo_techma.png') }}" alt="">
     </div>
     <nav class="sidebar-menu">
         <ul>
@@ -72,34 +73,24 @@
                     </a>
                 </li>
             @endauth
-
-            {{-- CRUD Customer/Pelanggan (admin only) --}}
+            
             @auth
                 @if (auth()->user()->isAdmin())
+                    {{-- CRUD Customer/Pelanggan (admin only) --}}
                     <li>
                         <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
-                            Daftar Customer
+                            Daftar Mitra Bisnis
                         </a>
                     </li>
-                @endif
-            @endauth
-
-            {{-- CRUD Daftar Barang yang diservice (admin only) --}}
-            @auth
-                @if (auth()->user()->isAdmin())
+                    {{-- CRUD Daftar Barang yang diservice (admin only) --}}
                     <li>
                         <a href="{{ route('service_items.index') }}" class="{{ request()->routeIs('service_items.*') ? 'active' : '' }}">
                             Daftar Barang Service
                         </a>
                     </li>
-                @endif
-            @endauth
-
-            {{-- Admin: Fitur pengiriman barang --}}
-            @auth
-                @if (auth()->user()->isAdmin())
+                    {{-- Admin: Fitur pengiriman barang --}}
                     <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
-                        Logistik Admin
+                        Shipment
                     </li>
                     <li>
                         <a href="{{ route('shipments.admin.outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.outbound_to_rma.*') ? 'active' : '' }}">
@@ -107,16 +98,44 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shiments.admin.inbound_from_rma.*') ? 'active' : '' }}">
+                        <a href="{{ route(name: 'shipments.admin.resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.resi_outbound_to_rma.*') ? 'active' : '' }}">
+                            Resi Kirim ke RMA
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.admin.inbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.admin.inbound_from_rma.*') ? 'active' : '' }}">
                             Barang Masuk Dari RMA
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
+                        History
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.admin.history_resi_outbound_to_rma.index') }}" class="{{ request()->routeIs('shipments.admin.history_resi_outbound_to_rma.*') ? 'active' : '' }}">
+                            Histori Pengiriman
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.admin.history_inbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.admin.history_inbound_from_rma.*') ? 'active' : '' }}">
+                            Histori Penerimaan
                         </a>
                     </li>
                 @endif
             @endauth
 
-            {{-- RMA: Fitur Pengiriman Barang (RMA) --}}
             @auth
                 @if (auth()->user()->isRmaAdmin())
+                    {{-- CRUD Sparepart --}}
+                    <li>
+                        <a href="{{ route('spareparts.index') }}" class="{{ request()->routeIs('spareparts.*') ? 'active' : '' }}">
+                            Sparepart Service
+                        </a>
+                    </li>
+
+                    <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
+                        Shipment
+                    </li>
+                    {{-- RMA: Fitur Shipment Service (RMA) --}}
                     <li>
                         <a href="{{ route('shipments.rma.inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.inbound_from_admin.*') ? 'active' : '' }}">
                             Barang Masuk Dari Admin
@@ -127,16 +146,30 @@
                             Siap Kirim Balik Ke Admin
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.resi_outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.resi_outbound_from_rma.*') ? 'active' : '' }}">
+                            Resi Kirim Balik Ke Admin
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-header" style="padding: 10px 20px; font-size: 0.9em; text-transform: uppercase; color: #bbb; margin-top: 15px;">
+                        History
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.history_inbound_from_admin.index') }}" class="{{ request()->routeIs('shipments.rma.history_inbound_from_admin.*') ? 'active' : '' }}">
+                            Histori Barang Masuk
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('shipments.rma.history_resi_outbound_from_rma.index') }}" class="{{ request()->routeIs('shipments.rma.history_resi_outbound_from_rma.*') ? 'active' : '' }}">
+                            Histori Pengiriman
+                        </a>
+                    </li>
                 @endif
             @endauth
+
             {{-- mengerjakan daftar proses service (RMA only) --}}
             @auth
                 @if (auth()->user()->isRma())
-                    <li>
-                        <a href="{{ route('spareparts.index') }}" class="{{ request()->routeIs('spareparts.*') ? 'active' : '' }}">
-                            Sparepart Service
-                        </a>
-                    </li>
                     <li>
                         <a href="{{ route('service_processes.index') }}" class="{{ request()->routeIs('service_processes.*') ? 'active' : '' }}">
                             Antrian Service
@@ -174,6 +207,11 @@
                             Tipe Barang
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('rma_technicians.index') }}" class="{{ request()->routeIs('rma-technicians.*') ? 'active' : '' }}">
+                            Teknisi RMA
+                        </a>
+                    </li>
                 @endif
             @endauth
 
@@ -188,6 +226,11 @@
                     <li>
                         <a href="{{ route('activity.service_items.index') }}" class="{{ request()->routeIs('activity.service_items.*') ? 'active' : '' }}">
                             Aktivitas Barang Service
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('activity.service_processes.index') }}" class="{{ request()->routeIs('activity.service_processes.*') ? 'active' : '' }}">
+                            Aktivitas RMA
                         </a>
                     </li>
                 @endif

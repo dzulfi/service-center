@@ -13,8 +13,8 @@ class Merk extends Model
         'merk_name',
     ];
 
-    public function itemTypes()
+    public function serviceItems()
     {
-        return $this->hasMany(ItemType::class, 'merk_id');
+        return $this->hasMany(ServiceItem::class, 'merk_id');
     }
 }

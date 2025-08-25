@@ -107,7 +107,7 @@
     </style> --}}
 </head>
 <body>
-    @extends('layouts.app') @section('title', 'Daftar Pelanggan') @section('content')
+    @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
         <div class="container">
             <h1>Detail Proses Servis</h1>
 
@@ -124,14 +124,14 @@
                 </span>
             </div>
             <div class="detail-group">
-                <strong>Pelanggan:</strong>
+                <strong>Mitra Bisnis:</strong>
                 <span>
                     @if ($serviceProcess->serviceItem && $serviceProcess->serviceItem->customer)
                         <a href="{{ route('customers.show', $serviceProcess->serviceItem->customer->id) }}">
                             {{ $serviceProcess->serviceItem->customer->name }}
                         </a>
                     @else
-                        <span style="color: #999;">(Pelanggan Tidak Ditemukan)</span>
+                        <span style="color: #999;">(Mitra Bisnis Tidak Ditemukan)</span>
                     @endif
                 </span>
             </div>
