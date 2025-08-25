@@ -111,7 +111,7 @@ class StockSparepartController extends Controller
         if (Auth::user()->isDeveloper() || Auth::user()->isSuperAdmin()) {
             return redirect()->route('activity.service_processes.index')->with('success','Sparepart berhasil di gunakan');
         } else {
-            return redirect()->route('service_processes.index')->with('success','Sparepart berhasil di gunakan');
+            return redirect()->route('service_processes.work_on', $serviceItem->id)->with('success','Sparepart berhasil di gunakan');
         }
     }
 
@@ -162,7 +162,7 @@ class StockSparepartController extends Controller
         if (Auth::user()->isDeveloper() || Auth::user()->isSuperAdmin()) {
             return redirect()->route('activity.service_processes.index')->with('success','Sparepart berhasil di gunakan');
         } else {
-            return redirect()->route('service_processes.index')->with('success', 'Sparepart berhasil dikembalikan ke stok');
+            return redirect()->route('service_processes.work_on', $serviceItem->id)->with('success', 'Sparepart berhasil dikembalikan ke stok');
         }
     }
 }

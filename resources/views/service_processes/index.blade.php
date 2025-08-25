@@ -32,7 +32,7 @@
                         <th>Sparepart</th>
                         <th>Teknisi</th>
                         <th>Aksi</th>
-                        <th>Aksi Sparepart</th>
+                        {{-- <th>Aksi Sparepart</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -103,10 +103,10 @@
                             <td class="actions">
                                 <a href="{{ route('service_processes.work_on', $item->id) }}" class="work-button">Kerjakan</a>
                             </td>
-                            <td class="actions">
+                            {{-- <td class="actions">
                                 <a href="{{ route('stock_out.index', $item->id) }}" class="stock-out">Gunakan</a>
                                 <a href="{{ route('stock_return.create', $item->id) }}" class="stock-return">Kembalikan</a>
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>

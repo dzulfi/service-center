@@ -1,3 +1,12 @@
+<style>
+    .list-disc{
+        list-style-type: disc;
+    }
+    .sparepart{
+        margin-left: 20px;
+        margin-bottom: 20px;
+    }
+</style>
 @extends('layouts.app') @section('title', 'Daftar Mitra Bisnis') @section('content')
     <div class="container full-width">
         <h1>
@@ -125,6 +134,33 @@
             </div>
             <button type="submit" class="kirim-button">Simpan Proses Servis</button>
         </form>
+
+        <h2 style="margin-top: 40px;">Penggunaan Sparepart</h2>
+        @if ($serviceItem->stockSpareparts->isEmpty())
+        <div style="color: rgb(255, 93, 93); font-weight: bold; margin-bottom: 20px;">
+            Tidak memakai sparepart
+        </div>
+        @else
+            <div class="sparepart">
+                <ul class="list-disc">
+                    @foreach ($serviceItem->stockSpareparts->groupBy('sparepart_id') as $sparepartId => $stocks)
+                        @php
+                            $sparepartName = $stocks->first()->sparepart->name ?? 'Nama tidak ditemukan';
+                            $currentStock = $serviceItem->getCurrentStockForSparepart($sparepartId);
+                        @endphp
+                        @if ($currentStock != 0)
+                            <li>
+                                {{ $sparepartName }} (stock: {{ $serviceItem->getCurrentStockForSparepart($sparepartId) }})
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+        <div class="actions">
+            <a href="{{ route('stock_out.index', $serviceItem->id) }}" class="stock-out">Gunakan</a>
+            <a href="{{ route('stock_return.create', $serviceItem->id) }}" class="stock-return">Kembalikan</a>
+        </div>
 
         <a href="{{ route('service_processes.index') }}" class="back-link">Kembali ke Daftar Barang Servis</a>
         <br>
